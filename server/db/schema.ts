@@ -111,4 +111,38 @@ export const MIGRATIONS: readonly string[] = [
 
   CREATE VIRTUAL TABLE mail_fts USING fts5(subject, sender, recipients, body, tokenize = 'unicode61 remove_diacritics 2');
   `,
+  `
+  CREATE TABLE cal_calendars (
+    id           INTEGER PRIMARY KEY,
+    file_rel     TEXT NOT NULL UNIQUE,
+    name         TEXT NOT NULL,
+    timezone     TEXT,
+    event_count  INTEGER NOT NULL DEFAULT 0,
+    source_size  INTEGER NOT NULL,
+    source_mtime INTEGER NOT NULL
+  );
+
+  CREATE TABLE cal_events (
+    id              INTEGER PRIMARY KEY,
+    cal_id          INTEGER NOT NULL,
+    uid             TEXT NOT NULL,
+    summary         TEXT NOT NULL,
+    start_ts        INTEGER NOT NULL,
+    end_ts          INTEGER NOT NULL,
+    all_day         INTEGER NOT NULL,
+    rrule           TEXT,
+    exdates         TEXT,
+    recurrence_ts   INTEGER,
+    location        TEXT NOT NULL,
+    description     TEXT NOT NULL,
+    organizer       TEXT NOT NULL,
+    attendees       TEXT,
+    status          TEXT NOT NULL,
+    meet_url        TEXT
+  );
+  CREATE INDEX cal_events_range ON cal_events(cal_id, start_ts);
+  CREATE INDEX cal_events_start ON cal_events(start_ts);
+  CREATE INDEX cal_events_uid ON cal_events(uid);
+  CREATE VIRTUAL TABLE cal_fts USING fts5(summary, description, location, tokenize = 'unicode61 remove_diacritics 2');
+  `,
 ]

@@ -204,3 +204,45 @@ export function splitHighlight(snippet: string, start: string, end: string): { t
   }
   return parts
 }
+
+const zoneFormatters = new Map<string, Intl.DateTimeFormat>()
+
+/** Wall-clock offset (ms) of `timeZone` at the given UTC instant. */
+export function getZoneOffsetMs(ts: number, timeZone: string): number {
+  let formatter = zoneFormatters.get(timeZone)
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      hourCycle: "h23",
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    })
+    zoneFormatters.set(timeZone, formatter)
+  }
+  const parts = Object.fromEntries(formatter.formatToParts(new Date(ts)).map((p) => [p.type, Number(p.value)]))
+  const asUtc = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second)
+  return asUtc - Math.floor(ts / 1000) * 1000
+}
+
+/** Convert a wall-clock time in `timeZone` (given as if it were UTC) to a real UTC timestamp. */
+export function zonedTimeToUtc(wallMs: number, timeZone: string): number {
+  try {
+    const guess = wallMs - getZoneOffsetMs(wallMs, timeZone)
+    return wallMs - getZoneOffsetMs(guess, timeZone)
+  } catch {
+    return wallMs // unknown zone: treat as UTC
+  }
+}
+
+/** Shift a UTC instant so its UTC fields read as the wall clock in `timeZone`. */
+export function utcToWall(ts: number, timeZone: string): number {
+  try {
+    return ts + getZoneOffsetMs(ts, timeZone)
+  } catch {
+    return ts
+  }
+}

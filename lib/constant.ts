@@ -279,3 +279,23 @@ export const MAIL_TEXT = {
   loadRemote: "Load remote images",
   noSubject: "(no subject)",
 } as const
+
+export const CALENDAR = {
+  views: ["month", "week", "day", "agenda"] as const,
+  defaultView: "month",
+  maxEventsPerRange: 4000,
+  searchLimit: 100,
+  msPerDay: 86_400_000,
+  weekStartsOn: 1, // Monday
+  hourHeightPx: 48,
+  maxChipsPerDay: 3,
+  agendaDays: 30,
+  /** One colour per calendar (cycled). oklch keeps lightness consistent in light and dark themes. */
+  colors: [
+    "oklch(0.62 0.17 255)", "oklch(0.65 0.18 145)", "oklch(0.68 0.18 55)", "oklch(0.62 0.21 25)",
+    "oklch(0.60 0.20 305)", "oklch(0.70 0.13 195)", "oklch(0.66 0.19 350)", "oklch(0.64 0.15 100)",
+    "oklch(0.58 0.14 230)", "oklch(0.60 0.16 175)", "oklch(0.66 0.20 80)", "oklch(0.55 0.18 280)",
+  ] as readonly string[],
+  fallbackTimeZone: "UTC",
+} as const
+export type CalendarView = (typeof CALENDAR.views)[number]

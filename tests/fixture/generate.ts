@@ -62,6 +62,55 @@ export const FIXTURE_MBOX = [
   "",
 ].join("\n")
 
+export const FIXTURE_ICS = [
+  "BEGIN:VCALENDAR",
+  "VERSION:2.0",
+  "X-WR-CALNAME:Fixture Calendar",
+  "X-WR-TIMEZONE:Asia/Kolkata",
+  "BEGIN:VEVENT",
+  "DTSTART:20230102T090000Z",
+  "DTEND:20230102T100000Z",
+  "UID:utc-event@fixture",
+  "SUMMARY:Planning\\, part one",
+  "DESCRIPTION:Line one\\nLine two with a very long text that gets folded by the",
+  "  exporter across lines",
+  "LOCATION:Room 1",
+  "ORGANIZER;CN=Alice Example:mailto:alice@example.test",
+  "ATTENDEE;CN=Bob;PARTSTAT=ACCEPTED:mailto:bob@example.test",
+  "X-GOOGLE-CONFERENCE:https://meet.google.com/abc-defg-hij",
+  "STATUS:CONFIRMED",
+  "END:VEVENT",
+  "BEGIN:VEVENT",
+  "DTSTART;TZID=Asia/Kolkata:20230103T103000",
+  "DTEND;TZID=Asia/Kolkata:20230103T113000",
+  "UID:ist-event@fixture",
+  "SUMMARY:Local time event",
+  "END:VEVENT",
+  "BEGIN:VEVENT",
+  "DTSTART;VALUE=DATE:20230105",
+  "DTEND;VALUE=DATE:20230106",
+  "UID:allday@fixture",
+  "SUMMARY:Holiday",
+  "END:VEVENT",
+  "BEGIN:VEVENT",
+  "DTSTART:20230109T040000Z",
+  "DTEND:20230109T043000Z",
+  "RRULE:FREQ=WEEKLY;COUNT=4",
+  "EXDATE:20230116T040000Z",
+  "UID:weekly@fixture",
+  "SUMMARY:Weekly sync",
+  "END:VEVENT",
+  "BEGIN:VEVENT",
+  "DTSTART:20230123T050000Z",
+  "DTEND:20230123T053000Z",
+  "RECURRENCE-ID:20230123T040000Z",
+  "UID:weekly@fixture",
+  "SUMMARY:Weekly sync (moved)",
+  "END:VEVENT",
+  "END:VCALENDAR",
+  "",
+].join("\r\n")
+
 const NARROW_NBSP = " "
 
 export function write(root: string, rel: string, content: string | Buffer) {
@@ -101,7 +150,7 @@ export function createFixture(options: { wrap?: boolean } = {}): { base: string;
       ],
     })
   )
-  write(root, "Calendar/me@example.test.ics", "BEGIN:VCALENDAR\nVERSION:2.0\nEND:VCALENDAR\n")
+  write(root, "Calendar/me@example.test.ics", FIXTURE_ICS)
   write(root, "Contacts/All Contacts/All Contacts.vcf", "BEGIN:VCARD\nVERSION:3.0\nFN:Alice Example\nEND:VCARD\n")
   write(root, "Drive/Reports/report.docx", "not a real docx")
   write(root, "Drive/photo.jpg", Buffer.from([0xff, 0xd8, 0xff, 0xd9]))

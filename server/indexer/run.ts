@@ -3,6 +3,7 @@ import path from "node:path"
 
 import { MODULES } from "@/lib/constant"
 import type { Db } from "@/server/db"
+import { indexCalendar } from "./calendar"
 import { indexChat } from "./chat"
 import { indexDrive } from "./drive"
 import { indexMail } from "./mail"
@@ -15,6 +16,7 @@ export const INDEXERS: Record<string, Indexer> = {
   drive: ({ db }) => indexDrive(db),
   chat: ({ db, root }) => indexChat(db, root),
   mail: ({ db, root }) => indexMail(db, root),
+  calendar: ({ db, root }) => indexCalendar(db, root),
 }
 
 /** Modules that are only browsable after their own indexer has run. Drive and the generic browser need just the file scan. */

@@ -98,3 +98,33 @@ export interface MailMessageView {
   attachments: MailAttachmentItem[]
   labels: string[]
 }
+
+export interface CalendarInfo {
+  id: number
+  name: string
+  eventCount: number
+  color: string
+}
+
+/** Times are "wall clock" milliseconds: read them with UTC getters to get the display-timezone time. */
+export interface CalendarEventItem {
+  key: string
+  eventId: number
+  calId: number
+  title: string
+  startWall: number
+  endWall: number
+  allDay: boolean
+  recurring: boolean
+  location: string
+}
+
+export interface CalendarEventDetail extends CalendarEventItem {
+  calendarName: string
+  description: string
+  organizer: string
+  attendees: { name: string; email: string; status: string }[]
+  meetUrl: string | null
+  status: string
+  rrule: string | null
+}

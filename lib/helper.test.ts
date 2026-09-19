@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery, splitHighlight, getDayKey } from "@/lib/helper"
+import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery, splitHighlight, getDayKey, zonedTimeToUtc, utcToWall } from "@/lib/helper"
 
 describe("helper", () => {
   it("formats bytes", () => {
@@ -44,5 +44,12 @@ describe("helper", () => {
   })
   it("derives a UTC day key", () => {
     expect(getDayKey(Date.UTC(2021, 0, 11, 23, 59))).toBe("2021-01-11")
+  })
+  it("converts between wall-clock time and UTC for a zone", () => {
+    const wall = Date.UTC(2021, 0, 15, 10, 30) // 10:30 wall time
+    expect(zonedTimeToUtc(wall, "Asia/Kolkata")).toBe(Date.UTC(2021, 0, 15, 5, 0)) // IST is UTC+5:30
+    expect(utcToWall(Date.UTC(2021, 0, 15, 5, 0), "Asia/Kolkata")).toBe(wall)
+    expect(zonedTimeToUtc(Date.UTC(2021, 6, 1, 12, 0), "Europe/Paris")).toBe(Date.UTC(2021, 6, 1, 10, 0)) // CEST +2
+    expect(zonedTimeToUtc(wall, "Not/AZone")).toBe(wall)
   })
 })
