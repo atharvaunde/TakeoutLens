@@ -25,7 +25,7 @@ beforeAll(async () => {
   const { runIndexer } = await import("@/server/indexer/run")
   const db = getDb()
   await runIndexer(db, fx.root)
-  ids.push(...(db.prepare("SELECT id FROM mail_messages ORDER BY date_ts").pluck().all() as number[]))
+  ids.push(...(db.prepare("SELECT id FROM mail_messages WHERE source = 'mail' ORDER BY date_ts").pluck().all() as number[]))
   const store = await import("@/server/auth/store")
   store.savePassword("mail-test-pw")
   jar.set(SESSION.cookieName, store.createSession().token)

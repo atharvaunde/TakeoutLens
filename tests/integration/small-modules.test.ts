@@ -133,3 +133,20 @@ describe("generic browser and viewer", () => {
     expect(sorted.kind === "csv" && sorted.rows.map((r) => r.username)).toEqual(["bob", "alice"])
   })
 })
+
+describe("groups", () => {
+  it("lists groups with counts, members and discussions, isolated from mail", async () => {
+    const { listGroups, getGroup, listGroupMembers } = await import("@/server/services/groups")
+    const { listMailMessages, getThread, listMailLabels } = await import("@/server/services/mail")
+    const groups = await listGroups()
+    expect(groups).toEqual([{ email: "dev@example.test", name: "Dev Team", description: "Dev discussions", memberCount: 2, discussionCount: 1 }])
+    expect(await getGroup("nope@example.test")).toBeNull()
+    expect((await listGroupMembers("dev@example.test", parseTableParams({}))).rows.map((m) => m.email)).toEqual(["alice@example.test", "bob@example.test"])
+
+    const discussions = await listMailMessages(parseTableParams({}), null, "group:dev@example.test")
+    expect(discussions.rows.map((r) => r.subject)).toEqual(["[dev] Release plan"])
+    expect((await listMailMessages(parseTableParams({}), null)).rows.every((r) => r.subject !== "[dev] Release plan")).toBe(true) // not in the Gmail view
+    expect((await getThread(discussions.rows[0].messageId))[0].text).toContain("ship on Friday")
+    expect((await listMailLabels()).length).toBeGreaterThan(0)
+  })
+})

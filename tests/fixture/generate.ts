@@ -165,6 +165,10 @@ export function createFixture(options: { wrap?: boolean } = {}): { base: string;
   write(root, "YouTube and YouTube Music/videos/Live Stream.webm", "x")
   write(root, "YouTube and YouTube Music/channels/channel.csv", "Channel ID,Channel Title (Original),Channel Visibility\nUC1,Fixture Channel,Public\n")
   write(root, "YouTube and YouTube Music/playlists/playlists.csv", "Playlist ID,Add new videos to top,Playlist Title (Original),Playlist Create Timestamp,Playlist Update Timestamp,Playlist Video Order,Playlist Visibility\nPL1,False,Fixture list,2020-11-20T07:32:24+00:00,2020-12-20T04:08:54+00:00,Manual,Private\n")
+  const GROUP = "Groups/example.test/owned groups/dev@example.test"
+  write(root, `${GROUP}/info.csv`, "autoReplyForMembersInOrg,description,groupEmailAddress,name\n,Dev discussions,dev@example.test,Dev Team\n")
+  write(root, `${GROUP}/members.csv`, "displayName,email,emailDeliverySetting,role,updatedTimestamp\nAlice Example,alice@example.test,All email,Owner,2022-12-03T20:08:22.000+05:30\n,bob@example.test,Digest,Member,2022-12-04T00:00:00.000+05:30\n")
+  write(root, `${GROUP}/topics.mbox`, ["From 2000000000000000001@xxx Mon Jan 02 10:00:00 +0000 2023", "From: Alice Example <alice@example.test>", "To: dev@example.test", "Subject: [dev] Release plan", "Date: Mon, 02 Jan 2023 10:00:00 +0000", "Message-ID: <g1@example.test>", "Content-Type: text/plain; charset=UTF-8", "", "Let us ship on Friday.", ""].join("\n"))
   write(root, "Keep/Note.json", JSON.stringify({ title: "Note", textContent: "hello", isTrashed: false }))
   write(
     root,

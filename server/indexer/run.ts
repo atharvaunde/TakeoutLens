@@ -6,6 +6,7 @@ import type { Db } from "@/server/db"
 import { indexCalendar } from "./calendar"
 import { indexChat } from "./chat"
 import { indexDrive } from "./drive"
+import { indexGroups } from "./groups"
 import { indexMail } from "./mail"
 import { indexPhotos } from "./photos"
 import { scanFiles } from "./scan"
@@ -19,6 +20,7 @@ export const INDEXERS: Record<string, Indexer> = {
   mail: ({ db, root }) => indexMail(db, root),
   calendar: ({ db, root }) => indexCalendar(db, root),
   photos: ({ db, root }) => indexPhotos(db, root),
+  groups: ({ db, root }) => indexGroups(db, root),
 }
 
 const setState = (db: Db, id: string, state: string, detail: string | null = null) =>

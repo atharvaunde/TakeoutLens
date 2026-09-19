@@ -44,12 +44,12 @@ interface ListRow {
   unread: number
 }
 
-export async function listMailMessages(params: TableParams, label: string | null): Promise<{ rows: MailRow[]; total: number }> {
+export async function listMailMessages(params: TableParams, label: string | null, source = "mail"): Promise<{ rows: MailRow[]; total: number }> {
   await requireSession()
   const db = getDb()
   const joins: string[] = []
-  const where: string[] = ["m.source = 'mail'"]
-  const args: (string | number)[] = []
+  const where: string[] = ["m.source = ?"]
+  const args: (string | number)[] = [source]
   const match = toFtsQuery(params.search)
   if (match) {
     joins.push("JOIN mail_fts ON mail_fts.rowid = m.id")
@@ -94,10 +94,11 @@ interface Located {
   byte_offset: number
   byte_length: number
   thread_id: string
+  source: string
 }
 
 function locate(id: number): Located | undefined {
-  return getDb().prepare("SELECT id, file_rel, byte_offset, byte_length, thread_id FROM mail_messages WHERE id = ?").get(id) as Located | undefined
+  return getDb().prepare("SELECT id, file_rel, byte_offset, byte_length, thread_id, source FROM mail_messages WHERE id = ?").get(id) as Located | undefined
 }
 
 function readRaw(row: Located): Buffer {
@@ -154,8 +155,8 @@ export async function getThread(messageId: number): Promise<MailMessageView[]> {
   const row = locate(messageId)
   if (!row) return []
   const siblings = getDb()
-    .prepare("SELECT id, file_rel, byte_offset, byte_length, thread_id FROM mail_messages WHERE thread_id = ? AND source = 'mail' ORDER BY date_ts, id")
-    .all(row.thread_id) as Located[]
+    .prepare("SELECT id, file_rel, byte_offset, byte_length, thread_id, source FROM mail_messages WHERE thread_id = ? AND source = ? ORDER BY date_ts, id")
+    .all(row.thread_id, row.source) as Located[]
   return Promise.all(siblings.map(parseMessage))
 }
 
