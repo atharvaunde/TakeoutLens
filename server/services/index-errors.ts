@@ -1,29 +1,47 @@
-import type { TableParams } from "@/lib/helper"
 import type { IndexErrorRow } from "@/columns/index-errors.column"
+import type { TableParams } from "@/lib/helper"
+import { requireSession } from "@/server/auth/session"
+import { getDb } from "@/server/db"
 
-// STUB until the SQLite index exists (M1). Deterministic sample rows so the
-// shared DataTable can be exercised end to end with server-side paging/sorting/search/filter.
-const MODULE_NAMES = ["mail", "chat", "calendar", "drive"] as const
-const SAMPLE: IndexErrorRow[] = Array.from({ length: 230 }, (_, i) => ({
-  id: String(i),
-  module: MODULE_NAMES[i % MODULE_NAMES.length],
-  path: `${MODULE_NAMES[i % MODULE_NAMES.length]}/sample-file-${i}.dat`,
-  reason: i % 2 ? "Invalid date" : "Malformed JSON",
-  occurredAt: new Date(Date.UTC(2026, 8, 1, 0, 0, 0) + i * 3_600_000).toISOString(),
-}))
+// Only whitelisted columns may be used for ORDER BY (never interpolate user input).
+const SORTABLE: Record<string, string> = { module: "module", occurredAt: "occurred_at" }
 
-export async function listIndexErrors(params: TableParams) {
-  const needle = params.search.toLowerCase()
-  let rows = SAMPLE.filter(
-    (row) =>
-      (!params.filters.module || row.module === params.filters.module) &&
-      (!needle || `${row.path} ${row.reason}`.toLowerCase().includes(needle))
-  )
-  if (params.sort && params.sort in SAMPLE[0]) {
-    const key = params.sort as keyof IndexErrorRow
-    const direction = params.dir === "desc" ? -1 : 1
-    rows = [...rows].sort((a, b) => (a[key] > b[key] ? 1 : a[key] < b[key] ? -1 : 0) * direction)
+interface Row {
+  id: number
+  module: string
+  path: string
+  reason: string
+  occurred_at: number
+}
+
+export async function listIndexErrors(params: TableParams): Promise<{ rows: IndexErrorRow[]; total: number }> {
+  await requireSession()
+  const db = getDb()
+  const where: string[] = []
+  const args: (string | number)[] = []
+  if (params.filters.module) {
+    where.push("module = ?")
+    args.push(params.filters.module)
   }
-  const start = (params.page - 1) * params.pageSize
-  return { rows: rows.slice(start, start + params.pageSize), total: rows.length }
+  if (params.search) {
+    where.push("(path LIKE ? ESCAPE '\\' OR reason LIKE ? ESCAPE '\\')")
+    const like = `%${params.search.replace(/[\\%_]/g, "\\$&")}%`
+    args.push(like, like)
+  }
+  const clause = where.length ? `WHERE ${where.join(" AND ")}` : ""
+  const order = params.sort && SORTABLE[params.sort] ? `ORDER BY ${SORTABLE[params.sort]} ${params.dir === "desc" ? "DESC" : "ASC"}` : "ORDER BY id"
+  const total = db.prepare(`SELECT count(*) FROM index_errors ${clause}`).pluck().get(...args) as number
+  const rows = db
+    .prepare(`SELECT id, module, path, reason, occurred_at FROM index_errors ${clause} ${order} LIMIT ? OFFSET ?`)
+    .all(...args, params.pageSize, (params.page - 1) * params.pageSize) as Row[]
+  return {
+    total,
+    rows: rows.map((r) => ({
+      id: String(r.id),
+      module: r.module,
+      path: r.path,
+      reason: r.reason,
+      occurredAt: new Date(r.occurred_at).toISOString(),
+    })),
+  }
 }
