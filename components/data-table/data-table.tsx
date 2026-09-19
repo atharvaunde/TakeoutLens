@@ -28,6 +28,8 @@ export interface DataTableProps<TData extends RowData> {
   rowHrefKey?: keyof TData & string
   /** Stable row id (defaults to the index). Needed for selection. */
   getRowId?: (row: TData) => string
+  /** Serializable alternative to `getRowId` for Server Component pages: the row field holding the id. */
+  rowIdKey?: keyof TData & string
   selectedRowId?: string | null
   onRowClick?: (row: TData) => void
   onRowDoubleClick?: (row: TData) => void
@@ -52,6 +54,7 @@ export function DataTable<TData extends RowData>({
   rowCount,
   rowHrefKey,
   getRowId,
+  rowIdKey,
   selectedRowId,
   onRowClick,
   onRowDoubleClick,
@@ -80,7 +83,9 @@ export function DataTable<TData extends RowData>({
     columns,
     data,
     rowCount,
-    ...(getRowId ? { getRowId: (row: TData) => getRowId(row) } : {}),
+    ...(getRowId || rowIdKey
+      ? { getRowId: (row: TData) => (getRowId ? getRowId(row) : String(row[rowIdKey as keyof TData])) }
+      : {}),
     manualPagination: true,
     manualSorting: true,
     state: { pagination, sorting },
