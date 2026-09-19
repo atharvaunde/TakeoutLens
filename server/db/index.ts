@@ -35,16 +35,22 @@ const globalForDb = globalThis as unknown as { __takeoutDb?: { key: string; db: 
  */
 export function getDb(): Db {
   const file = path.join(getConfig().dataDir, DB_FILE_NAME)
-  const key = `${file}#${MIGRATIONS.length}`
-  // Also reopen if the file was removed/recreated underneath us (e.g. a manual index reset).
-  const missing = !fs.existsSync(file)
-  if (globalForDb.__takeoutDb?.key !== key || missing) {
+  // The inode changes if the file is deleted and recreated underneath us (e.g. a manual index reset).
+  let inode = 0
+  try {
+    inode = fs.statSync(file).ino
+  } catch {
+    // not created yet
+  }
+  const key = `${file}#${MIGRATIONS.length}#${inode}`
+  if (globalForDb.__takeoutDb?.key !== key) {
     try {
       globalForDb.__takeoutDb?.db.close()
     } catch {
       // already unusable
     }
-    globalForDb.__takeoutDb = { key, db: openDb(file) }
+    const db = openDb(file)
+    globalForDb.__takeoutDb = { key: `${file}#${MIGRATIONS.length}#${fs.statSync(file).ino}`, db }
   }
   return globalForDb.__takeoutDb.db
 }
