@@ -51,7 +51,7 @@ export interface ModuleDefinition {
 export const MODULES: readonly ModuleDefinition[] = [
   { id: "mail", label: "Mail", href: "/mail", icon: MailIcon, priority: "P0", built: true, sourceFolders: ["Mail"] },
   { id: "chat", label: "Chat", href: "/chat", icon: MessageSquareIcon, priority: "P0", built: true, sourceFolders: ["Google Chat"] },
-  { id: "calendar", label: "Calendar", href: "/calendar", icon: CalendarDaysIcon, priority: "P0", built: false, sourceFolders: ["Calendar"] },
+  { id: "calendar", label: "Calendar", href: "/calendar", icon: CalendarDaysIcon, priority: "P0", built: true, sourceFolders: ["Calendar"] },
   { id: "drive", label: "Drive", href: "/drive", icon: HardDriveIcon, priority: "P0", built: true, sourceFolders: ["Drive"] },
   { id: "contacts", label: "Contacts", href: "/contacts", icon: ContactRoundIcon, priority: "P2", built: false, sourceFolders: ["Contacts"] },
   { id: "keep", label: "Keep", href: "/keep", icon: StickyNoteIcon, priority: "P2", built: false, sourceFolders: ["Keep"] },
