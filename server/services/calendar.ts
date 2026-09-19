@@ -150,3 +150,9 @@ export async function getEventDetail(id: number, occurrenceStartWall?: number): 
     rrule: row.rrule,
   }
 }
+
+/** Start of "today" as wall-clock ms in the display time zone. */
+export async function getTodayWall(): Promise<number> {
+  await requireSession()
+  return Math.floor(utcToWall(Date.now(), getDisplayTimeZone()) / CALENDAR.msPerDay) * CALENDAR.msPerDay
+}
