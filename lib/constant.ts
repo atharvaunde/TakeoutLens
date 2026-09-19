@@ -202,3 +202,13 @@ export const AUTH_TEXT = {
   mismatch: "Passwords do not match.",
   tooMany: "Too many attempts. Try again in a moment.",
 } as const
+
+export const THUMBNAIL = {
+  width: 320,
+  quality: 70,
+  /** Guard against decompression bombs (pixels). */
+  maxInputPixels: 268_402_689,
+  dirName: "thumbs",
+} as const
+
+export const INDEXING_REFRESH_MS = 2000
