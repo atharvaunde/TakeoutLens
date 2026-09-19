@@ -153,3 +153,32 @@ export const INLINE_MIME_TYPES: Readonly<Record<string, string>> = {
 }
 
 export const DEFAULT_DOWNLOAD_MIME = "application/octet-stream"
+
+export const ENV = {
+  takeoutDir: "TAKEOUT_DIR",
+  dataDir: "DATA_DIR",
+  allowedHosts: "ALLOWED_HOSTS",
+} as const
+
+export const DEFAULT_DIRS = {
+  takeout: "./takeout",
+  data: "./.data",
+} as const
+
+/** Folder name Google wraps a multi-product export in. */
+export const TAKEOUT_WRAPPER_FOLDER = "Takeout"
+
+export const DB_FILE_NAME = "index.db"
+export const AUTH_FILE_NAME = "auth.json"
+
+export type ModuleState = "pending" | "indexing" | "ready" | "failed" | "missing"
+
+export const MODULE_STATE_LABELS: Record<ModuleState, string> = {
+  pending: "Not indexed",
+  indexing: "Indexing",
+  ready: "Ready",
+  failed: "Failed",
+  missing: "Not in export",
+}
+
+export const ALLOWED_LOCAL_HOSTS = ["localhost", "127.0.0.1", "[::1]"] as const
