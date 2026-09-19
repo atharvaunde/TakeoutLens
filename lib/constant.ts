@@ -58,7 +58,7 @@ export const MODULES: readonly ModuleDefinition[] = [
   { id: "tasks", label: "Tasks", href: "/tasks", icon: ListChecksIcon, priority: "P2", built: true, sourceFolders: ["Tasks"] },
   { id: "photos", label: "Photos", href: "/photos", icon: ImageIcon, priority: "P2", built: true, sourceFolders: ["Google Photos"] },
   { id: "groups", label: "Groups", href: "/groups", icon: UsersRoundIcon, priority: "P2", built: false, sourceFolders: ["Groups"] },
-  { id: "youtube", label: "YouTube", href: "/youtube", icon: VideoIcon, priority: "P2", built: false, sourceFolders: ["YouTube and YouTube Music"] },
+  { id: "youtube", label: "YouTube", href: "/youtube", icon: VideoIcon, priority: "P2", built: true, sourceFolders: ["YouTube and YouTube Music"] },
   { id: "browse", label: "Other data", href: "/browse", icon: FolderTreeIcon, priority: "P2", built: false, sourceFolders: [] },
 ] as const
 
@@ -341,3 +341,8 @@ export const PHOTOS = { pageSize: 120, imageExtensions: [".jpg", ".jpeg", ".png"
 export const VIEWER = { maxTextBytes: 2_000_000, csvPreviewRows: 5000 } as const
 
 export const TASK_LIST_FILTER_ID = "list"
+
+export const YOUTUBE_TABS = [
+  { value: "videos", label: "Videos" },
+  { value: "playlists", label: "Playlists" },
+] as const

@@ -160,6 +160,11 @@ export function createFixture(options: { wrap?: boolean } = {}): { base: string;
   write(root, "Google Photos/Photos from 2021/IMG_2.jpg", Buffer.from([0xff, 0xd8, 0xff, 0xd9]))
   write(root, "Google Photos/Photos from 2021/IMG_3.jpg", Buffer.from([0xff, 0xd8, 0xff, 0xd9]))
   write(root, "Google Photos/Photos from 2021/IMG_3.jpg.supplemental-metadata.json", JSON.stringify({ photoTakenTime: { timestamp: "1500000000" }, geoData: { latitude: 0, longitude: 0 } }))
+  write(root, "YouTube and YouTube Music/video metadata/videos.csv", "Video ID,Approx Duration (ms),Video Category,Channel ID,Video Title (Original),Privacy,Video State,Video Create Timestamp\nabc,90000,People,UC1,Demo: part 1,Unlisted,Processed,2021-01-30T05:26:03+00:00\ndef,1000,People,UC1,Missing clip,Private,Processed,2021-02-01T00:00:00+00:00\n")
+  write(root, "YouTube and YouTube Music/videos/Demo_ part 1.mp4", "x")
+  write(root, "YouTube and YouTube Music/videos/Live Stream.webm", "x")
+  write(root, "YouTube and YouTube Music/channels/channel.csv", "Channel ID,Channel Title (Original),Channel Visibility\nUC1,Fixture Channel,Public\n")
+  write(root, "YouTube and YouTube Music/playlists/playlists.csv", "Playlist ID,Add new videos to top,Playlist Title (Original),Playlist Create Timestamp,Playlist Update Timestamp,Playlist Video Order,Playlist Visibility\nPL1,False,Fixture list,2020-11-20T07:32:24+00:00,2020-12-20T04:08:54+00:00,Manual,Private\n")
   write(root, "Keep/Note.json", JSON.stringify({ title: "Note", textContent: "hello", isTrashed: false }))
   write(
     root,

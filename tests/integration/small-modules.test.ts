@@ -78,3 +78,18 @@ describe("photos", () => {
     expect((await listPhotos(1, "Nope")).total).toBe(0)
   })
 })
+
+describe("youtube", () => {
+  it("joins metadata rows to files by normalized title and keeps file-only videos", async () => {
+    const { listVideos, listPlaylists, getYoutubeOverview } = await import("@/server/services/youtube")
+    const { rows } = await listVideos(parseTableParams({}))
+    const by = Object.fromEntries(rows.map((r) => [r.title, r]))
+    expect(by["Demo: part 1"]).toMatchObject({ durationMs: 90000, privacy: "Unlisted" })
+    expect(by["Demo: part 1"].fileId).not.toBeNull() // "Demo: part 1" matches "Demo_ part 1.mp4"
+    expect(by["Missing clip"].fileId).toBeNull()
+    expect(by["Live Stream"]).toMatchObject({ state: "File only" })
+    expect(await getYoutubeOverview()).toEqual({ channelTitle: "Fixture Channel", videoCount: 3, playlistCount: 1 })
+    expect((await listPlaylists(parseTableParams({}))).rows[0].title).toBe("Fixture list")
+    expect((await listVideos(parseTableParams({ q: "missing" }))).total).toBe(1)
+  })
+})

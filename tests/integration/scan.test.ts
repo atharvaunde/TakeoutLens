@@ -78,7 +78,7 @@ describe("runIndexer", () => {
     const { runIndexer } = await import("@/server/indexer/run")
     await runIndexer(db, root)
     const states = Object.fromEntries((db.prepare("SELECT id, state FROM modules").all() as { id: string; state: string }[]).map((r) => [r.id, r.state]))
-    expect(states).toMatchObject({ drive: "ready", browse: "ready", mail: "ready", chat: "ready", contacts: "ready", photos: "ready", youtube: "missing" })
+    expect(states).toMatchObject({ drive: "ready", browse: "ready", mail: "ready", chat: "ready", contacts: "ready", photos: "ready", youtube: "ready" })
     expect(db.prepare("SELECT file_count FROM modules WHERE id = 'drive'").pluck().get()).toBe(2)
   })
 })
