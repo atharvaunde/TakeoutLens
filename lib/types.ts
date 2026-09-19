@@ -129,3 +129,17 @@ export interface CalendarEventDetail extends CalendarEventItem {
   status: string
   rrule: string | null
 }
+
+export interface KeepNote {
+  id: string
+  title: string
+  text: string
+  items: { text: string; checked: boolean }[]
+  color: string
+  pinned: boolean
+  archived: boolean
+  trashed: boolean
+  labels: string[]
+  editedAt: number | null
+  attachmentIds: number[]
+}
