@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# spike outputs (derived from the real export; never commit)
+spike/mbox-offsets.json
