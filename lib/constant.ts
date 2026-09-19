@@ -58,6 +58,21 @@ export const PAGINATION = {
   pageSizeOptions: [25, 50, 100],
 } as const
 
+/** URL search params that drive server-side table state. */
+export const TABLE_PARAMS = {
+  page: "page",
+  pageSize: "pageSize",
+  sort: "sort",
+  dir: "dir",
+} as const
+
+export const TABLE_TEXT = {
+  empty: "No results",
+  previous: "Previous",
+  next: "Next",
+  rowsPerPage: "Rows per page",
+} as const
+
 export const SKELETON_ROWS = {
   table: 10,
   list: 12,

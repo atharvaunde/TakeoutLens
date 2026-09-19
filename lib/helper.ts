@@ -1,4 +1,4 @@
-import { DEFAULT_CURRENCY, DEFAULT_LOCALE, UNITS } from "@/lib/constant"
+import { DEFAULT_CURRENCY, DEFAULT_LOCALE, PAGINATION, TABLE_PARAMS, UNITS } from "@/lib/constant"
 
 // Shared formatters and small pure helpers. All Intl / toLocale* usage lives here.
 
@@ -101,4 +101,26 @@ export function getInitials(name: string | null | undefined): string {
   const first = parts[0][0] ?? ""
   const last = parts.length > 1 ? (parts[parts.length - 1][0] ?? "") : ""
   return (first + last).toUpperCase()
+}
+
+type SearchParams = Record<string, string | string[] | undefined>
+
+export interface TableParams {
+  page: number
+  pageSize: number
+  sort: string | null
+  dir: "asc" | "desc"
+}
+
+const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value)
+
+/** Parse the URL params that drive a server-side table (1-based `page`). */
+export function parseTableParams(searchParams: SearchParams): TableParams {
+  const page = Math.max(1, Number.parseInt(first(searchParams[TABLE_PARAMS.page]) ?? "1", 10) || 1)
+  const requested = Number.parseInt(first(searchParams[TABLE_PARAMS.pageSize]) ?? "", 10)
+  const pageSize = (PAGINATION.pageSizeOptions as readonly number[]).includes(requested)
+    ? requested
+    : PAGINATION.defaultPageSize
+  const dir = first(searchParams[TABLE_PARAMS.dir]) === "desc" ? "desc" : "asc"
+  return { page, pageSize, sort: first(searchParams[TABLE_PARAMS.sort]) ?? null, dir }
 }
