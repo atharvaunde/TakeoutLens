@@ -11,3 +11,18 @@ export interface ModuleStatus {
   totalBytes: number
   detail: string | null
 }
+
+export interface IndexRunSummary {
+  finishedAt: number
+  durationMs: number
+  totalFiles: number
+  added: number
+  updated: number
+  removed: number
+  errors: number
+}
+
+export type StartIndexingResult =
+  | { status: "finished"; run: IndexRunSummary | null }
+  | { status: "running" }
+  | { status: "already-running" }

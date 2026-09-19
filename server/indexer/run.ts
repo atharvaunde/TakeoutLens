@@ -36,7 +36,8 @@ export async function runIndexer(db: Db, root: string) {
   }
   db.prepare("DELETE FROM index_errors").run() // errors are re-derived on every run
 
-  scanFiles(db, root)
+  const startedAt = Date.now()
+  const scan = scanFiles(db, root)
 
   for (const mod of MODULES) {
     const row = db.prepare("SELECT state FROM modules WHERE id = ?").get(mod.id) as { state: string }
@@ -60,4 +61,9 @@ export async function runIndexer(db: Db, root: string) {
     }
   }
   refreshCounts(db)
+  const total = db.prepare("SELECT count(*) FROM files").pluck().get() as number
+  const errors = db.prepare("SELECT count(*) FROM index_errors").pluck().get() as number
+  db.prepare(
+    "INSERT INTO index_runs (started_at, finished_at, total_files, added, updated, removed, errors) VALUES (?, ?, ?, ?, ?, ?, ?)"
+  ).run(startedAt, Date.now(), total, scan.added, scan.updated, scan.removed, errors)
 }

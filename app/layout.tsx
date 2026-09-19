@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { DesktopOnlyGate } from "@/components/layout/desktop-only-gate";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { APP_NAME } from "@/lib/constant";
 
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <TooltipProvider>
           <DesktopOnlyGate>{children}</DesktopOnlyGate>
+          <Toaster />
         </TooltipProvider>
       </body>
     </html>

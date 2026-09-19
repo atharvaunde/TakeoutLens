@@ -32,4 +32,16 @@ export const MIGRATIONS: readonly string[] = [
     expires_at INTEGER NOT NULL
   );
   `,
+  `
+  CREATE TABLE index_runs (
+    id          INTEGER PRIMARY KEY,
+    started_at  INTEGER NOT NULL,
+    finished_at INTEGER NOT NULL,
+    total_files INTEGER NOT NULL,
+    added       INTEGER NOT NULL,
+    updated     INTEGER NOT NULL,
+    removed     INTEGER NOT NULL,
+    errors      INTEGER NOT NULL
+  );
+  `,
 ]

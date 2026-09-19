@@ -176,7 +176,7 @@ export const AUTH_FILE_NAME = "auth.json"
 export type ModuleState = "pending" | "indexing" | "ready" | "failed" | "missing"
 
 export const MODULE_STATE_LABELS: Record<ModuleState, string> = {
-  pending: "Not indexed",
+  pending: "Coming soon",
   indexing: "Indexing",
   ready: "Ready",
   failed: "Failed",
@@ -214,3 +214,7 @@ export const THUMBNAIL = {
 } as const
 
 export const INDEXING_REFRESH_MS = 2000
+
+/** How long the "Index now" action waits for a short run to finish before returning "running". */
+export const INDEX_WAIT_MS = 6000
+export const INDEX_POLL_MS = 150

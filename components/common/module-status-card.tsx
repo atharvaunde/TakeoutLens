@@ -3,7 +3,7 @@ import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { MODULE_STATE_LABELS } from "@/lib/constant"
-import { formatBytes, formatNumber } from "@/lib/helper"
+import { formatBytes, pluralize } from "@/lib/helper"
 import type { ModuleStatus } from "@/lib/types"
 
 export function ModuleStatusCard({ status }: { status: ModuleStatus }) {
@@ -21,7 +21,7 @@ export function ModuleStatusCard({ status }: { status: ModuleStatus }) {
         </div>
         <CardTitle>{module.label}</CardTitle>
         <CardDescription>
-          {available ? `${formatNumber(fileCount)} files · ${formatBytes(totalBytes)}` : "Not found in this export"}
+          {available ? `${pluralize(fileCount, "file")} · ${formatBytes(totalBytes)}` : "Not found in this export"}
         </CardDescription>
       </CardHeader>
     </Card>
