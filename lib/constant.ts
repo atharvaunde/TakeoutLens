@@ -53,7 +53,7 @@ export const MODULES: readonly ModuleDefinition[] = [
   { id: "chat", label: "Chat", href: "/chat", icon: MessageSquareIcon, priority: "P0", built: true, sourceFolders: ["Google Chat"] },
   { id: "calendar", label: "Calendar", href: "/calendar", icon: CalendarDaysIcon, priority: "P0", built: true, sourceFolders: ["Calendar"] },
   { id: "drive", label: "Drive", href: "/drive", icon: HardDriveIcon, priority: "P0", built: true, sourceFolders: ["Drive"] },
-  { id: "contacts", label: "Contacts", href: "/contacts", icon: ContactRoundIcon, priority: "P2", built: false, sourceFolders: ["Contacts"] },
+  { id: "contacts", label: "Contacts", href: "/contacts", icon: ContactRoundIcon, priority: "P2", built: true, sourceFolders: ["Contacts"] },
   { id: "keep", label: "Keep", href: "/keep", icon: StickyNoteIcon, priority: "P2", built: false, sourceFolders: ["Keep"] },
   { id: "tasks", label: "Tasks", href: "/tasks", icon: ListChecksIcon, priority: "P2", built: false, sourceFolders: ["Tasks"] },
   { id: "photos", label: "Photos", href: "/photos", icon: ImageIcon, priority: "P2", built: false, sourceFolders: ["Google Photos"] },
@@ -301,3 +301,41 @@ export const CALENDAR = {
   fallbackTimeZone: "UTC",
 } as const
 export type CalendarView = (typeof CALENDAR.views)[number]
+
+export const CONTACT_SOURCES = [
+  { value: "my", label: "My contacts" },
+  { value: "starred", label: "Starred" },
+] as const
+
+export const CONTACT_FILTERS: readonly TableFilterDefinition[] = [{ id: "source", label: "Source", options: CONTACT_SOURCES }]
+
+export const TASK_FILTERS = {
+  status: [
+    { value: "needsAction", label: "To do" },
+    { value: "completed", label: "Completed" },
+  ],
+} as const
+
+export const KEEP = {
+  views: ["notes", "archived", "trash"] as const,
+  /** Google Keep note colours (theme-aware via oklch with alpha). */
+  colors: {
+    DEFAULT: "transparent",
+    RED: "oklch(0.75 0.12 25 / 0.35)",
+    ORANGE: "oklch(0.8 0.13 60 / 0.35)",
+    YELLOW: "oklch(0.88 0.13 95 / 0.35)",
+    GREEN: "oklch(0.8 0.13 145 / 0.35)",
+    TEAL: "oklch(0.8 0.1 190 / 0.35)",
+    BLUE: "oklch(0.78 0.1 230 / 0.35)",
+    CERULEAN: "oklch(0.75 0.1 250 / 0.35)",
+    PURPLE: "oklch(0.75 0.12 300 / 0.35)",
+    PINK: "oklch(0.8 0.12 350 / 0.35)",
+    BROWN: "oklch(0.7 0.07 60 / 0.35)",
+    GRAY: "oklch(0.75 0.01 260 / 0.35)",
+  } as Readonly<Record<string, string>>,
+} as const
+export type KeepView = (typeof KEEP.views)[number]
+
+export const PHOTOS = { pageSize: 120, imageExtensions: [".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic"] as readonly string[] } as const
+
+export const VIEWER = { maxTextBytes: 2_000_000, csvPreviewRows: 5000 } as const
