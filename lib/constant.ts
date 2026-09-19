@@ -57,7 +57,7 @@ export const MODULES: readonly ModuleDefinition[] = [
   { id: "keep", label: "Keep", href: "/keep", icon: StickyNoteIcon, priority: "P2", built: true, sourceFolders: ["Keep"] },
   { id: "tasks", label: "Tasks", href: "/tasks", icon: ListChecksIcon, priority: "P2", built: true, sourceFolders: ["Tasks"] },
   { id: "photos", label: "Photos", href: "/photos", icon: ImageIcon, priority: "P2", built: true, sourceFolders: ["Google Photos"] },
-  { id: "groups", label: "Groups", href: "/groups", icon: UsersRoundIcon, priority: "P2", built: false, sourceFolders: ["Groups"] },
+  { id: "groups", label: "Groups", href: "/groups", icon: UsersRoundIcon, priority: "P2", built: true, sourceFolders: ["Groups"] },
   { id: "youtube", label: "YouTube", href: "/youtube", icon: VideoIcon, priority: "P2", built: true, sourceFolders: ["YouTube and YouTube Music"] },
   { id: "browse", label: "Other data", href: "/browse", icon: FolderTreeIcon, priority: "P2", built: true, sourceFolders: [] },
 ] as const
@@ -345,4 +345,9 @@ export const TASK_LIST_FILTER_ID = "list"
 export const YOUTUBE_TABS = [
   { value: "videos", label: "Videos" },
   { value: "playlists", label: "Playlists" },
+] as const
+
+export const GROUP_TABS = [
+  { value: "discussions", label: "Discussions" },
+  { value: "members", label: "Members" },
 ] as const
