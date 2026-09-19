@@ -6,11 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-Implementation in progress (plan.md milestones). M0 (foundations + spike, see `docs/m0-spike-report.md`) and M1 (indexer, auth, home, diagnostics, file routes) are done; Mail (M2) is next. The app is a self-hosted Google Takeout viewer (Next.js + shadcn/ui, run via Docker or `pnpm start`). The design lives in docs that are the source of truth; read them before building:
+Milestones M0–M6 of plan.md are implemented: every module has a page (Mail, Chat, Calendar incl. the multi-calendar overlay grid, Drive, Contacts, Keep, Tasks, Photos, Groups, YouTube, and the generic "Other data" browser). **M7 (Dockerfile/compose, README, MIT license, Playwright smoke test, security review, optional Typesense) is not done.** Measurements from the real export are in `docs/m0-spike-report.md`. The design docs remain the source of truth; read them before changing behavior:
 
 - `intent.md`: the problem, scope and decisions.
-- `plan.md`: milestones M0–M7, the file layout (`server/`, `columns/`, `components/common|data-table|skeletons`, `stores/`) and the verification checks; start at M0 (feasibility spike) and stop for owner review after it.
-- `spec.md`: requirements, design decisions, edge cases, acceptance criteria, and facts measured from a real 45GB export. Follows the AI-native SDLC chain (`intent.md` → `spec.md` → `plan.md`); `plan.md` is drafted; code should not start until it is approved. Each file's `Status:` footer says whether it is still draft.
+- `spec.md`: requirements, design decisions, edge cases, acceptance criteria, and facts measured from a real 45GB export.
+- `plan.md`: milestones M0–M7, file layout and verification checks.
 
 ## Commands
 
@@ -21,7 +21,7 @@ Package manager is pnpm.
 - Single test: `pnpm exec vitest run tests/unit/auth.test.ts` (or `-t "name"`)
 - `pnpm index`: run the indexer once (scans `TAKEOUT_DIR`, writes the SQLite index in `DATA_DIR`). The Home page's "Index now" button spawns the same CLI.
 - Config comes from `.env.local` (gitignored): `TAKEOUT_DIR` (read-only export folder) and `DATA_DIR` (index, thumbnails, `auth.json`). Tests use the synthetic fixture in `tests/fixture/generate.ts`, never the real export.
-- No e2e runner yet (Playwright planned for M7).
+- No e2e runner yet (Playwright planned for M7). For a production build next to a running dev server: `NEXT_DIST_DIR=.next-build pnpm build` (then `git checkout tsconfig.json`; Next rewrites its `include`).
 
 ## Architecture decisions that span the codebase (from spec.md)
 
@@ -44,6 +44,11 @@ Package manager is pnpm.
 - Desktop/laptop only: below `lg` the app shows a block screen.
 
 ## Gotchas
+
+- **Index database:** never delete only `index.db-wal`/`-shm` while a server is running; to reset, delete all three `index.db*` files and run `pnpm index` (it is derived data; sessions live in it, so everyone is logged out; `auth.json` is separate). `getDb()` reopens when the schema version or the file's inode changes, so hot reload picks up new migrations.
+- **Adding a table or index:** append a new string to `MIGRATIONS` in `server/db/schema.ts` (never edit old ones) and register a per-module indexer in `server/indexer/run.ts`. Small modules (contacts, keep, tasks, youtube, groups metadata, browse) parse their files on demand instead.
+- **Flip `built: true`** on a module in `lib/constant.ts` when its page ships (module cards only link built modules).
+- **Browser testing of the dev server:** a background tab throttles React effects/hydration, so screenshots can show the pre-hydration state; take a screenshot/interaction first and re-check before assuming a bug.
 
 - **This is a newer Next.js (16.x, React 19).** Middleware is now `proxy.ts`. Check `node_modules/next/dist/docs/` before using any API from memory; the docs are organized under `01-app/` (getting-started, guides, api-reference). The Range/streaming behavior of Route Handlers was not confirmed in the docs and must be verified early.
 - **shadcn is configured with the `radix-mira` style** (`components.json`, alias `@/components`, `@/lib`, Tailwind v4 with CSS variables in `app/globals.css`). Add components with the shadcn CLI/skill rather than hand-writing them. `.claude/skills/` and `.agents/skills/` contain the shadcn skills, locked in `skills-lock.json`.
