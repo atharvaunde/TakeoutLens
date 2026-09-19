@@ -1,4 +1,5 @@
-import { DEFAULT_CURRENCY, DEFAULT_LOCALE, INLINE_MIME_TYPES, PAGINATION, TABLE_PARAMS, UNITS } from "@/lib/constant"
+import type { LucideIcon } from "lucide-react"
+import { FILE_ICON_FALLBACK, FILE_ICONS_BY_EXT, DEFAULT_CURRENCY, DEFAULT_LOCALE, INLINE_MIME_TYPES, PAGINATION, TABLE_PARAMS, UNITS } from "@/lib/constant"
 
 // Shared formatters and small pure helpers. All Intl / toLocale* usage lives here.
 
@@ -159,4 +160,19 @@ export function toFtsQuery(input: string): string | null {
   const tokens = input.match(/[\p{L}\p{N}]+/gu)
   if (!tokens?.length) return null
   return tokens.map((token) => `"${token}"*`).join(" ")
+}
+
+export function getFileIcon(fileName: string): LucideIcon {
+  const dot = fileName.lastIndexOf(".")
+  return (dot === -1 ? undefined : FILE_ICONS_BY_EXT[fileName.slice(dot).toLowerCase()]) ?? FILE_ICON_FALLBACK
+}
+
+/** Start a browser download for a same-origin URL (client only). */
+export function triggerDownload(url: string) {
+  const link = document.createElement("a")
+  link.href = url
+  link.download = ""
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
 }

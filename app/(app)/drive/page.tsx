@@ -1,7 +1,6 @@
 import { PageHeader } from "@/components/common/page-header"
 import { PathBreadcrumbs } from "@/components/common/path-breadcrumbs"
-import { DataTable } from "@/components/data-table/data-table"
-import { driveColumns } from "@/columns/drive-files.column"
+import { DriveExplorer } from "@/components/drive/drive-explorer"
 import { parseTableParams } from "@/lib/helper"
 import { listDrive } from "@/server/services/drive"
 
@@ -18,14 +17,7 @@ export default async function DrivePage({ searchParams }: { searchParams: Promis
         rootHref="/drive"
         items={listing.breadcrumbs.map((b) => ({ label: b.label, href: `/drive?path=${encodeURIComponent(b.path)}` }))}
       />
-      <DataTable
-        columns={driveColumns}
-        data={listing.rows}
-        rowCount={listing.total}
-        searchable
-        searchPlaceholder={listing.folder ? "Search in this folder…" : "Search all files…"}
-        emptyTitle={listing.searching ? "No files match your search" : "This folder is empty"}
-      />
+      <DriveExplorer rows={listing.rows} total={listing.total} folder={listing.folder} searching={listing.searching} />
     </>
   )
 }

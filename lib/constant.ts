@@ -11,6 +11,15 @@ import {
   UsersRoundIcon,
   VideoIcon,
   FolderTreeIcon,
+  FileArchiveIcon,
+  FileAudioIcon,
+  FileCodeIcon,
+  FileIcon,
+  FileImageIcon,
+  FileVideoIcon,
+  FileSpreadsheetIcon,
+  FileTextIcon,
+  PresentationIcon,
   type LucideIcon,
 } from "lucide-react"
 
@@ -218,3 +227,20 @@ export const INDEXING_REFRESH_MS = 2000
 /** How long the "Index now" action waits for a short run to finish before returning "running". */
 export const INDEX_WAIT_MS = 6000
 export const INDEX_POLL_MS = 150
+
+/** Icon per file extension (Drive views). Anything unlisted uses FILE_ICON_FALLBACK. */
+export const FILE_ICONS_BY_EXT: Readonly<Record<string, LucideIcon>> = {
+  ".doc": FileTextIcon, ".docx": FileTextIcon, ".odt": FileTextIcon, ".pdf": FileTextIcon, ".txt": FileTextIcon, ".md": FileTextIcon, ".html": FileCodeIcon,
+  ".xls": FileSpreadsheetIcon, ".xlsx": FileSpreadsheetIcon, ".csv": FileSpreadsheetIcon, ".ods": FileSpreadsheetIcon,
+  ".ppt": PresentationIcon, ".pptx": PresentationIcon,
+  ".zip": FileArchiveIcon, ".gz": FileArchiveIcon, ".tgz": FileArchiveIcon, ".wpress": FileArchiveIcon,
+  ".mp3": FileAudioIcon, ".wav": FileAudioIcon, ".m4a": FileAudioIcon,
+  ".jpg": FileImageIcon, ".jpeg": FileImageIcon, ".png": FileImageIcon, ".gif": FileImageIcon, ".webp": FileImageIcon, ".heic": FileImageIcon, ".svg": FileImageIcon,
+  ".mp4": FileVideoIcon, ".m4v": FileVideoIcon, ".mov": FileVideoIcon, ".webm": FileVideoIcon,
+  ".sql": FileCodeIcon, ".json": FileCodeIcon, ".js": FileCodeIcon, ".ts": FileCodeIcon, ".xml": FileCodeIcon,
+}
+export const FILE_ICON_FALLBACK: LucideIcon = FileIcon
+
+export const DRIVE_VIEWS = ["list", "grid"] as const
+export type DriveView = (typeof DRIVE_VIEWS)[number]
+export const DRIVE_VIEW_STORAGE_KEY = "takeout-drive-view"
