@@ -1,24 +1,22 @@
 "use client"
 
-import { useCallback, useMemo, useTransition } from "react"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useMemo } from "react"
+import { useRouter } from "next/navigation"
 import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon } from "lucide-react"
 import { useTable, type ColumnDef, type RowData, type SortingState, type PaginationState } from "@tanstack/react-table"
 
 import { Button } from "@/components/ui/button"
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-} from "@/components/ui/pagination"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { PAGINATION, TABLE_PARAMS, TABLE_TEXT } from "@/lib/constant"
-import { formatNumber, parseTableParams } from "@/lib/helper"
+import { PAGINATION, TABLE_PARAMS, TABLE_TEXT, type TableFilterDefinition } from "@/lib/constant"
 import { cn } from "@/lib/utils"
+import { DataTablePagination } from "./data-table-pagination"
+import { DataTableToolbar } from "./data-table-toolbar"
 import { dataTableFeatures, type DataTableFeatures } from "./features"
+import { useTableUrlState } from "./use-table-url-state"
 
 const EMPTY_SORTING: SortingState = []
+const NO_FILTERS: readonly TableFilterDefinition[] = []
 
 export interface DataTableProps<TData extends RowData> {
   /** Column definitions from `columns/*.column.ts` (never defined inline). */
@@ -30,6 +28,12 @@ export interface DataTableProps<TData extends RowData> {
   rowHrefKey?: keyof TData & string
   emptyTitle?: string
   emptyDescription?: string
+  /** Show the search box (URL param `q`; the page filters server-side). */
+  searchable?: boolean
+  searchPlaceholder?: string
+  /** Dropdown filters; each `id` is a URL param the page reads via `parseTableParams`. */
+  filters?: readonly TableFilterDefinition[]
+  pageSizeOptions?: readonly number[]
   className?: string
 }
 
@@ -40,30 +44,20 @@ export function DataTable<TData extends RowData>({
   rowHrefKey,
   emptyTitle = TABLE_TEXT.empty,
   emptyDescription,
+  searchable = false,
+  searchPlaceholder,
+  filters = NO_FILTERS,
+  pageSizeOptions = PAGINATION.pageSizeOptions,
   className,
 }: DataTableProps<TData>) {
   const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const [isPending, startTransition] = useTransition()
+  const filterIds = useMemo(() => filters.map((filter) => filter.id), [filters])
+  const { params, isPending, update } = useTableUrlState(filterIds)
 
-  const params = useMemo(
-    () => parseTableParams(Object.fromEntries(searchParams.entries())),
-    [searchParams]
-  )
   const pagination: PaginationState = { pageIndex: params.page - 1, pageSize: params.pageSize }
   const sorting: SortingState = useMemo(
     () => (params.sort ? [{ id: params.sort, desc: params.dir === "desc" }] : EMPTY_SORTING),
     [params.sort, params.dir]
-  )
-
-  const pushParams = useCallback(
-    (update: (next: URLSearchParams) => void) => {
-      const next = new URLSearchParams(searchParams.toString())
-      update(next)
-      startTransition(() => router.push(`${pathname}?${next.toString()}`))
-    },
-    [pathname, router, searchParams]
   )
 
   const table = useTable({
@@ -76,23 +70,17 @@ export function DataTable<TData extends RowData>({
     state: { pagination, sorting },
     onPaginationChange: (updater) => {
       const value = typeof updater === "function" ? updater(pagination) : updater
-      pushParams((next) => {
-        next.set(TABLE_PARAMS.page, String(value.pageIndex + 1))
-        next.set(TABLE_PARAMS.pageSize, String(value.pageSize))
+      update({
+        [TABLE_PARAMS.page]: String(value.pageIndex + 1),
+        [TABLE_PARAMS.pageSize]: String(value.pageSize),
       })
     },
     onSortingChange: (updater) => {
       const value = typeof updater === "function" ? updater(sorting) : updater
-      pushParams((next) => {
-        const [first] = value
-        if (first) {
-          next.set(TABLE_PARAMS.sort, first.id)
-          next.set(TABLE_PARAMS.dir, first.desc ? "desc" : "asc")
-        } else {
-          next.delete(TABLE_PARAMS.sort)
-          next.delete(TABLE_PARAMS.dir)
-        }
-        next.set(TABLE_PARAMS.page, "1")
+      const [first] = value
+      update({
+        [TABLE_PARAMS.sort]: first?.id ?? null,
+        [TABLE_PARAMS.dir]: first ? (first.desc ? "desc" : "asc") : null,
       })
     },
   })
@@ -102,6 +90,15 @@ export function DataTable<TData extends RowData>({
 
   return (
     <div className={cn("flex flex-col gap-4", isPending && "opacity-70", className)}>
+      {searchable || filters.length > 0 ? (
+        <DataTableToolbar
+          search={params.search}
+          searchPlaceholder={searchPlaceholder}
+          filters={filters}
+          filterValues={params.filters}
+          onChange={update}
+        />
+      ) : null}
       <div className="rounded-lg border">
         <Table>
           <TableHeader>
@@ -171,52 +168,15 @@ export function DataTable<TData extends RowData>({
         </Table>
       </div>
 
-      <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
-        <span>{formatNumber(rowCount)} total</span>
-        <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2">
-            {TABLE_TEXT.rowsPerPage}
-            <select
-              className="h-8 rounded-md border bg-background px-2 text-foreground"
-              value={params.pageSize}
-              onChange={(event) => table.setPageSize(Number(event.target.value))}
-            >
-              {PAGINATION.pageSizeOptions.map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
-          </label>
-          <span>
-            Page {formatNumber(params.page)} of {formatNumber(Math.max(pageCount, 1))}
-          </span>
-          <Pagination className="mx-0 w-auto">
-            <PaginationContent>
-              <PaginationItem>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={!table.getCanPreviousPage()}
-                  onClick={() => table.previousPage()}
-                >
-                  {TABLE_TEXT.previous}
-                </Button>
-              </PaginationItem>
-              <PaginationItem>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={!table.getCanNextPage()}
-                  onClick={() => table.nextPage()}
-                >
-                  {TABLE_TEXT.next}
-                </Button>
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      </div>
+      <DataTablePagination
+        page={params.page}
+        pageSize={params.pageSize}
+        pageCount={pageCount}
+        rowCount={rowCount}
+        pageSizeOptions={pageSizeOptions}
+        onPageChange={(page) => update({ [TABLE_PARAMS.page]: String(page) }, true)}
+        onPageSizeChange={(size) => update({ [TABLE_PARAMS.pageSize]: String(size) })}
+      />
     </div>
   )
 }

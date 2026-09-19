@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { formatBytes, formatDuration, getInitials, formatDate } from "@/lib/helper"
+import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams } from "@/lib/helper"
 
 describe("helper", () => {
   it("formats bytes", () => {
@@ -17,5 +17,12 @@ describe("helper", () => {
   })
   it("handles invalid dates", () => {
     expect(formatDate("nope")).toBe("—")
+  })
+  it("parses table params with defaults and bounds", () => {
+    expect(parseTableParams({})).toMatchObject({ page: 1, pageSize: 50, sort: null, dir: "asc", search: "" })
+    expect(parseTableParams({ page: "3", pageSize: "100", sort: "date", dir: "desc", q: "hi", label: "Inbox" }, ["label"])).toMatchObject({
+      page: 3, pageSize: 100, sort: "date", dir: "desc", search: "hi", filters: { label: "Inbox" },
+    })
+    expect(parseTableParams({ page: "-4", pageSize: "7" })).toMatchObject({ page: 1, pageSize: 50 })
   })
 })

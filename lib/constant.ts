@@ -64,13 +64,33 @@ export const TABLE_PARAMS = {
   pageSize: "pageSize",
   sort: "sort",
   dir: "dir",
+  search: "q",
 } as const
+
+/** Sentinel value for "no filter" in filter dropdowns (Select needs a non-empty value). */
+export const FILTER_ALL_VALUE = "__all__"
+
+export interface TableFilterOption {
+  value: string
+  label: string
+}
+
+/** Serializable filter config; `id` is used as the URL param name. */
+export interface TableFilterDefinition {
+  id: string
+  label: string
+  options: readonly TableFilterOption[]
+}
 
 export const TABLE_TEXT = {
   empty: "No results",
   previous: "Previous",
   next: "Next",
   rowsPerPage: "Rows per page",
+  searchPlaceholder: "Search…",
+  jumpToPage: "Go to page",
+  clearFilters: "Clear",
+  allOption: "All",
 } as const
 
 export const SKELETON_ROWS = {
