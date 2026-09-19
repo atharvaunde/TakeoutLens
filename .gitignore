@@ -45,3 +45,4 @@ spike/mbox-offsets.json
 
 # local index/state
 /.data
+/.next-build/
