@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-Planning stage. The app is a self-hosted Google Takeout viewer (Next.js + shadcn/ui, run via Docker or `pnpm start`). Only the create-next-app scaffold plus shadcn setup exists (`app/`, `components/ui/button.tsx`, `lib/utils.ts`). The design lives in two docs that are the source of truth; read them before building anything:
+Implementation in progress (plan.md milestones). M0 (foundations + spike, see `docs/m0-spike-report.md`) and M1 (indexer, auth, home, diagnostics, file routes) are done; Mail (M2) is next. The app is a self-hosted Google Takeout viewer (Next.js + shadcn/ui, run via Docker or `pnpm start`). The design lives in docs that are the source of truth; read them before building:
 
 - `intent.md`: the problem, scope and decisions.
 - `plan.md`: milestones M0–M7, the file layout (`server/`, `columns/`, `components/common|data-table|skeletons`, `stores/`) and the verification checks; start at M0 (feasibility spike) and stop for owner review after it.
@@ -16,11 +16,12 @@ Planning stage. The app is a self-hosted Google Takeout viewer (Next.js + shadcn
 
 Package manager is pnpm.
 
-- `pnpm dev`: dev server
-- `pnpm build` / `pnpm start`: production build and server
-- `pnpm lint`: ESLint (flat config in `eslint.config.mjs`)
-- Planned in plan.md but not yet added: `pnpm typecheck`, `pnpm test`, `pnpm test:e2e`, `pnpm check:conventions` (fails on convention violations), `pnpm index`, `pnpm fixture`.
-- No test runner is configured yet. The spec calls for Vitest (unit/integration) and Playwright (smoke against the Docker image), tested only against a synthetic fixture generator, never the real export.
+- `pnpm dev` / `pnpm build` / `pnpm start`
+- `pnpm lint`, `pnpm typecheck`, `pnpm test` (Vitest), `pnpm check:conventions` (fails on convention violations, see below)
+- Single test: `pnpm exec vitest run tests/unit/auth.test.ts` (or `-t "name"`)
+- `pnpm index`: run the indexer once (scans `TAKEOUT_DIR`, writes the SQLite index in `DATA_DIR`). The Home page's "Index now" button spawns the same CLI.
+- Config comes from `.env.local` (gitignored): `TAKEOUT_DIR` (read-only export folder) and `DATA_DIR` (index, thumbnails, `auth.json`). Tests use the synthetic fixture in `tests/fixture/generate.ts`, never the real export.
+- No e2e runner yet (Playwright planned for M7).
 
 ## Architecture decisions that span the codebase (from spec.md)
 
