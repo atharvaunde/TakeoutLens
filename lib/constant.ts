@@ -288,6 +288,8 @@ export const CALENDAR = {
   msPerDay: 86_400_000,
   weekStartsOn: 1, // Monday
   hourHeightPx: 48,
+  /** Week/day views open scrolled to this hour. */
+  initialScrollHour: 7,
   maxChipsPerDay: 3,
   agendaDays: 30,
   /** One colour per calendar (cycled). oklch keeps lightness consistent in light and dark themes. */

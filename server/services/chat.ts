@@ -2,10 +2,8 @@ import { CHAT, type ChatKind } from "@/lib/constant"
 import { getFileKind, toFtsQuery } from "@/lib/helper"
 import type { ChatConversationItem, ChatMessageItem, ChatMessagePage, ChatSearchHit } from "@/lib/types"
 import { requireSession } from "@/server/auth/session"
-import { getConfig } from "@/server/config"
 import { getDb } from "@/server/db"
-import fs from "node:fs"
-import path from "node:path"
+import { getOwnerEmail } from "@/server/owner"
 
 interface ConvRow {
   id: number
@@ -52,24 +50,6 @@ export async function getConversation(id: number): Promise<{ id: number; title: 
     | { id: number; title: string; kind: "DM" | "Space"; message_count: number; member_count: number }
     | undefined
   return r ? { id: r.id, title: r.title, kind: r.kind, messageCount: r.message_count, memberCount: r.member_count } : null
-}
-
-let cachedOwner: { dataDir: string; email: string | null } | null = null
-function ownerEmail(): string | null {
-  const { takeoutDir } = getConfig()
-  if (cachedOwner?.dataDir === takeoutDir) return cachedOwner.email
-  let email: string | null = null
-  const usersDir = path.join(takeoutDir, "Google Chat", "Users")
-  try {
-    for (const entry of fs.readdirSync(usersDir)) {
-      const info = JSON.parse(fs.readFileSync(path.join(usersDir, entry, "user_info.json"), "utf8")) as { user?: { email?: string } }
-      if (info.user?.email) email = info.user.email
-    }
-  } catch {
-    // no owner info
-  }
-  cachedOwner = { dataDir: takeoutDir, email }
-  return email
 }
 
 interface MsgRow {
@@ -134,7 +114,7 @@ export async function getMessages(
     const before = opts.beforeSeq ?? Number.MAX_SAFE_INTEGER
     rows = (db.prepare(`SELECT ${COLUMNS} FROM chat_messages WHERE conv_id = ? AND seq < ? ORDER BY seq DESC LIMIT ?`).all(convId, before, limit) as MsgRow[]).reverse()
   }
-  const owner = ownerEmail()
+  const owner = getOwnerEmail()
   const first = rows[0]?.seq
   const last = rows.at(-1)?.seq
   const hasOlder = first !== undefined && (db.prepare("SELECT 1 FROM chat_messages WHERE conv_id = ? AND seq < ? LIMIT 1").get(convId, first) !== undefined)

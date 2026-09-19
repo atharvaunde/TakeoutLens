@@ -246,3 +246,22 @@ export function utcToWall(ts: number, timeZone: string): number {
     return ts
   }
 }
+
+const ENTITIES: Record<string, string> = { "&nbsp;": " ", "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#39;": "'", "&apos;": "'" }
+
+/** Turn the HTML fragments Google puts in descriptions into readable plain text (keeps line breaks and bullets). */
+export function htmlToText(input: string): string {
+  if (!/[<&]/.test(input)) return input
+  return input
+    .replace(/<(script|style)[\s\S]*?<\/\1>/gi, "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|ul|ol|h[1-6])>/gi, "\n")
+    .replace(/<li[^>]*>/gi, "\n• ")
+    .replace(/<a\s[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi, (_m, href: string, text: string) => (text.trim() === href ? href : `${text} (${href})`))
+    .replace(/<[^>]+>/g, "")
+    .replace(/\\([;,])/g, "$1")
+    .replace(/&(?:nbsp|amp|lt|gt|quot|apos|#39);/g, (entity) => ENTITIES[entity] ?? entity)
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery, splitHighlight, getDayKey, zonedTimeToUtc, utcToWall } from "@/lib/helper"
+import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery, splitHighlight, getDayKey, zonedTimeToUtc, utcToWall, htmlToText } from "@/lib/helper"
 
 describe("helper", () => {
   it("formats bytes", () => {
@@ -51,5 +51,12 @@ describe("helper", () => {
     expect(utcToWall(Date.UTC(2021, 0, 15, 5, 0), "Asia/Kolkata")).toBe(wall)
     expect(zonedTimeToUtc(Date.UTC(2021, 6, 1, 12, 0), "Europe/Paris")).toBe(Date.UTC(2021, 6, 1, 10, 0)) // CEST +2
     expect(zonedTimeToUtc(wall, "Not/AZone")).toBe(wall)
+  })
+  it("converts HTML descriptions to plain text", () => {
+    expect(htmlToText("<b>Agenda</b><ul><li>One&nbsp;</li><li>Two &amp; three</li></ul><br>Join: <a href=\"https://x.test/a\">here</a>")).toBe(
+      "Agenda\n• One\n• Two & three\n\nJoin: here (https://x.test/a)"
+    )
+    expect(htmlToText("plain text stays")).toBe("plain text stays")
+    expect(htmlToText("a&nbsp\\;b")).toBe("a b")
   })
 })

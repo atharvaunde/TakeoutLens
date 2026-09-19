@@ -104,6 +104,7 @@ export interface CalendarInfo {
   name: string
   eventCount: number
   color: string
+  defaultVisible: boolean
 }
 
 /** Times are "wall clock" milliseconds: read them with UTC getters to get the display-timezone time. */
