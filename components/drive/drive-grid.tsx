@@ -12,10 +12,11 @@ interface DriveGridProps {
   selectedId: string | null
   actions: DriveActions
   emptyText: string
+  canView?: boolean
 }
 
 /** Card view: folders as tiles, images with a cached thumbnail, other files with a type icon. */
-export function DriveGrid({ rows, selectedId, actions, emptyText }: DriveGridProps) {
+export function DriveGrid({ rows, selectedId, actions, emptyText, canView = false }: DriveGridProps) {
   if (rows.length === 0) {
     return <div className="rounded-lg border p-10 text-center text-sm text-muted-foreground">{emptyText}</div>
   }
@@ -57,7 +58,7 @@ export function DriveGrid({ rows, selectedId, actions, emptyText }: DriveGridPro
           </Card>
         )
         return (
-          <DriveContextMenu key={row.id} row={row} actions={actions}>
+          <DriveContextMenu key={row.id} row={row} actions={actions} canView={canView}>
             {card}
           </DriveContextMenu>
         )

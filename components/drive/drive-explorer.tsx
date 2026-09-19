@@ -18,6 +18,8 @@ import { DriveContextMenu, type DriveActions } from "./drive-context-menu"
 import { DriveGrid } from "./drive-grid"
 
 interface DriveExplorerProps {
+  /** Which tree this explorer shows: Drive, or the generic browser for every other product. */
+  basePath: "/drive" | "/browse"
   rows: DriveRow[]
   total: number
   folder: string
@@ -32,7 +34,7 @@ const LOCATION_COLUMN_ID = "location"
  * image/video -> preview, other -> download), right-click opens a context menu, and the
  * view toggles between a table (list) and cards (grid). All data comes from the server page.
  */
-export function DriveExplorer({ rows, total, folder, searching }: DriveExplorerProps) {
+export function DriveExplorer({ basePath, rows, total, folder, searching }: DriveExplorerProps) {
   const router = useRouter()
   const view = useDriveStore((state) => state.view)
   const setView = useDriveStore((state) => state.setView)
@@ -44,7 +46,7 @@ export function DriveExplorer({ rows, total, folder, searching }: DriveExplorerP
   useEffect(() => loadView(), [loadView])
 
   const actions: DriveActions = useMemo(() => {
-    const folderHref = (path: string) => (path ? `/drive?path=${encodeURIComponent(path)}` : "/drive")
+    const folderHref = (path: string) => (path ? `${basePath}?path=${encodeURIComponent(path)}` : basePath)
     const download = (row: DriveRow) => {
       if (row.fileId !== null) triggerDownload(`/download/${row.fileId}`)
     }
@@ -53,6 +55,7 @@ export function DriveExplorer({ rows, total, folder, searching }: DriveExplorerP
       open: (row) => {
         if (row.kind === "folder") router.push(folderHref(row.folderPath))
         else if (row.fileId !== null && row.fileKind !== "other") setPreview({ fileId: row.fileId, name: row.name, kind: row.fileKind })
+        else if (basePath === "/browse" && row.fileId !== null) router.push(`/browse/file?id=${row.fileId}`)
         else download(row)
       },
       download,
@@ -67,7 +70,7 @@ export function DriveExplorer({ rows, total, folder, searching }: DriveExplorerP
         }
       },
     }
-  }, [router])
+  }, [router, basePath])
 
   // The "Folder" column only makes sense for search results, which span folders.
   const columns = useMemo(() => (searching ? driveColumns : driveColumns.filter((c) => c.id !== LOCATION_COLUMN_ID)), [searching])
@@ -89,7 +92,7 @@ export function DriveExplorer({ rows, total, folder, searching }: DriveExplorerP
           onRowClick={actions.select}
           onRowDoubleClick={actions.open}
           wrapRow={(row, element) => (
-            <DriveContextMenu row={row} actions={actions}>
+            <DriveContextMenu row={row} actions={actions} canView={basePath === "/browse"}>
               {element}
             </DriveContextMenu>
           )}
@@ -105,7 +108,7 @@ export function DriveExplorer({ rows, total, folder, searching }: DriveExplorerP
             onChange={update}
             end={<ViewToggle value={view} onChange={setView} />}
           />
-          <DriveGrid rows={rows} selectedId={selectedId} actions={actions} emptyText={emptyText} />
+          <DriveGrid rows={rows} selectedId={selectedId} actions={actions} emptyText={emptyText} canView={basePath === "/browse"} />
           <DataTablePagination
             page={params.page}
             pageSize={params.pageSize}

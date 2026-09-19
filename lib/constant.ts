@@ -59,7 +59,7 @@ export const MODULES: readonly ModuleDefinition[] = [
   { id: "photos", label: "Photos", href: "/photos", icon: ImageIcon, priority: "P2", built: true, sourceFolders: ["Google Photos"] },
   { id: "groups", label: "Groups", href: "/groups", icon: UsersRoundIcon, priority: "P2", built: false, sourceFolders: ["Groups"] },
   { id: "youtube", label: "YouTube", href: "/youtube", icon: VideoIcon, priority: "P2", built: true, sourceFolders: ["YouTube and YouTube Music"] },
-  { id: "browse", label: "Other data", href: "/browse", icon: FolderTreeIcon, priority: "P2", built: false, sourceFolders: [] },
+  { id: "browse", label: "Other data", href: "/browse", icon: FolderTreeIcon, priority: "P2", built: true, sourceFolders: [] },
 ] as const
 
 export const HOME_NAV = { label: "Home", href: "/", icon: FolderIcon } as const

@@ -17,7 +17,7 @@ export default async function DrivePage({ searchParams }: { searchParams: Promis
         rootHref="/drive"
         items={listing.breadcrumbs.map((b) => ({ label: b.label, href: `/drive?path=${encodeURIComponent(b.path)}` }))}
       />
-      <DriveExplorer rows={listing.rows} total={listing.total} folder={listing.folder} searching={listing.searching} />
+      <DriveExplorer basePath="/drive" rows={listing.rows} total={listing.total} folder={listing.folder} searching={listing.searching} />
     </>
   )
 }

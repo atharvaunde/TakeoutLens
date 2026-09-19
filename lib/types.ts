@@ -152,3 +152,5 @@ export interface PhotoItem {
   description: string
   hasLocation: boolean
 }
+
+export type CsvRowData = Record<string, string> & { __id: string }

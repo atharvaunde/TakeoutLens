@@ -23,11 +23,13 @@ export interface DriveActions {
 interface DriveContextMenuProps {
   row: DriveRow
   actions: DriveActions
+  /** Offer "View" for files that are not images/videos (generic browser only). */
+  canView?: boolean
   children: React.ReactElement
 }
 
 /** Right-click menu for a Drive item (row in list view, card in grid view). */
-export function DriveContextMenu({ row, actions, children }: DriveContextMenuProps) {
+export function DriveContextMenu({ row, actions, canView = false, children }: DriveContextMenuProps) {
   const isFolder = row.kind === "folder"
   const previewable = !isFolder && row.fileKind !== "other"
   return (
@@ -45,6 +47,12 @@ export function DriveContextMenu({ row, actions, children }: DriveContextMenuPro
             <ContextMenuItem onSelect={() => actions.open(row)}>
               <EyeIcon />
               Preview
+            </ContextMenuItem>
+          ) : null}
+          {canView && !isFolder && !previewable ? (
+            <ContextMenuItem onSelect={() => actions.open(row)}>
+              <EyeIcon />
+              View
             </ContextMenuItem>
           ) : null}
           {!isFolder ? (

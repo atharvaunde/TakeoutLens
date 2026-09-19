@@ -93,3 +93,43 @@ describe("youtube", () => {
     expect((await listVideos(parseTableParams({ q: "missing" }))).total).toBe(1)
   })
 })
+
+describe("generic browser and viewer", () => {
+  it("lists product folders at the root and descends into them", async () => {
+    const { listBrowse } = await import("@/server/services/drive")
+    const root = await listBrowse(undefined, parseTableParams({}))
+    expect(root.rows.map((r) => r.name).sort()).toEqual(["Chrome", "Google Shopping", "My Activity"])
+    const chrome = await listBrowse("Chrome", parseTableParams({}))
+    expect(chrome.rows.map((r) => r.name)).toEqual(["Passwords.csv", "Settings.json"])
+    expect((await listBrowse(undefined, parseTableParams({ q: "orders" }))).rows.map((r) => r.name)).toEqual(["Orders.txt"])
+  })
+
+  it("previews JSON, text and HTML; downloads unknown types", async () => {
+    const { getFileMeta, getFilePreview, classify } = await import("@/server/services/viewer")
+    const { getDb } = await import("@/server/db")
+    const id = (rel: string) => (getDb().prepare("SELECT id FROM files WHERE rel_path = ?").pluck().get(rel) as number)
+    const params = parseTableParams({})
+    const json = await getFilePreview(getFileMeta(id("Chrome/Settings.json"))!, params)
+    expect(json).toMatchObject({ kind: "json" })
+    expect((json as { text: string }).text).toContain('  "a": 1') // pretty printed
+    expect(await getFilePreview(getFileMeta(id("Google Shopping/Orders/Orders.txt"))!, params)).toMatchObject({ kind: "text", text: "Order 1\nOrder 2" })
+    expect(await getFilePreview(getFileMeta(id("My Activity/Search/MyActivity.html"))!, params)).toMatchObject({ kind: "html" })
+    expect(await getFilePreview(getFileMeta(id("Drive/Reports/report.docx"))!, params)).toMatchObject({ kind: "download" })
+    expect(classify("x.kmz")).toBe("other")
+  })
+
+  it("previews CSV with search, sort, paging and flags password columns", async () => {
+    const { getFileMeta, getFilePreview } = await import("@/server/services/viewer")
+    const { getDb } = await import("@/server/db")
+    const meta = getFileMeta(getDb().prepare("SELECT id FROM files WHERE rel_path = 'Chrome/Passwords.csv'").pluck().get() as number)!
+    const all = await getFilePreview(meta, parseTableParams({}))
+    expect(all).toMatchObject({ kind: "csv", total: 2, passwordHeaders: ["password"] })
+    if (all.kind !== "csv") throw new Error("expected csv")
+    expect(all.headers).toEqual(["name", "url", "username", "password", "note"])
+    expect(all.rows[1].note).toBe("multi\nline")
+    const found = await getFilePreview(meta, parseTableParams({ q: "hunter2" }))
+    expect(found.kind === "csv" && found.rows.map((r) => r.username)).toEqual(["bob"])
+    const sorted = await getFilePreview(meta, parseTableParams({ sort: "c2", dir: "desc" })) // by username
+    expect(sorted.kind === "csv" && sorted.rows.map((r) => r.username)).toEqual(["bob", "alice"])
+  })
+})

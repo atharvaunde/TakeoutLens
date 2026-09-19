@@ -184,6 +184,9 @@ export function createFixture(options: { wrap?: boolean } = {}): { base: string;
     })
   )
   write(root, "Keep/Archived.json", JSON.stringify({ title: "Old list", color: "YELLOW", isArchived: true, isPinned: false, isTrashed: false, listContent: [{ text: "milk", isChecked: true }], userEditedTimestampUsec: 1_600_000_000_000_000 }))
+  write(root, "Chrome/Passwords.csv", "name,url,username,password,note\nexample.test,https://example.test,alice,s3cret!,\nother.test,https://other.test,bob,hunter2,\"multi\nline\"\n")
+  write(root, "Chrome/Settings.json", '{"a":1,"b":[1,2]}')
+  write(root, "Google Shopping/Orders/Orders.txt", "Order 1\nOrder 2")
   write(root, "My Activity/Search/MyActivity.html", "<html></html>")
   write(root, "archive_browser.html", "<html></html>")
   return { base, root }
