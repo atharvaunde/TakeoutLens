@@ -1,0 +1,104 @@
+import { DEFAULT_CURRENCY, DEFAULT_LOCALE, UNITS } from "@/lib/constant"
+
+// Shared formatters and small pure helpers. All Intl / toLocale* usage lives here.
+
+type DateInput = Date | string | number | null | undefined
+
+function toDate(value: DateInput): Date | null {
+  if (value === null || value === undefined || value === "") return null
+  const date = value instanceof Date ? value : new Date(value)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+const PLACEHOLDER = "—"
+
+export function formatDate(value: DateInput, options?: Intl.DateTimeFormatOptions): string {
+  const date = toDate(value)
+  if (!date) return PLACEHOLDER
+  return new Intl.DateTimeFormat(DEFAULT_LOCALE, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    ...options,
+  }).format(date)
+}
+
+export function formatTime(value: DateInput, options?: Intl.DateTimeFormatOptions): string {
+  const date = toDate(value)
+  if (!date) return PLACEHOLDER
+  return new Intl.DateTimeFormat(DEFAULT_LOCALE, {
+    hour: "numeric",
+    minute: "2-digit",
+    ...options,
+  }).format(date)
+}
+
+export function formatDateTime(value: DateInput): string {
+  const date = toDate(value)
+  if (!date) return PLACEHOLDER
+  return `${formatDate(date)}, ${formatTime(date)}`
+}
+
+export function formatRelative(value: DateInput, now: Date = new Date()): string {
+  const date = toDate(value)
+  if (!date) return PLACEHOLDER
+  const diffSeconds = Math.round((date.getTime() - now.getTime()) / 1000)
+  const steps: [Intl.RelativeTimeFormatUnit, number][] = [
+    ["year", 31536000],
+    ["month", 2592000],
+    ["day", 86400],
+    ["hour", 3600],
+    ["minute", 60],
+  ]
+  const formatter = new Intl.RelativeTimeFormat(DEFAULT_LOCALE, { numeric: "auto" })
+  for (const [unit, seconds] of steps) {
+    if (Math.abs(diffSeconds) >= seconds) {
+      return formatter.format(Math.round(diffSeconds / seconds), unit)
+    }
+  }
+  return formatter.format(diffSeconds, "second")
+}
+
+export function formatCurrency(
+  amount: number | null | undefined,
+  currency: string = DEFAULT_CURRENCY
+): string {
+  if (amount === null || amount === undefined || Number.isNaN(amount)) return PLACEHOLDER
+  return new Intl.NumberFormat(DEFAULT_LOCALE, { style: "currency", currency }).format(amount)
+}
+
+export function formatNumber(value: number | null | undefined): string {
+  if (value === null || value === undefined || Number.isNaN(value)) return PLACEHOLDER
+  return new Intl.NumberFormat(DEFAULT_LOCALE).format(value)
+}
+
+export function formatBytes(bytes: number | null | undefined, decimals = 1): string {
+  if (bytes === null || bytes === undefined || Number.isNaN(bytes)) return PLACEHOLDER
+  if (bytes === 0) return `0 ${UNITS.bytes[0]}`
+  const exponent = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(UNITS.bytesBase)),
+    UNITS.bytes.length - 1
+  )
+  const value = bytes / UNITS.bytesBase ** exponent
+  return `${value.toFixed(exponent === 0 ? 0 : decimals)} ${UNITS.bytes[exponent]}`
+}
+
+export function formatDuration(totalSeconds: number | null | undefined): string {
+  if (totalSeconds === null || totalSeconds === undefined || Number.isNaN(totalSeconds)) {
+    return PLACEHOLDER
+  }
+  const seconds = Math.floor(totalSeconds % 60)
+  const minutes = Math.floor((totalSeconds / 60) % 60)
+  const hours = Math.floor(totalSeconds / 3600)
+  const pad = (n: number) => n.toString().padStart(2, "0")
+  return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${minutes}:${pad(seconds)}`
+}
+
+export function getInitials(name: string | null | undefined): string {
+  if (!name) return "?"
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return "?"
+  const first = parts[0][0] ?? ""
+  const last = parts.length > 1 ? (parts[parts.length - 1][0] ?? "") : ""
+  return (first + last).toUpperCase()
+}
