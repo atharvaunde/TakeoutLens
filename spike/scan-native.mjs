@@ -1,6 +1,5 @@
 import fs from "node:fs"
 import path from "node:path"
-import readline from "node:readline"
 const root = process.argv[2]
 const t = (label, start) => console.log(`${label}: ${((performance.now() - start) / 1000).toFixed(2)}s`)
 
