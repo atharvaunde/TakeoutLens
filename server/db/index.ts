@@ -27,14 +27,18 @@ export function openDb(file: string): Db {
   return db
 }
 
-const globalForDb = globalThis as unknown as { __takeoutDb?: { file: string; db: Db } }
+const globalForDb = globalThis as unknown as { __takeoutDb?: { key: string; db: Db } }
 
-/** Process-wide handle (survives dev HMR). Re-opened if DATA_DIR changes. */
+/**
+ * Process-wide handle (survives dev HMR). Re-opened when DATA_DIR or the schema version
+ * changes, so a hot-reloaded server picks up new migrations instead of using a stale handle.
+ */
 export function getDb(): Db {
   const file = path.join(getConfig().dataDir, DB_FILE_NAME)
-  if (globalForDb.__takeoutDb?.file !== file) {
+  const key = `${file}#${MIGRATIONS.length}`
+  if (globalForDb.__takeoutDb?.key !== key) {
     globalForDb.__takeoutDb?.db.close()
-    globalForDb.__takeoutDb = { file, db: openDb(file) }
+    globalForDb.__takeoutDb = { key, db: openDb(file) }
   }
   return globalForDb.__takeoutDb.db
 }

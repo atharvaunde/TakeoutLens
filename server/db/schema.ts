@@ -44,4 +44,7 @@ export const MIGRATIONS: readonly string[] = [
     errors      INTEGER NOT NULL
   );
   `,
+  `
+  CREATE VIRTUAL TABLE drive_fts USING fts5(name, path, tokenize = 'unicode61 remove_diacritics 2');
+  `,
 ]

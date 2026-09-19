@@ -82,3 +82,17 @@ describe("runIndexer", () => {
     expect(db.prepare("SELECT file_count FROM modules WHERE id = 'drive'").pluck().get()).toBe(2)
   })
 })
+
+describe("migrations", () => {
+  it("upgrade an existing database in place", async () => {
+    const { migrate } = await import("@/server/db")
+    const { MIGRATIONS } = await import("@/server/db/schema")
+    const Database = (await import("better-sqlite3")).default
+    const db = new Database(":memory:")
+    db.exec(MIGRATIONS[0]) // simulate a database created by an older version
+    db.pragma("user_version = 1")
+    migrate(db)
+    expect(db.pragma("user_version", { simple: true })).toBe(MIGRATIONS.length)
+    expect(db.prepare("SELECT count(*) FROM index_runs").pluck().get()).toBe(0)
+  })
+})
