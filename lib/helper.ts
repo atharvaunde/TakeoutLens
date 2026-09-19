@@ -176,3 +176,31 @@ export function triggerDownload(url: string) {
   link.click()
   link.remove()
 }
+
+/** YYYY-MM-DD in UTC; used to detect day changes in timelines. */
+export function getDayKey(ts: number): string {
+  return new Date(ts).toISOString().slice(0, 10)
+}
+
+export function formatDay(value: DateInput): string {
+  return formatDate(value, { weekday: "long", year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })
+}
+
+/** Split an FTS snippet marked with sentinel characters into plain and highlighted parts. */
+export function splitHighlight(snippet: string, start: string, end: string): { text: string; match: boolean }[] {
+  const parts: { text: string; match: boolean }[] = []
+  let rest = snippet
+  while (rest.length) {
+    const open = rest.indexOf(start)
+    if (open === -1) {
+      parts.push({ text: rest, match: false })
+      break
+    }
+    if (open > 0) parts.push({ text: rest.slice(0, open), match: false })
+    const close = rest.indexOf(end, open + 1)
+    const stop = close === -1 ? rest.length : close
+    parts.push({ text: rest.slice(open + 1, stop), match: true })
+    rest = rest.slice(stop + 1)
+  }
+  return parts
+}

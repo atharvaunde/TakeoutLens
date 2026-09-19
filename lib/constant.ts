@@ -50,7 +50,7 @@ export interface ModuleDefinition {
 
 export const MODULES: readonly ModuleDefinition[] = [
   { id: "mail", label: "Mail", href: "/mail", icon: MailIcon, priority: "P0", built: false, sourceFolders: ["Mail"] },
-  { id: "chat", label: "Chat", href: "/chat", icon: MessageSquareIcon, priority: "P0", built: false, sourceFolders: ["Google Chat"] },
+  { id: "chat", label: "Chat", href: "/chat", icon: MessageSquareIcon, priority: "P0", built: true, sourceFolders: ["Google Chat"] },
   { id: "calendar", label: "Calendar", href: "/calendar", icon: CalendarDaysIcon, priority: "P0", built: false, sourceFolders: ["Calendar"] },
   { id: "drive", label: "Drive", href: "/drive", icon: HardDriveIcon, priority: "P0", built: true, sourceFolders: ["Drive"] },
   { id: "contacts", label: "Contacts", href: "/contacts", icon: ContactRoundIcon, priority: "P2", built: false, sourceFolders: ["Contacts"] },
@@ -244,3 +244,13 @@ export const FILE_ICON_FALLBACK: LucideIcon = FileIcon
 export const DRIVE_VIEWS = ["list", "grid"] as const
 export type DriveView = (typeof DRIVE_VIEWS)[number]
 export const DRIVE_VIEW_STORAGE_KEY = "takeout-drive-view"
+
+export const CHAT = {
+  pageSize: 200,
+  searchLimit: 60,
+  kinds: ["all", "DM", "Space"] as const,
+  snippetStart: "\u0001",
+  snippetEnd: "\u0002",
+  ownerNameFallback: "You",
+} as const
+export type ChatKind = (typeof CHAT.kinds)[number]

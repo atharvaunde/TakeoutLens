@@ -26,3 +26,48 @@ export type StartIndexingResult =
   | { status: "finished"; run: IndexRunSummary | null }
   | { status: "running" }
   | { status: "already-running" }
+
+export interface ChatConversationItem {
+  id: number
+  title: string
+  kind: "DM" | "Space"
+  messageCount: number
+  lastAt: number | null
+  preview: string
+}
+
+export interface ChatAttachment {
+  name: string
+  fileId: number | null
+  kind: "image" | "video" | "other"
+}
+
+export interface ChatMessageItem {
+  id: number
+  seq: number
+  ts: number
+  name: string
+  isBot: boolean
+  isMine: boolean
+  text: string
+  attachments: ChatAttachment[]
+  reactions: { emoji: string; count: number }[]
+  quoted: { name: string; text: string } | null
+  links: { title: string; url: string | null }[]
+}
+
+export interface ChatMessagePage {
+  messages: ChatMessageItem[]
+  hasOlder: boolean
+  hasNewer: boolean
+}
+
+export interface ChatSearchHit {
+  messageId: number
+  seq: number
+  convId: number
+  convTitle: string
+  name: string
+  ts: number
+  snippet: string
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery } from "@/lib/helper"
+import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery, splitHighlight, getDayKey } from "@/lib/helper"
 
 describe("helper", () => {
   it("formats bytes", () => {
@@ -35,5 +35,14 @@ describe("helper", () => {
     expect(toFtsQuery("Quarterly report!")).toBe('"Quarterly"* "report"*')
     expect(toFtsQuery('" OR 1=1 --')).toBe('"OR"* "1"* "1"*')
     expect(toFtsQuery("   ")).toBeNull()
+  })
+  it("splits FTS snippets into highlighted parts", () => {
+    expect(splitHighlight("a \u0001b\u0002 c", "\u0001", "\u0002")).toEqual([
+      { text: "a ", match: false }, { text: "b", match: true }, { text: " c", match: false },
+    ])
+    expect(splitHighlight("plain", "\u0001", "\u0002")).toEqual([{ text: "plain", match: false }])
+  })
+  it("derives a UTC day key", () => {
+    expect(getDayKey(Date.UTC(2021, 0, 11, 23, 59))).toBe("2021-01-11")
   })
 })
