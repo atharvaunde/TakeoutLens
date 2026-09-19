@@ -9,7 +9,7 @@ export function startIndexer(): "started" | "already-running" {
   const { dataDir } = getConfig()
   if (isIndexerRunning(dataDir)) return "already-running"
   const tsx = path.join(process.cwd(), "node_modules", ".bin", "tsx")
-  const child = spawn(tsx, [path.join("server", "indexer", "cli.ts")], {
+  const child = spawn(tsx, ["--max-old-space-size=256", path.join("server", "indexer", "cli.ts")], {
     cwd: process.cwd(),
     detached: true,
     stdio: "ignore",

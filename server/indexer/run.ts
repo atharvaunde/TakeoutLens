@@ -5,6 +5,7 @@ import { MODULES } from "@/lib/constant"
 import type { Db } from "@/server/db"
 import { indexChat } from "./chat"
 import { indexDrive } from "./drive"
+import { indexMail } from "./mail"
 import { scanFiles } from "./scan"
 
 export type Indexer = (ctx: { db: Db; root: string }) => Promise<void> | void
@@ -13,6 +14,7 @@ export type Indexer = (ctx: { db: Db; root: string }) => Promise<void> | void
 export const INDEXERS: Record<string, Indexer> = {
   drive: ({ db }) => indexDrive(db),
   chat: ({ db, root }) => indexChat(db, root),
+  mail: ({ db, root }) => indexMail(db, root),
 }
 
 /** Modules that are only browsable after their own indexer has run. Drive and the generic browser need just the file scan. */

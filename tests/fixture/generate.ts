@@ -5,6 +5,63 @@ import path from "node:path"
 // Synthetic Takeout tree mimicking the shapes seen in a real export. Contains NO real data.
 // Grow this generator as modules are built (mail bodies, calendar events, ...).
 
+export const FIXTURE_MBOX = [
+  "From 1000000000000000001@xxx Mon Oct 16 01:29:30 +0000 2023",
+  "X-GM-THRID: 1000000000000000001",
+  "X-Gmail-Labels: Inbox,Important,Opened",
+  "From: Alice Example <alice@example.test>",
+  "To: Me <me@example.test>",
+  "Subject: Quarterly plan",
+  "Date: Mon, 16 Oct 2023 01:29:30 +0000",
+  "Message-ID: <fixture-1@example.test>",
+  "Content-Type: text/plain; charset=UTF-8",
+  "",
+  "Hello from the fixture. Let us plan the roadmap.",
+  ">From the old days we said hello",
+  "",
+  "From 1000000000000000002@xxx Tue Oct 17 09:00:00 +0000 2023",
+  "X-GM-THRID: 1000000000000000001",
+  "X-Gmail-Labels: Sent",
+  "From: Me <me@example.test>",
+  "To: Alice Example <alice@example.test>",
+  "Subject: Re: Quarterly plan",
+  "Date: Tue, 17 Oct 2023 09:00:00 +0000",
+  "Message-ID: <fixture-2@example.test>",
+  "MIME-Version: 1.0",
+  'Content-Type: multipart/mixed; boundary="B1"',
+  "",
+  "--B1",
+  'Content-Type: multipart/alternative; boundary="B2"',
+  "",
+  "--B2",
+  "Content-Type: text/plain; charset=UTF-8",
+  "",
+  "Sounds good, see attached.",
+  "--B2",
+  "Content-Type: text/html; charset=UTF-8",
+  "",
+  '<html><body><p>Sounds <b>good</b>, see attached.</p><img src="https://tracker.example.test/p.gif"><script>alert(1)</script></body></html>',
+  "--B2--",
+  "--B1",
+  'Content-Type: application/pdf; name="plan.pdf"',
+  'Content-Disposition: attachment; filename="plan.pdf"',
+  "Content-Transfer-Encoding: base64",
+  "",
+  "JVBERi0xLjQK",
+  "--B1--",
+  "",
+  "From 1000000000000000003@xxx Wed Oct 18 12:00:00 +0000 2023",
+  "X-GM-THRID: 1000000000000000003",
+  "X-Gmail-Labels: Inbox,Unread,Category Updates",
+  "From: Newsletter <news@example.test>",
+  "Subject: =?UTF-8?B?w4l0w6kgbmV3cw==?=",
+  "Date: Wed, 18 Oct 2023 12:00:00 +0000",
+  "Content-Type: text/plain; charset=UTF-8",
+  "",
+  "Weekly digest",
+  "",
+].join("\n")
+
 const NARROW_NBSP = " "
 
 export function write(root: string, rel: string, content: string | Buffer) {
@@ -18,24 +75,7 @@ export function createFixture(options: { wrap?: boolean } = {}): { base: string;
   const root = options.wrap ? path.join(base, "Takeout") : base
   fs.mkdirSync(root, { recursive: true })
 
-  write(
-    root,
-    "Mail/All mail Including Spam and Trash.mbox",
-    [
-      "From 1000000000000000001@xxx Mon Oct 16 01:29:30 +0000 2023",
-      "X-GM-THRID: 1000000000000000001",
-      "X-Gmail-Labels: Inbox,Important",
-      "From: Alice Example <alice@example.test>",
-      "To: Me <me@example.test>",
-      "Subject: Hello fixture",
-      "Date: Mon, 16 Oct 2023 01:29:30 +0000",
-      "Message-ID: <fixture-1@example.test>",
-      "Content-Type: text/plain; charset=UTF-8",
-      "",
-      "Hello from the fixture.",
-      "",
-    ].join("\n")
-  )
+  write(root, "Mail/All mail Including Spam and Trash.mbox", FIXTURE_MBOX)
   write(
     root,
     "Google Chat/Groups/DM AAAAAAAAAAE/messages.json",

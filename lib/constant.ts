@@ -254,3 +254,28 @@ export const CHAT = {
   ownerNameFallback: "You",
 } as const
 export type ChatKind = (typeof CHAT.kinds)[number]
+
+export const MAIL_INDEX = {
+  /** Messages larger than this are parsed from their first `guardHeadBytes` only when indexing (bounds memory). */
+  guardBytes: 8 * 1000 * 1000,
+  guardHeadBytes: 1_000_000,
+  chunkBytes: 1 << 20,
+  snippetChars: 200,
+  /** Gmail flag labels that are state, not folders. */
+  hiddenLabels: ["Opened", "Unread"] as readonly string[],
+  systemLabelOrder: ["Inbox", "Starred", "Important", "Sent", "Drafts", "Spam", "Trash"] as readonly string[],
+} as const
+
+export const MAIL_VIEW = {
+  inlineImageMaxBytes: 2 * 1000 * 1000,
+  /** CSP applied inside the sandboxed message iframe. Remote images are opt-in per message. */
+  cspBlocked: "default-src 'none'; img-src data:; style-src 'unsafe-inline'; font-src data:; form-action 'none'; base-uri 'none'",
+  cspRemote: "default-src 'none'; img-src data: http: https:; style-src 'unsafe-inline'; font-src data:; form-action 'none'; base-uri 'none'",
+} as const
+
+export const MAIL_TEXT = {
+  allMail: "All mail",
+  remoteBlocked: "Remote images are blocked.",
+  loadRemote: "Load remote images",
+  noSubject: "(no subject)",
+} as const

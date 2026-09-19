@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "check:conventions": "tsx scripts/check-conventions.ts",
-    "index": "tsx --env-file-if-exists=.env.local server/indexer/cli.ts"
+    "index": "tsx --max-old-space-size=256 --env-file-if-exists=.env.local server/indexer/cli.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

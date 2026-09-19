@@ -79,4 +79,36 @@ export const MIGRATIONS: readonly string[] = [
   );
   CREATE VIRTUAL TABLE chat_fts USING fts5(text, creator, tokenize = 'unicode61 remove_diacritics 2');
   `,
+  `
+  CREATE TABLE kv (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+
+  CREATE TABLE mail_messages (
+    id           INTEGER PRIMARY KEY,
+    source       TEXT NOT NULL DEFAULT 'mail',
+    file_rel     TEXT NOT NULL,
+    byte_offset  INTEGER NOT NULL,
+    byte_length  INTEGER NOT NULL,
+    message_id   TEXT,
+    thread_id    TEXT NOT NULL,
+    subject      TEXT NOT NULL,
+    from_name    TEXT NOT NULL,
+    from_email   TEXT NOT NULL,
+    to_text      TEXT NOT NULL,
+    date_ts      INTEGER NOT NULL,
+    snippet      TEXT NOT NULL,
+    attach_count INTEGER NOT NULL,
+    unread       INTEGER NOT NULL DEFAULT 0
+  );
+  CREATE INDEX mail_messages_source_date ON mail_messages(source, date_ts);
+  CREATE INDEX mail_messages_thread ON mail_messages(thread_id);
+
+  CREATE TABLE mail_labels (
+    message_id INTEGER NOT NULL,
+    label      TEXT NOT NULL,
+    PRIMARY KEY (label, message_id)
+  );
+  CREATE INDEX mail_labels_message ON mail_labels(message_id);
+
+  CREATE VIRTUAL TABLE mail_fts USING fts5(subject, sender, recipients, body, tokenize = 'unicode61 remove_diacritics 2');
+  `,
 ]

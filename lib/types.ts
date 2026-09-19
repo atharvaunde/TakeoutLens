@@ -71,3 +71,30 @@ export interface ChatSearchHit {
   ts: number
   snippet: string
 }
+
+export interface MailLabelItem {
+  label: string
+  total: number
+  unread: number
+}
+
+export interface MailAttachmentItem {
+  index: number
+  name: string
+  mime: string
+  size: number
+  inline: boolean
+}
+
+export interface MailMessageView {
+  id: number
+  subject: string
+  from: string
+  to: string
+  cc: string
+  dateTs: number
+  html: string | null
+  text: string
+  attachments: MailAttachmentItem[]
+  labels: string[]
+}
