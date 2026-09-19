@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Fragment } from "react"
 
 import {
   Breadcrumb,
@@ -27,16 +28,18 @@ export function PathBreadcrumbs({ rootLabel, rootHref, items }: PathBreadcrumbsP
           )}
         </BreadcrumbItem>
         {items.map((item, index) => (
-          <BreadcrumbItem key={item.href}>
+          <Fragment key={item.href}>
             <BreadcrumbSeparator />
-            {index === items.length - 1 ? (
-              <BreadcrumbPage>{item.label}</BreadcrumbPage>
-            ) : (
-              <BreadcrumbLink asChild>
-                <Link href={item.href}>{item.label}</Link>
-              </BreadcrumbLink>
-            )}
-          </BreadcrumbItem>
+            <BreadcrumbItem>
+              {index === items.length - 1 ? (
+                <BreadcrumbPage>{item.label}</BreadcrumbPage>
+              ) : (
+                <BreadcrumbLink asChild>
+                  <Link href={item.href}>{item.label}</Link>
+                </BreadcrumbLink>
+              )}
+            </BreadcrumbItem>
+          </Fragment>
         ))}
       </BreadcrumbList>
     </Breadcrumb>
