@@ -47,4 +47,36 @@ export const MIGRATIONS: readonly string[] = [
   `
   CREATE VIRTUAL TABLE drive_fts USING fts5(name, path, tokenize = 'unicode61 remove_diacritics 2');
   `,
+  `
+  CREATE TABLE chat_conversations (
+    id            INTEGER PRIMARY KEY,
+    folder        TEXT NOT NULL UNIQUE,
+    kind          TEXT NOT NULL,
+    title         TEXT NOT NULL,
+    member_count  INTEGER NOT NULL,
+    message_count INTEGER NOT NULL,
+    first_at      INTEGER,
+    last_at       INTEGER,
+    source_size   INTEGER NOT NULL,
+    source_mtime  INTEGER NOT NULL
+  );
+  CREATE INDEX chat_conversations_last ON chat_conversations(last_at);
+
+  CREATE TABLE chat_messages (
+    id            INTEGER PRIMARY KEY,
+    conv_id       INTEGER NOT NULL,
+    seq           INTEGER NOT NULL,
+    ts            INTEGER NOT NULL,
+    creator_name  TEXT NOT NULL,
+    creator_email TEXT NOT NULL,
+    is_bot        INTEGER NOT NULL,
+    text          TEXT NOT NULL,
+    attachments   TEXT,
+    reactions     TEXT,
+    quoted        TEXT,
+    links         TEXT,
+    UNIQUE (conv_id, seq)
+  );
+  CREATE VIRTUAL TABLE chat_fts USING fts5(text, creator, tokenize = 'unicode61 remove_diacritics 2');
+  `,
 ]

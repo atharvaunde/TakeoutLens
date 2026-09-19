@@ -40,8 +40,8 @@ export function runChecks(root: string): Violation[] {
       if (/\b(fetch|axios)\s*\(|XMLHttpRequest|\baxios\b/.test(src)) {
         add("E1", rel, "client file performs a network call (fetch/axios/XMLHttpRequest)")
       }
-      if (/from\s+["'](@\/)?server\//.test(src)) {
-        add("E1", rel, "client file imports from server/")
+      if (/from\s+["'](@\/)?server\/(?!actions\/)/.test(src)) {
+        add("E1", rel, "client file imports from server/ (only server/actions is allowed)")
       }
     }
 

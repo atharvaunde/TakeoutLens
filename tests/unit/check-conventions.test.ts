@@ -35,6 +35,11 @@ describe("check-conventions", () => {
     expect(runChecks(root).map((v) => v.rule)).toContain(rule)
   })
 
+  it("allows client files to import Server Functions from server/actions", () => {
+    const root = project({ "components/a.tsx": `"use client"\nimport { go } from "@/server/actions/chat"\n` })
+    expect(runChecks(root)).toEqual([])
+  })
+
   it("flags a route without loading.tsx", () => {
     const root = project({ "app/(app)/chat/page.tsx": "export default () => null" })
     expect(runChecks(root).map((v) => v.rule)).toContain("E8")

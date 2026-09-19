@@ -36,8 +36,14 @@ const globalForDb = globalThis as unknown as { __takeoutDb?: { key: string; db: 
 export function getDb(): Db {
   const file = path.join(getConfig().dataDir, DB_FILE_NAME)
   const key = `${file}#${MIGRATIONS.length}`
-  if (globalForDb.__takeoutDb?.key !== key) {
-    globalForDb.__takeoutDb?.db.close()
+  // Also reopen if the file was removed/recreated underneath us (e.g. a manual index reset).
+  const missing = !fs.existsSync(file)
+  if (globalForDb.__takeoutDb?.key !== key || missing) {
+    try {
+      globalForDb.__takeoutDb?.db.close()
+    } catch {
+      // already unusable
+    }
     globalForDb.__takeoutDb = { key, db: openDb(file) }
   }
   return globalForDb.__takeoutDb.db

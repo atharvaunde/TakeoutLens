@@ -11,7 +11,14 @@ const eslintConfig = defineConfig([
     rules: {
       "no-restricted-imports": [
         "error",
-        { patterns: [{ group: ["@/server/*", "**/server/*"], message: "UI code must not import server/ modules (plan E1)." }] },
+        {
+          patterns: [
+            {
+              regex: "^(@/|(\\.\\./)+)server/(?!actions/)",
+              message: "UI code may only import Server Functions from server/actions (plan E1).",
+            },
+          ],
+        },
       ],
     },
   },
