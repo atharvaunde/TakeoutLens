@@ -3,12 +3,15 @@ import path from "node:path"
 
 import { MODULES } from "@/lib/constant"
 import type { Db } from "@/server/db"
+import { indexDrive } from "./drive"
 import { scanFiles } from "./scan"
 
 export type Indexer = (ctx: { db: Db; root: string }) => Promise<void> | void
 
 /** Dedicated per-mod indexers (mail, chat, ...) are registered here as they are built. */
-export const INDEXERS: Record<string, Indexer> = {}
+export const INDEXERS: Record<string, Indexer> = {
+  drive: ({ db }) => indexDrive(db),
+}
 
 /** Modules that are only browsable after their own indexer has run. Drive and the generic browser need just the file scan. */
 const NEEDS_DEDICATED_INDEXER = new Set(MODULES.map((m) => m.id).filter((id) => id !== "drive" && id !== "browse"))

@@ -1,4 +1,4 @@
-import { DEFAULT_CURRENCY, DEFAULT_LOCALE, PAGINATION, TABLE_PARAMS, UNITS } from "@/lib/constant"
+import { DEFAULT_CURRENCY, DEFAULT_LOCALE, INLINE_MIME_TYPES, PAGINATION, TABLE_PARAMS, UNITS } from "@/lib/constant"
 
 // Shared formatters and small pure helpers. All Intl / toLocale* usage lives here.
 
@@ -142,4 +142,21 @@ export function parseTableParams(searchParams: SearchParams, filterIds: readonly
 
 export function pluralize(count: number, singular: string, plural = `${singular}s`): string {
   return `${formatNumber(count)} ${count === 1 ? singular : plural}`
+}
+
+export type FileKind = "image" | "video" | "other"
+
+/** Only images and videos are previewed in the app; everything else is download-only. */
+export function getFileKind(fileName: string): FileKind {
+  const ext = fileName.slice(fileName.lastIndexOf(".")).toLowerCase()
+  const mime = INLINE_MIME_TYPES[ext]
+  if (!mime) return "other"
+  return mime.startsWith("video/") ? "video" : "image"
+}
+
+/** Turn free text into a safe FTS5 prefix query: every word quoted, last-word prefix match. */
+export function toFtsQuery(input: string): string | null {
+  const tokens = input.match(/[\p{L}\p{N}]+/gu)
+  if (!tokens?.length) return null
+  return tokens.map((token) => `"${token}"*`).join(" ")
 }
