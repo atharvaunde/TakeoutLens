@@ -1,14 +1,25 @@
+import { ActionButton } from "@/components/common/action-button"
+import { AutoRefresh } from "@/components/common/auto-refresh"
 import { ModuleStatusCard } from "@/components/common/module-status-card"
 import { PageHeader } from "@/components/common/page-header"
-import { MODULES } from "@/lib/constant"
+import { startIndexingAction } from "@/server/actions/indexer"
+import { getOverview } from "@/server/services/modules"
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { modules, indexerRunning } = await getOverview()
+  const indexing = indexerRunning || modules.some((m) => m.state === "indexing")
+
   return (
     <>
-      <PageHeader title="Home" description="Browse your Google Takeout export. Nothing leaves this machine." />
+      <AutoRefresh active={indexing} />
+      <PageHeader
+        title="Home"
+        description="Browse your Google Takeout export. Nothing leaves this machine."
+        actions={<ActionButton action={startIndexingAction} label={indexing ? "Indexing…" : "Index now"} disabled={indexing} />}
+      />
       <div className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-4">
-        {MODULES.map((module) => (
-          <ModuleStatusCard key={module.id} module={module} status="Not indexed" />
+        {modules.map((status) => (
+          <ModuleStatusCard key={status.module.id} status={status} />
         ))}
       </div>
     </>
