@@ -143,3 +143,12 @@ export interface KeepNote {
   editedAt: number | null
   attachmentIds: number[]
 }
+
+export interface PhotoItem {
+  id: number
+  takenAt: number
+  title: string
+  album: string
+  description: string
+  hasLocation: boolean
+}

@@ -155,6 +155,11 @@ export function createFixture(options: { wrap?: boolean } = {}): { base: string;
   write(root, "Contacts/My Contacts/My Contacts.vcf", "BEGIN:VCARD\nVERSION:3.0\nFN:Alice Example\nEMAIL:alice@example.test\nEND:VCARD\n")
   write(root, "Drive/Reports/report.docx", "not a real docx")
   write(root, "Drive/photo.jpg", Buffer.from([0xff, 0xd8, 0xff, 0xd9]))
+  write(root, "Google Photos/Photos from 2021/IMG_1.jpg", Buffer.from([0xff, 0xd8, 0xff, 0xd9]))
+  write(root, "Google Photos/Photos from 2021/IMG_1.jpg.json", JSON.stringify({ title: "IMG_1.jpg", description: "beach", photoTakenTime: { timestamp: "1622437268" }, geoData: { latitude: 12.5, longitude: 77.1 } }))
+  write(root, "Google Photos/Photos from 2021/IMG_2.jpg", Buffer.from([0xff, 0xd8, 0xff, 0xd9]))
+  write(root, "Google Photos/Photos from 2021/IMG_3.jpg", Buffer.from([0xff, 0xd8, 0xff, 0xd9]))
+  write(root, "Google Photos/Photos from 2021/IMG_3.jpg.supplemental-metadata.json", JSON.stringify({ photoTakenTime: { timestamp: "1500000000" }, geoData: { latitude: 0, longitude: 0 } }))
   write(root, "Keep/Note.json", JSON.stringify({ title: "Note", textContent: "hello", isTrashed: false }))
   write(
     root,

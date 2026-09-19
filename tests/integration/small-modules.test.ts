@@ -63,3 +63,18 @@ describe("keep", () => {
     expect(await listKeepNotes("archived", "zzz")).toEqual([])
   })
 })
+
+describe("photos", () => {
+  it("matches sidecars (classic and supplemental), falls back to mtime, drops zero geo", async () => {
+    const { listPhotos, listAlbums } = await import("@/server/services/photos")
+    const { photos, total } = await listPhotos(1, null)
+    expect(total).toBe(3)
+    const by = Object.fromEntries(photos.map((p) => [p.title, p]))
+    expect(by["IMG_1.jpg"]).toMatchObject({ takenAt: 1622437268000, hasLocation: true, description: "beach" })
+    expect(by["IMG_3.jpg"]).toMatchObject({ takenAt: 1500000000000, hasLocation: false }) // supplemental sidecar, 0/0 geo ignored
+    expect(by["IMG_2.jpg"].takenAt).toBeGreaterThan(1_600_000_000_000) // no sidecar: file mtime
+    expect(photos[0].title).toBe("IMG_2.jpg") // newest first
+    expect(await listAlbums()).toEqual([{ album: "Photos from 2021", count: 3 }])
+    expect((await listPhotos(1, "Nope")).total).toBe(0)
+  })
+})

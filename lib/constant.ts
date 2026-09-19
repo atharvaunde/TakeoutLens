@@ -56,7 +56,7 @@ export const MODULES: readonly ModuleDefinition[] = [
   { id: "contacts", label: "Contacts", href: "/contacts", icon: ContactRoundIcon, priority: "P2", built: true, sourceFolders: ["Contacts"] },
   { id: "keep", label: "Keep", href: "/keep", icon: StickyNoteIcon, priority: "P2", built: true, sourceFolders: ["Keep"] },
   { id: "tasks", label: "Tasks", href: "/tasks", icon: ListChecksIcon, priority: "P2", built: true, sourceFolders: ["Tasks"] },
-  { id: "photos", label: "Photos", href: "/photos", icon: ImageIcon, priority: "P2", built: false, sourceFolders: ["Google Photos"] },
+  { id: "photos", label: "Photos", href: "/photos", icon: ImageIcon, priority: "P2", built: true, sourceFolders: ["Google Photos"] },
   { id: "groups", label: "Groups", href: "/groups", icon: UsersRoundIcon, priority: "P2", built: false, sourceFolders: ["Groups"] },
   { id: "youtube", label: "YouTube", href: "/youtube", icon: VideoIcon, priority: "P2", built: false, sourceFolders: ["YouTube and YouTube Music"] },
   { id: "browse", label: "Other data", href: "/browse", icon: FolderTreeIcon, priority: "P2", built: false, sourceFolders: [] },

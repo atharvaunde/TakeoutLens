@@ -145,4 +145,17 @@ export const MIGRATIONS: readonly string[] = [
   CREATE INDEX cal_events_uid ON cal_events(uid);
   CREATE VIRTUAL TABLE cal_fts USING fts5(summary, description, location, tokenize = 'unicode61 remove_diacritics 2');
   `,
+  `
+  CREATE TABLE photo_items (
+    file_id     INTEGER PRIMARY KEY,
+    taken_ts    INTEGER NOT NULL,
+    title       TEXT NOT NULL,
+    album       TEXT NOT NULL,
+    description TEXT NOT NULL,
+    latitude    REAL,
+    longitude   REAL
+  );
+  CREATE INDEX photo_items_taken ON photo_items(taken_ts);
+  CREATE INDEX photo_items_album ON photo_items(album);
+  `,
 ]

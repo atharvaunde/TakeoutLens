@@ -7,6 +7,7 @@ import { indexCalendar } from "./calendar"
 import { indexChat } from "./chat"
 import { indexDrive } from "./drive"
 import { indexMail } from "./mail"
+import { indexPhotos } from "./photos"
 import { scanFiles } from "./scan"
 
 export type Indexer = (ctx: { db: Db; root: string }) => Promise<void> | void
@@ -17,6 +18,7 @@ export const INDEXERS: Record<string, Indexer> = {
   chat: ({ db, root }) => indexChat(db, root),
   mail: ({ db, root }) => indexMail(db, root),
   calendar: ({ db, root }) => indexCalendar(db, root),
+  photos: ({ db, root }) => indexPhotos(db, root),
 }
 
 const setState = (db: Db, id: string, state: string, detail: string | null = null) =>
