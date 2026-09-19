@@ -19,9 +19,6 @@ export const INDEXERS: Record<string, Indexer> = {
   calendar: ({ db, root }) => indexCalendar(db, root),
 }
 
-/** Modules that are only browsable after their own indexer has run. Drive and the generic browser need just the file scan. */
-const NEEDS_DEDICATED_INDEXER = new Set(MODULES.map((m) => m.id).filter((id) => id !== "drive" && id !== "browse"))
-
 const setState = (db: Db, id: string, state: string, detail: string | null = null) =>
   db
     .prepare(
@@ -57,7 +54,7 @@ export async function runIndexer(db: Db, root: string) {
         await indexer({ db, root })
         setState(db, mod.id, "ready")
       } else {
-        setState(db, mod.id, NEEDS_DEDICATED_INDEXER.has(mod.id) ? "pending" : "ready")
+        setState(db, mod.id, "ready") // small modules parse their files on demand
       }
     } catch (error) {
       setState(db, mod.id, "failed", (error as Error).message)
