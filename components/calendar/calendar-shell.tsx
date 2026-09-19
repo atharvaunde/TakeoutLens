@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
@@ -37,7 +37,11 @@ export function CalendarShell({ view, dateMs, todayMs, events, calendars, trunca
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const hidden = useCalendarStore((s) => s.hidden)
+  const initialize = useCalendarStore((s) => s.initialize)
   const [opened, setOpened] = useState<CalendarEventItem | null>(null)
+
+  // First visit: hide the calendars the server marked as not shown by default (e.g. colleagues').
+  useEffect(() => initialize(calendars.filter((c) => !c.defaultVisible).map((c) => c.id)), [calendars, initialize])
 
   const byId = useMemo(() => new Map(calendars.map((c) => [c.id, c])), [calendars])
   const colorOf = (id: number) => byId.get(id)?.color ?? CALENDAR.colors[0]

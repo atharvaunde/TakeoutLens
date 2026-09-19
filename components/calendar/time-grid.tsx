@@ -1,5 +1,7 @@
 "use client"
 
+import { useEffect, useRef } from "react"
+
 import { CALENDAR } from "@/lib/constant"
 import { addDays, dayKey, eventTouchesDay, layoutDay } from "@/lib/calendar"
 import { formatDate } from "@/lib/helper"
@@ -23,6 +25,10 @@ interface TimeGridProps {
 export function TimeGrid({ startMs, dayCount, todayMs, events, colorOf, onOpen }: TimeGridProps) {
   const days = Array.from({ length: dayCount }, (_, i) => addDays(startMs, i))
   const px = CALENDAR.hourHeightPx / MINUTES_PER_HOUR
+  const scroller = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (scroller.current) scroller.current.scrollTop = CALENDAR.initialScrollHour * CALENDAR.hourHeightPx
+  }, [])
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border">
       <div className="grid border-b bg-muted/40" style={{ gridTemplateColumns: `3.5rem repeat(${dayCount}, minmax(0, 1fr))` }}>
@@ -40,7 +46,7 @@ export function TimeGrid({ startMs, dayCount, todayMs, events, colorOf, onOpen }
           </div>
         ))}
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto">
         <div className="grid" style={{ gridTemplateColumns: `3.5rem repeat(${dayCount}, minmax(0, 1fr))`, height: HOURS * CALENDAR.hourHeightPx }}>
           <div className="relative">
             {Array.from({ length: HOURS }, (_, hour) => (

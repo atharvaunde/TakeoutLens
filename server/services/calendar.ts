@@ -1,10 +1,11 @@
 import { RRule } from "rrule"
 
 import { CALENDAR } from "@/lib/constant"
-import { toFtsQuery, utcToWall, zonedTimeToUtc } from "@/lib/helper"
+import { htmlToText, toFtsQuery, utcToWall, zonedTimeToUtc } from "@/lib/helper"
 import type { CalendarEventDetail, CalendarEventItem, CalendarInfo } from "@/lib/types"
 import { requireSession } from "@/server/auth/session"
 import { getDb } from "@/server/db"
+import { getOwnerEmail } from "@/server/owner"
 
 interface EventRow {
   id: number
@@ -63,11 +64,16 @@ export function expandOccurrences(row: EventRow, overrides: Set<number>, fromTs:
 
 export async function listCalendars(): Promise<CalendarInfo[]> {
   await requireSession()
-  return (getDb().prepare("SELECT id, name, event_count FROM cal_calendars ORDER BY event_count DESC").all() as { id: number; name: string; event_count: number }[]).map((c, index) => ({
+  const owner = getOwnerEmail()?.toLowerCase()
+  const rows = (getDb().prepare("SELECT id, name, event_count FROM cal_calendars ORDER BY event_count DESC").all() as { id: number; name: string; event_count: number }[])
+  // Show only the owner's own calendar by default when it can be identified; others are one click away.
+  const hasOwn = owner ? rows.some((c) => c.name.toLowerCase() === owner) : false
+  return rows.map((c, index) => ({
     id: c.id,
     name: c.name,
     eventCount: c.event_count,
     color: CALENDAR.colors[index % CALENDAR.colors.length],
+    defaultVisible: hasOwn ? c.name.toLowerCase() === owner : true,
   }))
 }
 
@@ -142,7 +148,7 @@ export async function getEventDetail(id: number, occurrenceStartWall?: number): 
     startWall: base.startWall + shift,
     endWall: base.endWall + shift,
     calendarName: row.calendar_name,
-    description: row.description,
+    description: htmlToText(row.description),
     organizer: row.organizer,
     attendees: row.attendees ? (JSON.parse(row.attendees) as CalendarEventDetail["attendees"]) : [],
     meetUrl: row.meet_url,
