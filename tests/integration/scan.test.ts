@@ -70,3 +70,15 @@ describe("scanFiles", () => {
     expect(moduleForTopFolder("Google Chat")).toBe("chat")
   })
 })
+
+describe("runIndexer", () => {
+  it("sets module states from the export contents", async () => {
+    const { root } = make()
+    const db = memDb()
+    const { runIndexer } = await import("@/server/indexer/run")
+    await runIndexer(db, root)
+    const states = Object.fromEntries((db.prepare("SELECT id, state FROM modules").all() as { id: string; state: string }[]).map((r) => [r.id, r.state]))
+    expect(states).toMatchObject({ drive: "ready", browse: "ready", mail: "pending", photos: "missing", youtube: "missing" })
+    expect(db.prepare("SELECT file_count FROM modules WHERE id = 'drive'").pluck().get()).toBe(2)
+  })
+})
