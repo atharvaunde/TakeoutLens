@@ -5,6 +5,16 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    // E1: UI code must not reach into server-only modules; data comes via props or Server Functions.
+    files: ["components/**/*.{ts,tsx}", "stores/**/*.{ts,tsx}", "hooks/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        { patterns: [{ group: ["@/server/*", "**/server/*"], message: "UI code must not import server/ modules (plan E1)." }] },
+      ],
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
