@@ -137,3 +137,19 @@ export const INDEX_ERROR_FILTERS: readonly TableFilterDefinition[] = [
     ],
   },
 ]
+
+/** MIME types for files served inline (images, video). Everything else is served as a download. */
+export const INLINE_MIME_TYPES: Readonly<Record<string, string>> = {
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+  ".gif": "image/gif",
+  ".webp": "image/webp",
+  ".heic": "image/heic",
+  ".mp4": "video/mp4",
+  ".m4v": "video/mp4",
+  ".mov": "video/quicktime",
+  ".webm": "video/webm",
+}
+
+export const DEFAULT_DOWNLOAD_MIME = "application/octet-stream"
