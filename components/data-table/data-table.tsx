@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { Fragment, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon } from "lucide-react"
 import { useTable, type ColumnDef, type RowData, type SortingState, type PaginationState } from "@tanstack/react-table"
@@ -26,6 +26,15 @@ export interface DataTableProps<TData extends RowData> {
   rowCount: number
   /** Field on each row holding an href; makes the row clickable. */
   rowHrefKey?: keyof TData & string
+  /** Stable row id (defaults to the index). Needed for selection. */
+  getRowId?: (row: TData) => string
+  selectedRowId?: string | null
+  onRowClick?: (row: TData) => void
+  onRowDoubleClick?: (row: TData) => void
+  /** Wrap each rendered row, e.g. in a context menu. Must return the given element inside its wrapper. */
+  wrapRow?: (row: TData, element: React.ReactElement) => React.ReactElement
+  /** Extra controls shown at the right end of the toolbar. */
+  toolbarEnd?: React.ReactNode
   emptyTitle?: string
   emptyDescription?: string
   /** Show the search box (URL param `q`; the page filters server-side). */
@@ -42,6 +51,12 @@ export function DataTable<TData extends RowData>({
   data,
   rowCount,
   rowHrefKey,
+  getRowId,
+  selectedRowId,
+  onRowClick,
+  onRowDoubleClick,
+  wrapRow,
+  toolbarEnd,
   emptyTitle = TABLE_TEXT.empty,
   emptyDescription,
   searchable = false,
@@ -65,6 +80,7 @@ export function DataTable<TData extends RowData>({
     columns,
     data,
     rowCount,
+    ...(getRowId ? { getRowId: (row: TData) => getRowId(row) } : {}),
     manualPagination: true,
     manualSorting: true,
     state: { pagination, sorting },
@@ -90,13 +106,14 @@ export function DataTable<TData extends RowData>({
 
   return (
     <div className={cn("flex flex-col gap-4", isPending && "opacity-70", className)}>
-      {searchable || filters.length > 0 ? (
+      {searchable || filters.length > 0 || toolbarEnd ? (
         <DataTableToolbar
           search={params.search}
           searchPlaceholder={searchPlaceholder}
           filters={filters}
           filterValues={params.filters}
           onChange={update}
+          end={toolbarEnd}
         />
       ) : null}
       <div className="rounded-lg border">
@@ -149,11 +166,14 @@ export function DataTable<TData extends RowData>({
             ) : (
               rows.map((row) => {
                 const href = rowHrefKey ? (row.original[rowHrefKey] as string | undefined) : undefined
-                return (
+                const clickable = Boolean(href || onRowClick || onRowDoubleClick)
+                const element = (
                   <TableRow
                     key={row.id}
-                    className={cn(href && "cursor-pointer")}
-                    onClick={href ? () => router.push(href) : undefined}
+                    data-state={selectedRowId && row.id === selectedRowId ? "selected" : undefined}
+                    className={cn(clickable && "cursor-pointer select-none")}
+                    onClick={href ? () => router.push(href) : onRowClick ? () => onRowClick(row.original) : undefined}
+                    onDoubleClick={onRowDoubleClick ? () => onRowDoubleClick(row.original) : undefined}
                   >
                     {row.getAllCells().map((cell) => (
                       <TableCell key={cell.id}>
@@ -162,6 +182,7 @@ export function DataTable<TData extends RowData>({
                     ))}
                   </TableRow>
                 )
+                return wrapRow ? <Fragment key={row.id}>{wrapRow(row.original, element)}</Fragment> : element
               })
             )}
           </TableBody>

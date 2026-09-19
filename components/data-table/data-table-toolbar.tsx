@@ -14,6 +14,8 @@ interface DataTableToolbarProps {
   filters: readonly TableFilterDefinition[]
   filterValues: Record<string, string>
   onChange: (changes: Record<string, string | null>) => void
+  /** Extra controls aligned to the right (e.g. a view toggle). */
+  end?: React.ReactNode
 }
 
 export function DataTableToolbar({
@@ -22,6 +24,7 @@ export function DataTableToolbar({
   filters,
   filterValues,
   onChange,
+  end,
 }: DataTableToolbarProps) {
   // Uncontrolled input: typing is debounced into the URL; `resetKey` remounts it after "Clear".
   const [resetKey, setResetKey] = useState(0)
@@ -87,6 +90,7 @@ export function DataTableToolbar({
           {TABLE_TEXT.clearFilters}
         </Button>
       ) : null}
+      {end ? <div className="ml-auto flex items-center gap-2">{end}</div> : null}
     </div>
   )
 }
