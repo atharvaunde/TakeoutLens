@@ -54,8 +54,8 @@ export const MODULES: readonly ModuleDefinition[] = [
   { id: "calendar", label: "Calendar", href: "/calendar", icon: CalendarDaysIcon, priority: "P0", built: true, sourceFolders: ["Calendar"] },
   { id: "drive", label: "Drive", href: "/drive", icon: HardDriveIcon, priority: "P0", built: true, sourceFolders: ["Drive"] },
   { id: "contacts", label: "Contacts", href: "/contacts", icon: ContactRoundIcon, priority: "P2", built: true, sourceFolders: ["Contacts"] },
-  { id: "keep", label: "Keep", href: "/keep", icon: StickyNoteIcon, priority: "P2", built: false, sourceFolders: ["Keep"] },
-  { id: "tasks", label: "Tasks", href: "/tasks", icon: ListChecksIcon, priority: "P2", built: false, sourceFolders: ["Tasks"] },
+  { id: "keep", label: "Keep", href: "/keep", icon: StickyNoteIcon, priority: "P2", built: true, sourceFolders: ["Keep"] },
+  { id: "tasks", label: "Tasks", href: "/tasks", icon: ListChecksIcon, priority: "P2", built: true, sourceFolders: ["Tasks"] },
   { id: "photos", label: "Photos", href: "/photos", icon: ImageIcon, priority: "P2", built: false, sourceFolders: ["Google Photos"] },
   { id: "groups", label: "Groups", href: "/groups", icon: UsersRoundIcon, priority: "P2", built: false, sourceFolders: ["Groups"] },
   { id: "youtube", label: "YouTube", href: "/youtube", icon: VideoIcon, priority: "P2", built: false, sourceFolders: ["YouTube and YouTube Music"] },
@@ -339,3 +339,5 @@ export type KeepView = (typeof KEEP.views)[number]
 export const PHOTOS = { pageSize: 120, imageExtensions: [".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic"] as readonly string[] } as const
 
 export const VIEWER = { maxTextBytes: 2_000_000, csvPreviewRows: 5000 } as const
+
+export const TASK_LIST_FILTER_ID = "list"

@@ -151,11 +151,29 @@ export function createFixture(options: { wrap?: boolean } = {}): { base: string;
     })
   )
   write(root, "Calendar/me@example.test.ics", FIXTURE_ICS)
-  write(root, "Contacts/All Contacts/All Contacts.vcf", "BEGIN:VCARD\nVERSION:3.0\nFN:Alice Example\nEND:VCARD\n")
+  write(root, "Contacts/All Contacts/All Contacts.vcf", "BEGIN:VCARD\nVERSION:3.0\nFN:Alice Example\nEMAIL:alice@example.test\nEND:VCARD\nBEGIN:VCARD\nVERSION:3.0\nFN:Bob Example\nTEL:123\nEND:VCARD\n")
+  write(root, "Contacts/My Contacts/My Contacts.vcf", "BEGIN:VCARD\nVERSION:3.0\nFN:Alice Example\nEMAIL:alice@example.test\nEND:VCARD\n")
   write(root, "Drive/Reports/report.docx", "not a real docx")
   write(root, "Drive/photo.jpg", Buffer.from([0xff, 0xd8, 0xff, 0xd9]))
   write(root, "Keep/Note.json", JSON.stringify({ title: "Note", textContent: "hello", isTrashed: false }))
-  write(root, "Tasks/Tasks.json", JSON.stringify({ kind: "tasks#taskLists", items: [] }))
+  write(
+    root,
+    "Tasks/Tasks.json",
+    JSON.stringify({
+      kind: "tasks#taskLists",
+      items: [
+        {
+          id: "L1",
+          title: "My Tasks",
+          items: [
+            { id: "t1", title: "Write report", status: "needsAction", due: "2023-02-01T00:00:00Z", updated: "2023-01-10T00:00:00Z", notes: "quarterly" },
+            { id: "t2", title: "Send invoice", status: "completed", completed: "2023-01-05T00:00:00Z", updated: "2023-01-05T00:00:00Z" },
+          ],
+        },
+      ],
+    })
+  )
+  write(root, "Keep/Archived.json", JSON.stringify({ title: "Old list", color: "YELLOW", isArchived: true, isPinned: false, isTrashed: false, listContent: [{ text: "milk", isChecked: true }], userEditedTimestampUsec: 1_600_000_000_000_000 }))
   write(root, "My Activity/Search/MyActivity.html", "<html></html>")
   write(root, "archive_browser.html", "<html></html>")
   return { base, root }
