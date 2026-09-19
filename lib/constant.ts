@@ -124,3 +124,16 @@ export const MAIL = {
   /** Max plain-text characters per message stored in the FTS index. */
   ftsBodyCap: 64 * 1024,
 } as const
+
+export const INDEX_ERROR_FILTERS: readonly TableFilterDefinition[] = [
+  {
+    id: "module",
+    label: "Module",
+    options: [
+      { value: "mail", label: "Mail" },
+      { value: "chat", label: "Chat" },
+      { value: "calendar", label: "Calendar" },
+      { value: "drive", label: "Drive" },
+    ],
+  },
+]
