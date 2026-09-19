@@ -182,3 +182,23 @@ export const MODULE_STATE_LABELS: Record<ModuleState, string> = {
 }
 
 export const ALLOWED_LOCAL_HOSTS = ["localhost", "127.0.0.1", "[::1]"] as const
+
+export const AUTH = {
+  minPasswordLength: 8,
+  scrypt: { keyLength: 64, cost: 16384, blockSize: 8, parallelization: 1 },
+  saltBytes: 16,
+  tokenBytes: 32,
+  /** Progressive delay after repeated wrong passwords. */
+  rateLimit: { freeAttempts: 3, baseDelayMs: 1000, maxDelayMs: 30000, windowMs: 15 * 60 * 1000 },
+  publicPaths: ["/setup", "/login"],
+} as const
+
+export const AUTH_TEXT = {
+  setupTitle: "Set up a password",
+  setupDescription: "This password protects your Takeout data on this machine. It is stored only as a salted hash and cannot be recovered; to reset it, delete auth.json in the data folder.",
+  loginTitle: "Enter your password",
+  wrongPassword: "Incorrect password.",
+  tooShort: "Use at least 8 characters.",
+  mismatch: "Passwords do not match.",
+  tooMany: "Too many attempts. Try again in a moment.",
+} as const

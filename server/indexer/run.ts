@@ -7,7 +7,7 @@ import { scanFiles } from "./scan"
 
 export type Indexer = (ctx: { db: Db; root: string }) => Promise<void> | void
 
-/** Dedicated per-module indexers (mail, chat, ...) are registered here as they are built. */
+/** Dedicated per-mod indexers (mail, chat, ...) are registered here as they are built. */
 export const INDEXERS: Record<string, Indexer> = {}
 
 /** Modules that are only browsable after their own indexer has run. Drive and the generic browser need just the file scan. */
@@ -30,30 +30,30 @@ function refreshCounts(db: Db) {
 }
 
 export async function runIndexer(db: Db, root: string) {
-  for (const module of MODULES) {
-    const present = module.sourceFolders.length === 0 || module.sourceFolders.some((f) => fs.existsSync(path.join(root, f)))
-    setState(db, module.id, present ? "indexing" : "missing")
+  for (const mod of MODULES) {
+    const present = mod.sourceFolders.length === 0 || mod.sourceFolders.some((f) => fs.existsSync(path.join(root, f)))
+    setState(db, mod.id, present ? "indexing" : "missing")
   }
   db.prepare("DELETE FROM index_errors").run() // errors are re-derived on every run
 
   scanFiles(db, root)
 
-  for (const module of MODULES) {
-    const row = db.prepare("SELECT state FROM modules WHERE id = ?").get(module.id) as { state: string }
+  for (const mod of MODULES) {
+    const row = db.prepare("SELECT state FROM modules WHERE id = ?").get(mod.id) as { state: string }
     if (row.state === "missing") continue
-    const indexer = INDEXERS[module.id]
+    const indexer = INDEXERS[mod.id]
     try {
       if (indexer) {
         await indexer({ db, root })
-        setState(db, module.id, "ready")
+        setState(db, mod.id, "ready")
       } else {
-        setState(db, module.id, NEEDS_DEDICATED_INDEXER.has(module.id) ? "pending" : "ready")
+        setState(db, mod.id, NEEDS_DEDICATED_INDEXER.has(mod.id) ? "pending" : "ready")
       }
     } catch (error) {
-      setState(db, module.id, "failed", (error as Error).message)
+      setState(db, mod.id, "failed", (error as Error).message)
       db.prepare("INSERT INTO index_errors (module, path, reason, occurred_at) VALUES (?, ?, ?, ?)").run(
-        module.id,
-        module.sourceFolders[0] ?? "",
+        mod.id,
+        mod.sourceFolders[0] ?? "",
         `Indexer failed: ${(error as Error).message}`,
         Date.now()
       )

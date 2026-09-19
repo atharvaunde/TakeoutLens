@@ -41,13 +41,13 @@ export function scanFiles(db: Db, root: string, onProgress?: (seen: number) => v
   const result: ScanResult = { added: 0, updated: 0, removed: 0, unchanged: 0, errors: 0 }
 
   const upsert = db.prepare(
-    `INSERT INTO files (rel_path, module, size, mtime_ms) VALUES (@rel, @module, @size, @mtime)
-     ON CONFLICT(rel_path) DO UPDATE SET module = @module, size = @size, mtime_ms = @mtime`
+    `INSERT INTO files (rel_path, module, size, mtime_ms) VALUES (@rel, @mod, @size, @mtime)
+     ON CONFLICT(rel_path) DO UPDATE SET module = @mod, size = @size, mtime_ms = @mtime`
   )
   const logError = db.prepare("INSERT INTO index_errors (module, path, reason, occurred_at) VALUES (?, ?, ?, ?)")
-  const recordError = (module: string, rel: string, reason: string) => {
+  const recordError = (mod: string, rel: string, reason: string) => {
     result.errors++
-    logError.run(module, rel, reason, Date.now())
+    logError.run(mod, rel, reason, Date.now())
   }
 
   const visit = (dir: string, topFolder: string | null) => {
@@ -70,7 +70,7 @@ export function scanFiles(db: Db, root: string, onProgress?: (seen: number) => v
       if (!entry.isFile() || topFolder === null) continue // root-level files (e.g. archive_browser.html) are ignored
       try {
         const stat = fs.statSync(abs)
-        const module = moduleForTopFolder(topFolder)
+        const mod = moduleForTopFolder(topFolder)
         seen.add(rel)
         const previous = existing.get(rel)
         const mtime = Math.floor(stat.mtimeMs)
@@ -80,7 +80,7 @@ export function scanFiles(db: Db, root: string, onProgress?: (seen: number) => v
           result.unchanged++
           continue
         }
-        upsert.run({ rel, module, size: stat.size, mtime })
+        upsert.run({ rel, mod, size: stat.size, mtime })
         if (onProgress && seen.size % 1000 === 0) onProgress(seen.size)
       } catch (error) {
         recordError(moduleForTopFolder(topFolder), rel, `Cannot stat file: ${(error as Error).message}`)
