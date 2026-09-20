@@ -97,7 +97,7 @@ export function AppSidebar({ sizes, index }: AppSidebarProps) {
   return (
     <div className={cn("flex-none overflow-hidden p-2.5 transition-[width] duration-[180ms] ease-in-out", mini ? "w-[70px]" : "w-[246px]")}>
       <div className={cn("flex h-full flex-col rounded-[14px] border border-line bg-panel shadow-[0_1px_2px_var(--shadow)]", mini ? "w-[50px]" : "w-[226px]")}>
-        <div className={cn("flex items-center gap-2 px-2.5 pt-3 pb-2.5", mini && "justify-center")}>
+        <div className={cn("flex items-center gap-2 px-2.5 pt-3 pb-[18px]", mini && "justify-center")}>
           <div className="size-[22px] flex-none rounded-[7px] bg-acc" />
           {mini ? null : (
             <>
@@ -112,7 +112,7 @@ export function AppSidebar({ sizes, index }: AppSidebarProps) {
           {top.map((item) => (
             <NavRow key={item.key} item={item} active={isActive(item.href)} mini={mini} />
           ))}
-          {mini ? <div className="mx-1.5 mt-2.5 mb-[9px] h-px bg-line" /> : <div className="px-[9px] pt-[15px] pb-[5px] text-[11px] font-medium text-faint">Core</div>}
+          {mini ? <div className="mx-1.5 mt-2.5 mb-[9px] h-px bg-line" /> : <div className="px-[9px] pt-1.5 pb-[5px] text-[11px] font-medium text-faint">Core</div>}
           {core.map((item) => (
             <NavRow key={item.key} item={item} active={isActive(item.href)} mini={mini} />
           ))}
