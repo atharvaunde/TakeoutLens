@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-Milestones M0–M6 of plan.md are implemented: every module has a page (Mail, Chat, Calendar incl. the multi-calendar overlay grid, Drive, Contacts, Keep, Tasks, Photos, Groups, YouTube, and the generic "Other data" browser). **M7 (Dockerfile/compose, README, MIT license, Playwright smoke test, security review, optional Typesense) is not done.** Measurements from the real export are in `docs/m0-spike-report.md`. The design docs remain the source of truth; read them before changing behavior:
+Milestones M0–M6 of plan.md are implemented: every module has a page (Mail, Chat, Calendar incl. the multi-calendar overlay grid, Drive, Contacts, Keep, Tasks, Photos, Groups, YouTube, and the generic "Other data" browser). **M7 is done except the optional Typesense provider** (Dockerfile/compose, README, MIT license, Playwright smoke test in `e2e/`, `docs/security-review.md`). Measurements from the real export are in `docs/m0-spike-report.md`. The design docs remain the source of truth; read them before changing behavior:
 
 - `intent.md`: the problem, scope and decisions.
 - `spec.md`: requirements, design decisions, edge cases, acceptance criteria, and facts measured from a real 45GB export.
@@ -21,7 +21,8 @@ Package manager is pnpm.
 - Single test: `pnpm exec vitest run tests/unit/auth.test.ts` (or `-t "name"`)
 - `pnpm index`: run the indexer once (scans `TAKEOUT_DIR`, writes the SQLite index in `DATA_DIR`). The Home page's "Index now" button spawns the same CLI.
 - Config comes from `.env.local` (gitignored): `TAKEOUT_DIR` (read-only export folder) and `DATA_DIR` (index, thumbnails, `auth.json`). Tests use the synthetic fixture in `tests/fixture/generate.ts`, never the real export.
-- No e2e runner yet (Playwright planned for M7). For a production build next to a running dev server: `NEXT_DIST_DIR=.next-build pnpm build` (then `git checkout tsconfig.json`; Next rewrites its `include`).
+- `pnpm test:e2e`: Playwright smoke test (`e2e/`, `playwright.config.ts`); it starts `pnpm start` on port 3210 with a synthetic fixture and a temp data dir, so run `pnpm build` first. For a production build next to a running dev server: `NEXT_DIST_DIR=.next-build pnpm build` (then `git checkout tsconfig.json`; Next rewrites its `include`), and `NEXT_DIST_DIR=.next-build pnpm test:e2e`.
+- Docker: `TAKEOUT_DIR=… docker compose up --build`. The image keeps `node_modules` and sources (not Next standalone) because the server spawns the indexer with `tsx`; `serverExternalPackages` covers the native modules.
 
 ## Architecture decisions that span the codebase (from spec.md)
 
@@ -56,6 +57,7 @@ The UI follows a Claude Design handoff (reference copy in `design/`, git-ignored
 
 - **Index database:** never delete only `index.db-wal`/`-shm` while a server is running; to reset, delete all three `index.db*` files and run `pnpm index` (it is derived data; sessions live in it, so everyone is logged out; `auth.json` is separate). `getDb()` reopens when the schema version or the file's inode changes, so hot reload picks up new migrations.
 - **Adding a table or index:** append a new string to `MIGRATIONS` in `server/db/schema.ts` (never edit old ones) and register a per-module indexer in `server/indexer/run.ts`. Small modules (contacts, keep, tasks, youtube, groups metadata, browse) parse their files on demand instead.
+- **Charts:** the Home storage donut uses shadcn `chart` (Recharts). Colours must be CSS variables (`STORAGE_SEGMENT_COLORS`), never literals; set an explicit `size-*` on `ChartContainer` and `isAnimationActive={false}` on `Pie`, otherwise it renders oversized/blank.
 - **Flip `built: true`** on a module in `lib/constant.ts` when its page ships (module cards only link built modules).
 - **Browser testing of the dev server:** a background tab throttles React effects/hydration, so screenshots can show the pre-hydration state; take a screenshot/interaction first and re-check before assuming a bug.
 
