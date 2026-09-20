@@ -47,7 +47,7 @@ Package manager is pnpm.
 
 ## Design system
 
-The UI follows a Claude Design handoff (reference copy in `design/`, git-ignored; its source of truth is `design/project/Takeout Viewer.dc.html`). Rules that matter when changing UI:
+The UI follows a Claude Design handoff (exported into a git-ignored `design/` folder when needed; it is not tracked in the repo). Rules that matter when changing UI:
 
 - **All colours are tokens in `app/globals.css`** (light + `.dark`): `--bg/--panel/--surf/--line/--line2/--ink/--ink2/--mute/--faint/--acc/--accbg/--sel/--hov/--ok`, module chips `--k-<kind>-bg/fg`, calendar palette `--cal-1..12`, stack ramp `--stack-1..5`, `--on-acc`, `--scrim`. They map onto shadcn's semantic tokens and are exposed as Tailwind colours (`bg-panel`, `text-faint`, `border-line2`, `bg-acc`...). No colour literals in code: `pnpm check:conventions` (rule E9) fails on them (only generated `components/ui/` and the isolated email iframe document are exempt).
 - Fonts are IBM Plex Sans/Mono (`font-sans`, `font-mono`); labels are mono, uppercase, tracked (`font-mono text-[9.5px] tracking-[.16em] uppercase text-faint`).
