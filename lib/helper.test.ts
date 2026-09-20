@@ -5,7 +5,7 @@ describe("helper", () => {
   it("formats bytes", () => {
     expect(formatBytes(0)).toBe("0 B")
     expect(formatBytes(1536)).toBe("1.5 KB")
-    expect(formatBytes(4.7 * 1024 ** 3)).toBe("4.7 GB")
+    expect(formatBytes(4.7e9)).toBe("4.7 GB")
   })
   it("formats durations", () => {
     expect(formatDuration(65)).toBe("1:05")
@@ -89,7 +89,7 @@ describe("helper", () => {
   it("formats fixed-width durations and sizes", () => {
     expect(formatDuration(3724, { fixed: true })).toBe("01:02:04")
     expect(formatDuration(7, { fixed: true })).toBe("00:00:07")
-    expect(formatBytesFixed(113.3 * 1024 ** 2)).toBe("\u00a0113.3 MB")
-    expect(formatBytesFixed(1.05 * 1024 ** 3)).toHaveLength(9)
+    expect(formatBytesFixed(113.3e6)).toBe("\u00a0113.3 MB")
+    expect(formatBytesFixed(1.05e9)).toHaveLength(9)
   })
 })

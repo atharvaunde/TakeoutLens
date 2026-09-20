@@ -161,7 +161,8 @@ export const SESSION = {
 
 export const UNITS = {
   bytes: ["B", "KB", "MB", "GB", "TB"],
-  bytesBase: 1024,
+  /** Decimal (1 GB = 10^9 bytes), matching macOS Finder and Google's own UIs. */
+  bytesBase: 1000,
 } as const
 
 export const DEFAULT_LOCALE = "en-US"
