@@ -17,16 +17,16 @@ interface MediaLightboxProps {
 export function MediaLightbox({ target, onClose }: MediaLightboxProps) {
   return (
     <Dialog open={target !== null} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-5xl">
+      <DialogContent className="w-[92vw] gap-3 sm:max-w-[min(1400px,92vw)]">
         {target ? (
           <>
             <DialogTitle className="truncate">{target.name}</DialogTitle>
             <DialogDescription className="sr-only">Preview of {target.name}</DialogDescription>
             {target.kind === "video" ? (
-              <video src={`/media/${target.fileId}`} controls autoPlay className="max-h-[75vh] w-full rounded-md bg-black" />
+              <video src={`/media/${target.fileId}`} controls autoPlay className="max-h-[82vh] w-full rounded-md bg-black" />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element -- streamed from the local media route, not an optimizable remote image
-              <img src={`/media/${target.fileId}`} alt={target.name} className="max-h-[75vh] w-full rounded-md object-contain" />
+              <img src={`/media/${target.fileId}`} alt={target.name} className="max-h-[82vh] w-full rounded-md object-contain" />
             )}
           </>
         ) : null}
