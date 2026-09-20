@@ -1,0 +1,11 @@
+node_modules
+.next
+.next-build
+.data
+.git
+.env*
+design
+spike
+takeout
+Takeout
+tsconfig.tsbuildinfo
