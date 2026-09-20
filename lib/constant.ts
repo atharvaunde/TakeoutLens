@@ -72,16 +72,6 @@ export const MODULES: readonly ModuleDefinition[] = [
 
 export const HOME_NAV = { label: "Home", href: "/", icon: HouseIcon, shortcut: "g" } as const
 
-export const SHORTCUTS = [
-  { key: "⌘K", label: "Search everything" },
-  { key: "G", label: "Overview" },
-  { key: "M", label: "Mail" },
-  { key: "C", label: "Chat" },
-  { key: "E", label: "Calendar" },
-  { key: "D", label: "Drive" },
-  { key: "[", label: "Collapse sidebar" },
-] as const
-
 /** Storage-bar segment colour per module (Tailwind classes backed by --gs-* tokens); unlisted modules use the "other" grey. */
 export const STORAGE_SEGMENT_CLASSES: Readonly<Record<string, string>> = {
   drive: "bg-gs-drive",

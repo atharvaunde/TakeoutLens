@@ -2,7 +2,7 @@ import Link from "next/link"
 
 import { Crumb } from "@/components/layout/crumb"
 import { RecentsCard } from "@/components/home/recents-card"
-import { GOOGLE_LOGOS, MODULES, SHORTCUTS, STORAGE_OTHER_CLASS, STORAGE_SEGMENT_CLASSES, type ModuleKind } from "@/lib/constant"
+import { GOOGLE_LOGOS, MODULES, STORAGE_OTHER_CLASS, STORAGE_SEGMENT_CLASSES, type ModuleKind } from "@/lib/constant"
 import { formatBytes, formatBytesCompact, formatNumber } from "@/lib/helper"
 import { getHomeData, getOverview } from "@/server/services/modules"
 
@@ -96,19 +96,8 @@ export default async function HomePage() {
           })}
         </div>
 
-        <div className="mt-[30px] grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-2.5">
+        <div className="mt-[30px] grid grid-cols-1 gap-2.5">
           <RecentsCard />
-          <div className="rounded-xl border border-line bg-surf p-3.5">
-            <div className="font-mono text-[10px] tracking-[.14em] text-faint uppercase">Shortcuts</div>
-            <div className="mt-2.5 grid grid-cols-2 gap-x-3.5 gap-y-[7px]">
-              {SHORTCUTS.map((shortcut) => (
-                <div key={shortcut.key} className="flex items-center gap-2">
-                  <span className="min-w-[26px] rounded-[3px] border border-line px-[5px] py-0.5 text-center font-mono text-[10px] text-ink2">{shortcut.key}</span>
-                  <span className="text-xs text-mute">{shortcut.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </div>

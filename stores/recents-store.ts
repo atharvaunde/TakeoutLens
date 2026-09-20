@@ -34,7 +34,9 @@ export const useRecentsStore = create<RecentsState>((set, get) => ({
   load: () => {
     try {
       const parsed = JSON.parse(localStorage.getItem(SHELL.recentsStorageKey) ?? "[]") as RecentItem[]
-      set({ items: Array.isArray(parsed) ? parsed.slice(0, SHELL.maxRecents) : [], loaded: true })
+      // Drop entries for pages that no longer exist (e.g. the removed Timeline) and anything without a known module.
+      const valid = Array.isArray(parsed) ? parsed.filter((item) => item.moduleId !== "timeline" && !item.href.startsWith("/timeline")) : []
+      set({ items: valid.slice(0, SHELL.maxRecents), loaded: true })
     } catch {
       set({ loaded: true })
     }
