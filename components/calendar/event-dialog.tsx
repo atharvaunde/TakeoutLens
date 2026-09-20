@@ -103,7 +103,7 @@ export function EventDialog({ target, color, onClose }: EventDialogProps) {
                     const status = statusOf(a.status)
                     return (
                       <div key={a.email} className="flex items-center gap-2 py-1">
-                        <span className={`size-[5px] flex-none rounded-full ${status === "accepted" ? "bg-ok" : status === "declined" ? "bg-acc" : "bg-line"}`} />
+                        <span className={`size-2 flex-none rounded-full ${status === "accepted" ? "bg-ok" : status === "declined" ? "bg-destructive" : "bg-line"}`} />
                         <span className={`min-w-0 flex-1 truncate text-[12.5px] ${status === "pending" ? "text-mute" : "text-ink"}`}>{a.name || a.email}</span>
                         <span className="font-mono text-[9.5px] text-faint">{status}</span>
                       </div>
