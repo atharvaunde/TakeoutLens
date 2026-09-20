@@ -154,3 +154,44 @@ export interface PhotoItem {
 }
 
 export type CsvRowData = Record<string, string> & { __id: string }
+
+export interface GlobalSearchResult {
+  id: string
+  label: string
+  meta: string
+  href: string
+  moduleId: string
+}
+
+export interface IndexStatus {
+  indexing: boolean
+  /** Share of modules finished (0-100). */
+  percent: number
+  fileCount: number
+  lastFinishedAt: number | null
+}
+
+export interface StackSegment {
+  name: string
+  bytes: number
+  percent: number
+}
+
+export interface HomeData {
+  totalBytes: number
+  totalFiles: number
+  firstYear: number | null
+  lastYear: number | null
+  stack: StackSegment[]
+  metas: Record<string, string>
+  parsed: number
+  errors: number
+}
+
+export interface LockInfo {
+  source: string
+  files: number
+  bytes: number
+  indexedAt: number | null
+  folderFound: boolean
+}

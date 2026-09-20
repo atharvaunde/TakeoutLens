@@ -1,25 +1,26 @@
 import {
-  CalendarDaysIcon,
-  ContactRoundIcon,
-  FolderIcon,
-  HardDriveIcon,
-  ImageIcon,
-  ListChecksIcon,
-  MailIcon,
-  MessageSquareIcon,
-  StickyNoteIcon,
-  UsersRoundIcon,
-  VideoIcon,
-  FolderTreeIcon,
+  CalendarIcon,
+  ContactIcon,
   FileArchiveIcon,
   FileAudioIcon,
   FileCodeIcon,
   FileIcon,
   FileImageIcon,
-  FileVideoIcon,
   FileSpreadsheetIcon,
   FileTextIcon,
+  FileVideoIcon,
+  HardDriveIcon,
+  HistoryIcon,
+  HouseIcon,
+  ImageIcon,
+  LayoutGridIcon,
+  ListChecksIcon,
+  MailIcon,
+  MessageSquareIcon,
   PresentationIcon,
+  SquarePlayIcon,
+  StickyNoteIcon,
+  UsersIcon,
   type LucideIcon,
 } from "lucide-react"
 
@@ -42,27 +43,65 @@ export interface ModuleDefinition {
   href: string
   icon: LucideIcon
   priority: ModulePriority
+  /** Sidebar group: "Core" or "More". */
+  nav: "core" | "more"
   /** Flip to true once the module's page exists; until then it is shown but not linked. */
   built: boolean
+  /** Single-key shortcut that opens the module. */
+  shortcut?: string
+  /** Design colour family for chips (maps to --k-<kind>-bg/fg in globals.css). */
+  kind: ModuleKind
   /** Top-level Takeout folder names this module reads. */
   sourceFolders: readonly string[]
 }
 
+export type ModuleKind = "mail" | "chat" | "cal" | "drive" | "photos" | "keep" | "neutral"
+
 export const MODULES: readonly ModuleDefinition[] = [
-  { id: "mail", label: "Mail", href: "/mail", icon: MailIcon, priority: "P0", built: true, sourceFolders: ["Mail"] },
-  { id: "chat", label: "Chat", href: "/chat", icon: MessageSquareIcon, priority: "P0", built: true, sourceFolders: ["Google Chat"] },
-  { id: "calendar", label: "Calendar", href: "/calendar", icon: CalendarDaysIcon, priority: "P0", built: true, sourceFolders: ["Calendar"] },
-  { id: "drive", label: "Drive", href: "/drive", icon: HardDriveIcon, priority: "P0", built: true, sourceFolders: ["Drive"] },
-  { id: "contacts", label: "Contacts", href: "/contacts", icon: ContactRoundIcon, priority: "P2", built: true, sourceFolders: ["Contacts"] },
-  { id: "keep", label: "Keep", href: "/keep", icon: StickyNoteIcon, priority: "P2", built: true, sourceFolders: ["Keep"] },
-  { id: "tasks", label: "Tasks", href: "/tasks", icon: ListChecksIcon, priority: "P2", built: true, sourceFolders: ["Tasks"] },
-  { id: "photos", label: "Photos", href: "/photos", icon: ImageIcon, priority: "P2", built: true, sourceFolders: ["Google Photos"] },
-  { id: "groups", label: "Groups", href: "/groups", icon: UsersRoundIcon, priority: "P2", built: true, sourceFolders: ["Groups"] },
-  { id: "youtube", label: "YouTube", href: "/youtube", icon: VideoIcon, priority: "P2", built: true, sourceFolders: ["YouTube and YouTube Music"] },
-  { id: "browse", label: "Other data", href: "/browse", icon: FolderTreeIcon, priority: "P2", built: true, sourceFolders: [] },
+  { id: "mail", label: "Mail", href: "/mail", icon: MailIcon, priority: "P0", nav: "core", built: true, shortcut: "m", kind: "mail", sourceFolders: ["Mail"] },
+  { id: "chat", label: "Chat", href: "/chat", icon: MessageSquareIcon, priority: "P0", nav: "core", built: true, shortcut: "c", kind: "chat", sourceFolders: ["Google Chat"] },
+  { id: "calendar", label: "Calendar", href: "/calendar", icon: CalendarIcon, priority: "P0", nav: "core", built: true, shortcut: "e", kind: "cal", sourceFolders: ["Calendar"] },
+  { id: "drive", label: "Drive", href: "/drive", icon: HardDriveIcon, priority: "P0", nav: "core", built: true, shortcut: "d", kind: "drive", sourceFolders: ["Drive"] },
+  { id: "photos", label: "Photos", href: "/photos", icon: ImageIcon, priority: "P2", nav: "core", built: true, shortcut: "p", kind: "photos", sourceFolders: ["Google Photos"] },
+  { id: "contacts", label: "Contacts", href: "/contacts", icon: ContactIcon, priority: "P2", nav: "more", built: true, kind: "neutral", sourceFolders: ["Contacts"] },
+  { id: "keep", label: "Keep", href: "/keep", icon: StickyNoteIcon, priority: "P2", nav: "more", built: true, kind: "keep", sourceFolders: ["Keep"] },
+  { id: "tasks", label: "Tasks", href: "/tasks", icon: ListChecksIcon, priority: "P2", nav: "more", built: true, kind: "neutral", sourceFolders: ["Tasks"] },
+  { id: "groups", label: "Groups", href: "/groups", icon: UsersIcon, priority: "P2", nav: "more", built: true, kind: "chat", sourceFolders: ["Groups"] },
+  { id: "youtube", label: "YouTube", href: "/youtube", icon: SquarePlayIcon, priority: "P2", nav: "more", built: true, kind: "keep", sourceFolders: ["YouTube and YouTube Music"] },
+  { id: "browse", label: "Other data", href: "/browse", icon: LayoutGridIcon, priority: "P2", nav: "more", built: true, kind: "neutral", sourceFolders: [] },
 ] as const
 
-export const HOME_NAV = { label: "Home", href: "/", icon: FolderIcon } as const
+export const HOME_NAV = { label: "Home", href: "/", icon: HouseIcon, shortcut: "g" } as const
+export const TIMELINE_NAV = { label: "Timeline", href: "/timeline", icon: HistoryIcon, shortcut: "t" } as const
+
+export const SHORTCUTS = [
+  { key: "⌘K", label: "Search everything" },
+  { key: "G", label: "Overview" },
+  { key: "T", label: "Timeline" },
+  { key: "M", label: "Mail" },
+  { key: "C", label: "Chat" },
+  { key: "E", label: "Calendar" },
+  { key: "D", label: "Drive" },
+  { key: "[", label: "Collapse sidebar" },
+] as const
+
+export const SHELL = {
+  railStorageKey: "takeout-rail-collapsed",
+  recentsStorageKey: "takeout-recents",
+  maxRecents: 6,
+  searchDebounceMs: 200,
+  searchMinLength: 2,
+} as const
+
+export const SEARCH_MODULE_LABELS: Record<string, string> = {
+  mail: "mail",
+  chat: "chat",
+  calendar: "calendar",
+  drive: "drive",
+  contacts: "contacts",
+  keep: "keep",
+  tasks: "tasks",
+}
 
 export const PAGINATION = {
   defaultPageSize: 50,

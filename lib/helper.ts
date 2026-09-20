@@ -265,3 +265,23 @@ export function htmlToText(input: string): string {
     .replace(/\n{3,}/g, "\n\n")
     .trim()
 }
+
+/** Compact size for tight UI (sidebar): 4.6G, 62M, 360K, 14K. */
+export function formatBytesCompact(bytes: number | null | undefined): string {
+  if (bytes === null || bytes === undefined || Number.isNaN(bytes)) return ""
+  const units = ["B", "K", "M", "G", "T"]
+  const exponent = Math.min(Math.floor(Math.log(Math.max(bytes, 1)) / Math.log(1000)), units.length - 1)
+  const value = bytes / 1000 ** exponent
+  return `${exponent >= 3 || (value < 10 && exponent > 0) ? value.toFixed(1) : Math.round(value)}${units[exponent]}`
+}
+
+/** Very short relative time for tight lists: 2m, 18m, 1h, 3d, 4mo, 2y. */
+export function formatShortAgo(value: DateInput, now: Date = new Date()): string {
+  const date = toDate(value)
+  if (!date) return ""
+  const seconds = Math.max(0, Math.round((now.getTime() - date.getTime()) / 1000))
+  if (seconds < 60) return "now"
+  const steps: [number, string][] = [[31536000, "y"], [2592000, "mo"], [86400, "d"], [3600, "h"], [60, "m"]]
+  for (const [size, unit] of steps) if (seconds >= size) return `${Math.floor(seconds / size)}${unit}`
+  return "now"
+}

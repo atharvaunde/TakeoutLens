@@ -1,26 +1,24 @@
-import { LockIcon } from "lucide-react"
+import { AppShell } from "@/components/layout/app-shell"
+import { getOverview } from "@/server/services/modules"
 
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { Button } from "@/components/ui/button"
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { logoutAction } from "@/server/actions/auth"
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const { modules, indexerRunning, lastRun } = await getOverview()
+  const sizes = Object.fromEntries(modules.map((m) => [m.module.id, m.totalBytes]))
+  const present = modules.filter((m) => m.state !== "missing")
+  const done = present.filter((m) => m.state === "ready").length
+  const indexing = indexerRunning || present.some((m) => m.state === "indexing")
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-12 items-center justify-between gap-2 border-b px-4">
-          <SidebarTrigger />
-          <form action={logoutAction}>
-            <Button type="submit" variant="ghost" size="sm">
-              <LockIcon data-icon="inline-start" />
-              Lock
-            </Button>
-          </form>
-        </header>
-        <main className="flex flex-1 flex-col gap-6 p-6">{children}</main>
-      </SidebarInset>
-    </SidebarProvider>
+    <AppShell
+      sizes={sizes}
+      index={{
+        indexing,
+        percent: present.length ? Math.round((done / present.length) * 100) : 100,
+        fileCount: modules.reduce((sum, m) => sum + m.fileCount, 0),
+        lastFinishedAt: lastRun?.finishedAt ?? null,
+      }}
+    >
+      {children}
+    </AppShell>
   )
 }
