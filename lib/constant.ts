@@ -371,3 +371,18 @@ export const GROUP_TABS = [
   { value: "discussions", label: "Discussions" },
   { value: "members", label: "Members" },
 ] as const
+
+export const TIMELINE = {
+  sources: [
+    { value: "all", label: "All" },
+    { value: "mail", label: "Mail" },
+    { value: "chat", label: "Chat" },
+    { value: "calendar", label: "Calendar" },
+    { value: "drive", label: "Drive" },
+    { value: "photos", label: "Photos" },
+  ] as const,
+  pageSize: 60,
+  /** Rows fetched per source before merging (chat is de-duplicated per conversation and day). */
+  perSource: 80,
+} as const
+export type TimelineSource = (typeof TIMELINE.sources)[number]["value"]

@@ -195,3 +195,12 @@ export interface LockInfo {
   indexedAt: number | null
   folderFound: boolean
 }
+
+export interface TimelineItem {
+  id: string
+  ts: number
+  moduleId: string
+  title: string
+  sub: string
+  href: string
+}
