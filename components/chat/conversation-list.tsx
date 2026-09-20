@@ -1,9 +1,5 @@
 import Link from "next/link"
-import { UsersIcon } from "lucide-react"
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { formatDate, getInitials } from "@/lib/helper"
 import type { ChatConversationItem } from "@/lib/types"
 import { cn } from "@/lib/utils"
@@ -15,36 +11,34 @@ interface ConversationListProps {
   hrefFor: (id: number) => string
 }
 
+/** Conversation rows: round avatar for direct messages, rounded square for spaces. */
 export function ConversationList({ conversations, activeId, hrefFor }: ConversationListProps) {
   return (
-    <ScrollArea className="min-h-0 flex-1">
-      <div className="flex flex-col gap-0.5 p-1">
-        {conversations.map((conversation) => (
-          <Link
-            key={conversation.id}
-            href={hrefFor(conversation.id)}
+    <div className="min-h-0 flex-1 overflow-y-auto p-[5px]">
+      {conversations.map((conversation) => (
+        <Link
+          key={conversation.id}
+          href={hrefFor(conversation.id)}
+          className={cn("flex items-center gap-[9px] rounded-lg px-2 py-[7px] text-ink no-underline hover:bg-hov hover:no-underline", conversation.id === activeId && "bg-sel")}
+        >
+          <div
             className={cn(
-              "flex items-center gap-3 rounded-md p-2 transition-colors hover:bg-muted/60",
-              conversation.id === activeId && "bg-muted"
+              "flex size-[26px] flex-none items-center justify-center bg-sel font-mono text-[9.5px] font-semibold text-mute",
+              conversation.kind === "Space" ? "rounded-md" : "rounded-full"
             )}
           >
-            <Avatar>
-              <AvatarFallback>{conversation.kind === "Space" ? <UsersIcon /> : getInitials(conversation.title)}</AvatarFallback>
-            </Avatar>
-            <div className="flex min-w-0 flex-1 flex-col">
-              <div className="flex items-center justify-between gap-2">
-                <span className="truncate text-sm font-medium">{conversation.title}</span>
-                <span className="shrink-0 text-xs text-muted-foreground">{formatDate(conversation.lastAt)}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="truncate text-xs text-muted-foreground">{conversation.preview || "No text"}</span>
-                {conversation.kind === "Space" ? <Badge variant="outline">Space</Badge> : null}
-              </div>
+            {getInitials(conversation.title)}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-baseline gap-[7px]">
+              <span className="min-w-0 flex-1 truncate text-[12.5px] font-semibold">{conversation.title}</span>
+              <span className="flex-none font-mono text-[9.5px] text-faint">{formatDate(conversation.lastAt, { year: "numeric", month: undefined, day: undefined, timeZone: "UTC" })}</span>
             </div>
-          </Link>
-        ))}
-        {conversations.length === 0 ? <p className="p-4 text-center text-sm text-muted-foreground">No conversations</p> : null}
-      </div>
-    </ScrollArea>
+            <div className="truncate text-[11.5px] text-faint">{conversation.preview || "No text"}</div>
+          </div>
+        </Link>
+      ))}
+      {conversations.length === 0 ? <p className="p-4 text-center text-[12.5px] text-faint">No conversations</p> : null}
+    </div>
   )
 }

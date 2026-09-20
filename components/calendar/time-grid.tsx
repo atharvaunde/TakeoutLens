@@ -30,12 +30,12 @@ export function TimeGrid({ startMs, dayCount, todayMs, events, colorOf, onOpen }
     if (scroller.current) scroller.current.scrollTop = CALENDAR.initialScrollHour * CALENDAR.hourHeightPx
   }, [])
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border">
-      <div className="grid border-b bg-muted/40" style={{ gridTemplateColumns: `3.5rem repeat(${dayCount}, minmax(0, 1fr))` }}>
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="grid border-b border-line bg-panel" style={{ gridTemplateColumns: `3.5rem repeat(${dayCount}, minmax(0, 1fr))` }}>
         <div />
         {days.map((day) => (
-          <div key={day} className="flex flex-col gap-1 border-l px-2 py-1.5">
-            <span className={cn("text-xs font-medium", dayKey(day) === dayKey(todayMs) && "text-primary")}>
+          <div key={day} className="flex flex-col gap-1 border-l border-line2 px-2 py-1.5">
+            <span className={cn("font-mono text-[9.5px] tracking-[.14em] uppercase", dayKey(day) === dayKey(todayMs) ? "text-acc" : "text-faint")}>
               {formatDate(day, { weekday: "short", day: "numeric", year: undefined, month: undefined, timeZone: "UTC" })}
             </span>
             {events
@@ -50,15 +50,15 @@ export function TimeGrid({ startMs, dayCount, todayMs, events, colorOf, onOpen }
         <div className="grid" style={{ gridTemplateColumns: `3.5rem repeat(${dayCount}, minmax(0, 1fr))`, height: HOURS * CALENDAR.hourHeightPx }}>
           <div className="relative">
             {Array.from({ length: HOURS }, (_, hour) => (
-              <div key={hour} className="absolute right-2 -translate-y-1/2 text-[0.65rem] text-muted-foreground" style={{ top: hour * CALENDAR.hourHeightPx }}>
+              <div key={hour} className="absolute right-2 -translate-y-1/2 font-mono text-[9.5px] text-faint" style={{ top: hour * CALENDAR.hourHeightPx }}>
                 {hour === 0 ? "" : `${String(hour).padStart(2, "0")}:00`}
               </div>
             ))}
           </div>
           {days.map((day) => (
-            <div key={day} className="relative border-l">
+            <div key={day} className="relative border-l border-line2">
               {Array.from({ length: HOURS }, (_, hour) => (
-                <div key={hour} className="absolute inset-x-0 border-t border-border/60" style={{ top: hour * CALENDAR.hourHeightPx }} />
+                <div key={hour} className="absolute inset-x-0 border-t border-line2" style={{ top: hour * CALENDAR.hourHeightPx }} />
               ))}
               {layoutDay(events.filter((e) => eventTouchesDay(e, day)), day).map(({ event, column, columns, topMinutes, heightMinutes }) => (
                 <EventChip
@@ -67,7 +67,7 @@ export function TimeGrid({ startMs, dayCount, todayMs, events, colorOf, onOpen }
                   color={colorOf(event.calId)}
                   onOpen={onOpen}
                   showTime
-                  className="absolute items-start"
+                  className="absolute items-start bg-sel"
                   style={{
                     top: topMinutes * px,
                     height: Math.max(heightMinutes * px, 18),

@@ -123,3 +123,12 @@ export function layoutDay(events: CalendarEventItem[], dayStart: number): Positi
   if (group.length) flush()
   return result
 }
+
+/** Number of week rows a month grid needs (5 or 6). */
+export function monthWeekCount(ms: number): number {
+  const d = new Date(ms)
+  const first = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)
+  const daysInMonth = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate()
+  const offset = (new Date(first).getUTCDay() - CALENDAR.weekStartsOn + 7) % 7
+  return Math.ceil((offset + daysInMonth) / 7)
+}

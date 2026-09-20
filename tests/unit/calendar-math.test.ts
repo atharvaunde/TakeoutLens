@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { addDays, dayKey, layoutDay, monthGridStart, parseDateParam, rangeFor, shiftDate, startOfWeek } from "@/lib/calendar"
+import { addDays, dayKey, layoutDay, monthWeekCount, monthGridStart, parseDateParam, rangeFor, shiftDate, startOfWeek } from "@/lib/calendar"
 import type { CalendarEventItem } from "@/lib/types"
 
 const d = (y: number, m: number, day: number, h = 0, min = 0) => Date.UTC(y, m - 1, day, h, min)
@@ -43,5 +43,11 @@ describe("calendar date math", () => {
     expect(by[1]).toMatchObject({ column: 0, columns: 2, topMinutes: 540, heightMinutes: 60 })
     expect(by[2]).toMatchObject({ column: 1, columns: 2 })
     expect(by[3]).toMatchObject({ column: 0, columns: 1 })
+  })
+
+  it("counts the week rows a month needs", () => {
+    expect(monthWeekCount(d(2025, 5, 10))).toBe(5) // May 2025 starts on Thursday
+    expect(monthWeekCount(d(2023, 1, 10))).toBe(6) // Jan 2023 starts on Sunday
+    expect(monthWeekCount(d(2021, 2, 10))).toBe(4) // Feb 2021 fits exactly in 4 weeks
   })
 })

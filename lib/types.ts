@@ -211,3 +211,13 @@ export interface TimelineItem {
   sub: string
   href: string
 }
+
+export interface ChatConversationDetail {
+  id: number
+  title: string
+  kind: "DM" | "Space"
+  messageCount: number
+  memberCount: number
+  firstAt: number | null
+  lastAt: number | null
+}

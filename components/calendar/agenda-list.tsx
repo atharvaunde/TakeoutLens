@@ -1,6 +1,5 @@
 "use client"
 
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty"
 import { dayKey, startOfDay } from "@/lib/calendar"
 import { formatDay, formatTime } from "@/lib/helper"
 import type { CalendarEventItem } from "@/lib/types"
@@ -17,12 +16,12 @@ interface AgendaListProps {
 export function AgendaList({ events, colorOf, nameOf, onOpen, emptyText }: AgendaListProps) {
   if (events.length === 0) {
     return (
-      <Empty className="flex-1">
-        <EmptyHeader>
-          <EmptyTitle>{emptyText}</EmptyTitle>
-          <EmptyDescription>Try another date range or turn on more calendars.</EmptyDescription>
-        </EmptyHeader>
-      </Empty>
+      <div className="flex flex-1 items-center justify-center px-10 text-center">
+        <div>
+          <div className="text-base font-semibold tracking-[-.015em]">{emptyText}</div>
+          <div className="mt-1.5 text-[13px] text-mute">Try another date range or turn on more calendars.</div>
+        </div>
+      </div>
     )
   }
   const groups = new Map<string, CalendarEventItem[]>()
@@ -31,18 +30,18 @@ export function AgendaList({ events, colorOf, nameOf, onOpen, emptyText }: Agend
     groups.set(key, [...(groups.get(key) ?? []), event])
   }
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto rounded-lg border p-4">
+    <div className="min-h-0 flex-1 overflow-y-auto px-[18px] py-3.5">
       {[...groups].map(([key, list]) => (
-        <section key={key} className="flex flex-col gap-1">
-          <h3 className="text-sm font-semibold">{formatDay(Date.parse(`${key}T00:00:00Z`))}</h3>
+        <section key={key} className="mb-[18px]">
+          <div className="border-b border-line2 pb-1.5 font-mono text-[10px] tracking-[.1em] text-faint uppercase">{formatDay(Date.parse(`${key}T00:00:00Z`))}</div>
           {list.map((event) => (
-            <button key={event.key} type="button" onClick={() => onOpen(event)} className="flex items-center gap-3 rounded-md p-2 text-left hover:bg-muted/60">
-              <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: colorOf(event.calId) }} />
-              <span className="w-28 shrink-0 text-xs text-muted-foreground">
-                {event.allDay ? "All day" : `${formatTime(event.startWall, { timeZone: "UTC" })} – ${formatTime(event.endWall, { timeZone: "UTC" })}`}
+            <button key={event.key} type="button" onClick={() => onOpen(event)} className="flex w-full cursor-pointer items-center gap-3 rounded-[7px] px-1.5 py-[7px] text-left hover:bg-hov">
+              <span className="size-[7px] flex-none rounded-full" style={{ backgroundColor: colorOf(event.calId) }} />
+              <span className="w-28 flex-none font-mono text-[10.5px] text-faint">
+                {event.allDay ? "All day" : `${formatTime(event.startWall, { hour12: false, timeZone: "UTC" })}–${formatTime(event.endWall, { hour12: false, timeZone: "UTC" })}`}
               </span>
-              <span className="min-w-0 flex-1 truncate text-sm">{event.title || "(no title)"}</span>
-              <span className="shrink-0 text-xs text-muted-foreground">{nameOf(event.calId)}</span>
+              <span className="min-w-0 flex-1 truncate text-[12.5px]">{event.title || "(no title)"}</span>
+              <span className="flex-none text-[11.5px] text-faint">{nameOf(event.calId)}</span>
             </button>
           ))}
         </section>

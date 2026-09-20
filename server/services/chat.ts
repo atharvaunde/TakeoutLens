@@ -1,6 +1,6 @@
 import { CHAT, type ChatKind } from "@/lib/constant"
 import { getFileKind, toFtsQuery } from "@/lib/helper"
-import type { ChatConversationItem, ChatMessageItem, ChatMessagePage, ChatSearchHit } from "@/lib/types"
+import type { ChatConversationDetail, ChatConversationItem, ChatMessageItem, ChatMessagePage, ChatSearchHit } from "@/lib/types"
 import { requireSession } from "@/server/auth/session"
 import { getDb } from "@/server/db"
 import { getOwnerEmail } from "@/server/owner"
@@ -44,12 +44,12 @@ export async function listConversations(kind: ChatKind, search: string): Promise
   }))
 }
 
-export async function getConversation(id: number): Promise<{ id: number; title: string; kind: "DM" | "Space"; messageCount: number; memberCount: number } | null> {
+export async function getConversation(id: number): Promise<ChatConversationDetail | null> {
   await requireSession()
-  const r = getDb().prepare("SELECT id, title, kind, message_count, member_count FROM chat_conversations WHERE id = ?").get(id) as
-    | { id: number; title: string; kind: "DM" | "Space"; message_count: number; member_count: number }
+  const r = getDb().prepare("SELECT id, title, kind, message_count, member_count, first_at, last_at FROM chat_conversations WHERE id = ?").get(id) as
+    | { id: number; title: string; kind: "DM" | "Space"; message_count: number; member_count: number; first_at: number | null; last_at: number | null }
     | undefined
-  return r ? { id: r.id, title: r.title, kind: r.kind, messageCount: r.message_count, memberCount: r.member_count } : null
+  return r ? { id: r.id, title: r.title, kind: r.kind, messageCount: r.message_count, memberCount: r.member_count, firstAt: r.first_at, lastAt: r.last_at } : null
 }
 
 interface MsgRow {

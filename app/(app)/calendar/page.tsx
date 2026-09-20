@@ -1,6 +1,7 @@
 import { CalendarShell } from "@/components/calendar/calendar-shell"
+import { Crumb } from "@/components/layout/crumb"
 import { CALENDAR, type CalendarView } from "@/lib/constant"
-import { parseDateParam, rangeFor } from "@/lib/calendar"
+import { parseDateParam, rangeFor, titleFor } from "@/lib/calendar"
 import { getDefaultCalendarDate, getEventsInRange, getTodayWall, listCalendars, searchEvents } from "@/server/services/calendar"
 
 type Query = Record<string, string | string[] | undefined>
@@ -22,6 +23,8 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
   ])
 
   return (
+    <>
+    <Crumb value={`Calendar / ${titleFor(view, dateMs)}`} />
     <CalendarShell
       view={view}
       dateMs={dateMs}
@@ -31,5 +34,6 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
       truncated={range.truncated}
       searchQuery={searchQuery}
     />
+    </>
   )
 }

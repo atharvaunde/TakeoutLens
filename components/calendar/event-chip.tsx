@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 
 interface EventChipProps {
   event: CalendarEventItem
+  /** Calendar colour (a CSS variable reference) shown as the dot. */
   color: string
   onOpen: (event: CalendarEventItem) => void
   showTime?: boolean
@@ -13,7 +14,7 @@ interface EventChipProps {
   style?: React.CSSProperties
 }
 
-/** Compact event pill tinted with its calendar's colour (used in month cells, all-day rows and time grids). */
+/** Thin event pill: colour dot, optional 24h start time, title. */
 export function EventChip({ event, color, onOpen, showTime = false, className, style }: EventChipProps) {
   return (
     <button
@@ -23,11 +24,14 @@ export function EventChip({ event, color, onOpen, showTime = false, className, s
         onOpen(event)
       }}
       title={event.title}
-      className={cn("flex min-w-0 items-center gap-1 overflow-hidden rounded-sm border-l-2 px-1.5 py-0.5 text-left text-xs hover:brightness-95", className)}
-      style={{ borderLeftColor: color, backgroundColor: `color-mix(in oklch, ${color} 18%, transparent)`, ...style }}
+      className={cn("flex min-w-0 cursor-pointer items-center gap-1 overflow-hidden rounded-[3px] bg-sel px-1 py-px text-left hover:brightness-95", className)}
+      style={style}
     >
-      {showTime && !event.allDay ? <span className="shrink-0 text-muted-foreground">{formatTime(event.startWall, { timeZone: "UTC" })}</span> : null}
-      <span className="truncate">{event.title || "(no title)"}</span>
+      <span className="size-1 flex-none rounded-full" style={{ backgroundColor: color }} />
+      <span className="truncate text-[10.5px] text-ink2">
+        {showTime && !event.allDay ? `${formatTime(event.startWall, { hour12: false, timeZone: "UTC" })} ` : ""}
+        {event.title || "(no title)"}
+      </span>
     </button>
   )
 }

@@ -2,12 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
 import { DatePicker } from "@/components/common/date-picker"
+import { OptionGroup } from "@/components/common/option-group"
 import { SearchInput } from "@/components/common/search-input"
-import { Button } from "@/components/ui/button"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { CALENDAR, type CalendarView } from "@/lib/constant"
 import { addDays, dayKey, shiftDate, startOfWeek, titleFor } from "@/lib/calendar"
 import type { CalendarEventItem, CalendarInfo } from "@/lib/types"
@@ -18,8 +16,9 @@ import { EventDialog } from "./event-dialog"
 import { MonthGrid } from "./month-grid"
 import { TimeGrid } from "./time-grid"
 
-const VIEW_LABELS: Record<CalendarView, string> = { month: "Month", week: "Week", day: "Day", agenda: "Agenda" }
+const VIEW_OPTIONS = CALENDAR.views.map((v) => ({ value: v, label: v.charAt(0).toUpperCase() + v.slice(1) }))
 const WEEK_DAYS = 7
+const navButton = "cursor-pointer rounded-[4px] border border-line px-2 py-[3px] font-mono text-[11px] hover:bg-hov"
 
 interface CalendarShellProps {
   view: CalendarView
@@ -59,39 +58,37 @@ export function CalendarShell({ view, dateMs, todayMs, events, calendars, trunca
   const goDate = (ms: number, nextView?: CalendarView) => go({ date: dayKey(ms), view: nextView ?? view, q: null })
 
   return (
-    <div className="grid h-[calc(100svh-9rem)] min-h-0 grid-cols-[15rem_minmax(0,1fr)] gap-4">
+    <div className="relative grid h-full grid-cols-[212px_1fr]">
       <CalendarSidebar calendars={calendars} />
-      <div className="flex min-h-0 flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => goDate(todayMs)}>
-            Today
-          </Button>
-          <Button variant="outline" size="icon-sm" aria-label="Previous" onClick={() => goDate(shiftDate(view, dateMs, -1))}>
-            <ChevronLeftIcon />
-          </Button>
-          <Button variant="outline" size="icon-sm" aria-label="Next" onClick={() => goDate(shiftDate(view, dateMs, 1))}>
-            <ChevronRightIcon />
-          </Button>
-          <h1 className="text-lg font-semibold">{searchQuery ? `Results for “${searchQuery}”` : titleFor(view, dateMs)}</h1>
-          <div className="ml-auto flex flex-wrap items-center gap-2">
-            <SearchInput className="w-56" placeholder="Search events…" />
-            <DatePicker value={dateMs} onChange={(ms) => goDate(ms)} />
-            <ToggleGroup type="single" variant="outline" size="sm" value={view} onValueChange={(next) => next && goDate(dateMs, next as CalendarView)}>
-              {CALENDAR.views.map((v) => (
-                <ToggleGroupItem key={v} value={v}>
-                  {VIEW_LABELS[v]}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
+      <div className="flex min-h-0 min-w-0 flex-col">
+        <div className="flex min-h-[42px] flex-none flex-wrap items-center gap-x-2.5 gap-y-2 border-b border-line px-3.5 py-[7px]">
+          <div className="flex flex-none gap-[3px]">
+            <button type="button" className={navButton} onClick={() => goDate(todayMs)}>
+              Today
+            </button>
+            <button type="button" className={navButton} aria-label="Previous" onClick={() => goDate(shiftDate(view, dateMs, -1))}>
+              ‹
+            </button>
+            <button type="button" className={navButton} aria-label="Next" onClick={() => goDate(shiftDate(view, dateMs, 1))}>
+              ›
+            </button>
           </div>
+          <DatePicker value={dateMs} onChange={(ms) => goDate(ms)}>
+            <button type="button" title="Jump to a date" className="cursor-pointer text-[15px] font-semibold tracking-[-.02em] hover:text-acc">
+              {searchQuery ? `Results for “${searchQuery}”` : titleFor(view, dateMs)}
+            </button>
+          </DatePicker>
+          <div className="flex-1" />
+          <SearchInput className="h-[26px] w-[190px] bg-surf text-xs" placeholder="Search events…" />
+          <OptionGroup options={VIEW_OPTIONS} value={view} variant="segment" onChange={(next) => goDate(dateMs, next)} />
         </div>
 
-        {truncated ? <p className="text-xs text-muted-foreground">Showing the first {CALENDAR.maxEventsPerRange} events in this range.</p> : null}
+        {truncated ? <p className="px-3.5 pt-2 font-mono text-[10px] text-faint">Showing the first {CALENDAR.maxEventsPerRange} events in this range.</p> : null}
 
         {searchQuery || view === "agenda" ? (
           <AgendaList events={visible} colorOf={colorOf} nameOf={nameOf} onOpen={setOpened} emptyText={searchQuery ? "No events match" : "No events in this period"} />
         ) : view === "month" ? (
-          <MonthGrid dateMs={dateMs} todayMs={todayMs} events={visible} colorOf={colorOf} onOpen={setOpened} onDayClick={(day) => goDate(day, "day")} />
+          <MonthGrid dateMs={dateMs} events={visible} colorOf={colorOf} onOpen={setOpened} onDayClick={(day) => goDate(day, "day")} />
         ) : (
           <TimeGrid
             key={`${view}-${dayKey(dateMs)}`}
