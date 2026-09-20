@@ -2,7 +2,7 @@ import Link from "next/link"
 
 import { Crumb } from "@/components/layout/crumb"
 import { RecentsCard } from "@/components/home/recents-card"
-import { MODULES, SHORTCUTS, STORAGE_OTHER_CLASS, STORAGE_SEGMENT_CLASSES, type ModuleKind } from "@/lib/constant"
+import { GOOGLE_LOGOS, MODULES, SHORTCUTS, STORAGE_OTHER_CLASS, STORAGE_SEGMENT_CLASSES, type ModuleKind } from "@/lib/constant"
 import { formatBytes, formatBytesCompact, formatNumber } from "@/lib/helper"
 import { getHomeData, getOverview } from "@/server/services/modules"
 
@@ -71,7 +71,12 @@ export default async function HomePage() {
               <div className={`flex flex-col gap-2.5 rounded-xl border border-line bg-surf px-3 py-[11px] ${missing ? "opacity-60" : "hover:border-acc"}`}>
                 <div className="flex items-center justify-between">
                   <span className="flex size-[30px] items-center justify-center rounded-[9px] border border-line bg-panel">
-                    <module.icon className={`size-4 ${KIND_ICON_COLOR[module.kind]}`} />
+                    {GOOGLE_LOGOS[module.id] ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- small local static icon
+                      <img src={GOOGLE_LOGOS[module.id]} alt="" className="size-[18px] object-contain" />
+                    ) : (
+                      <module.icon className={`size-4 ${KIND_ICON_COLOR[module.kind]}`} />
+                    )}
                   </span>
                   <span className="font-mono text-sm font-medium text-ink2">{formatBytesCompact(status?.totalBytes ?? 0)}</span>
                 </div>

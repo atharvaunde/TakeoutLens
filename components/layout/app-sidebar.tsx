@@ -8,7 +8,7 @@ import { useTransition } from "react"
 import { toast } from "sonner"
 
 import { useMounted } from "@/hooks/use-mounted"
-import { HOME_NAV, MODULES, type ModuleDefinition } from "@/lib/constant"
+import { GOOGLE_LOGOS, HOME_NAV, MODULES, type ModuleDefinition } from "@/lib/constant"
 import { formatBytesCompact, formatNumber, formatRelative } from "@/lib/helper"
 import type { IndexStatus } from "@/lib/types"
 import { cn } from "@/lib/utils"
@@ -25,6 +25,8 @@ interface Item {
   label: string
   href: string
   icon: React.ComponentType<{ className?: string }>
+  /** Official product icon (replaces the line icon when present). */
+  logo?: string
   size?: string
 }
 
@@ -40,7 +42,12 @@ function NavRow({ item, active, mini }: { item: Item; active: boolean; mini: boo
       )}
     >
       <span className="flex size-[18px] flex-none items-center justify-center">
-        <item.icon className={cn("size-[17px]", active ? "text-acc" : "text-mute")} />
+        {item.logo ? (
+          // eslint-disable-next-line @next/next/no-img-element -- small local static icon
+          <img src={item.logo} alt="" className={cn("size-[18px] object-contain", !active && "opacity-90")} />
+        ) : (
+          <item.icon className={cn("size-[17px]", active ? "text-acc" : "text-mute")} />
+        )}
       </span>
       {mini ? null : (
         <>
@@ -62,7 +69,7 @@ export function AppSidebar({ sizes, index }: AppSidebarProps) {
 
   const dark = mounted && resolvedTheme === "dark"
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href))
-  const toItem = (m: ModuleDefinition): Item => ({ key: m.id, label: m.label, href: m.href, icon: m.icon, size: formatBytesCompact(sizes[m.id]) })
+  const toItem = (m: ModuleDefinition): Item => ({ key: m.id, label: m.label, href: m.href, icon: m.icon, logo: GOOGLE_LOGOS[m.id], size: formatBytesCompact(sizes[m.id]) })
   const top: Item[] = [
     { key: "home", label: HOME_NAV.label, href: HOME_NAV.href, icon: HOME_NAV.icon },
   ]

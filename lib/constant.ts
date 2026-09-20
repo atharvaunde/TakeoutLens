@@ -442,3 +442,17 @@ export const MIME_BY_EXT: Readonly<Record<string, string>> = {
   ".webm": "video/webm",
 }
 export const FOLDER_MIME = "inode/directory"
+
+/** Official product icons for the nav drawer, by module id (files in public/google). Modules without one keep their line icon. */
+export const GOOGLE_LOGOS: Readonly<Record<string, string>> = {
+  mail: "/google/mail.png",
+  chat: "/google/chat.png",
+  calendar: "/google/calendar.png",
+  drive: "/google/drive.png",
+  photos: "/google/photos.png",
+  contacts: "/google/contacts.png",
+  keep: "/google/keep.png",
+  tasks: "/google/tasks.png",
+  groups: "/google/groups.png",
+  youtube: "/google/youtube.png",
+}
