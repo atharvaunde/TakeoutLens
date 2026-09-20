@@ -1,15 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 import { UrlPagination } from "@/components/data-table/url-pagination"
 import { formatDate, pluralize } from "@/lib/helper"
-import { PhotoViewer, type PhotoTarget } from "./photo-viewer"
+import { PhotoViewer } from "./photo-viewer"
 import type { PhotoItem } from "@/lib/types"
 
 /** Photos grouped by month (taken date): a heading with count, then a grid of square tiles. Click opens the full image. */
 export function PhotoGallery({ photos, total }: { photos: PhotoItem[]; total: number }) {
-  const [preview, setPreview] = useState<PhotoTarget | null>(null)
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const targets = useMemo(() => photos.map((p) => ({ fileId: p.id, name: p.title })), [photos])
 
   if (photos.length === 0) return <div className="py-16 text-center text-[13px] text-faint">No photos here.</div>
 
@@ -33,7 +34,7 @@ export function PhotoGallery({ photos, total }: { photos: PhotoItem[]; total: nu
                 key={photo.id}
                 type="button"
                 title={`${photo.title} · ${formatDate(photo.takenAt, { timeZone: "UTC" })}`}
-                onClick={() => setPreview({ fileId: photo.id, name: photo.title })}
+                onClick={() => setOpenIndex(photos.indexOf(photo))}
                 className="bg-stripes group relative flex aspect-square cursor-pointer items-end overflow-hidden rounded-[4px] p-1.5 hover:outline-2 hover:-outline-offset-2 hover:outline-acc"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element -- cached local thumbnail */}
@@ -45,7 +46,7 @@ export function PhotoGallery({ photos, total }: { photos: PhotoItem[]; total: nu
         </section>
       ))}
       <UrlPagination rowCount={total} compact />
-      <PhotoViewer target={preview} onClose={() => setPreview(null)} />
+      <PhotoViewer photos={targets} index={openIndex} onIndexChange={setOpenIndex} onClose={() => setOpenIndex(null)} />
     </div>
   )
 }

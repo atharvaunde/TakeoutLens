@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -31,11 +32,35 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
   </div>
 )
 
-/** Full-size photo with an Info panel: dates, dimensions, camera/EXIF, location and Google Photos details. */
-export function PhotoViewer({ target, onClose }: { target: PhotoTarget | null; onClose: () => void }) {
+interface PhotoViewerProps {
+  /** The photos on the current page, in display order (used for previous/next). */
+  photos: PhotoTarget[]
+  /** Index into `photos` of the open photo, or null when closed. */
+  index: number | null
+  onIndexChange: (index: number) => void
+  onClose: () => void
+}
+
+const ARROW = "absolute top-1/2 flex size-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-line bg-surf/90 text-ink shadow-[0_2px_8px_var(--shadow)] hover:bg-hov disabled:cursor-default disabled:opacity-30"
+
+/** Full-size photo with previous/next arrows and an Info panel: dates, dimensions, camera/EXIF, location, Google Photos details. */
+export function PhotoViewer({ photos, index, onIndexChange, onClose }: PhotoViewerProps) {
+  const target = index === null ? null : (photos[index] ?? null)
+  const hasPrev = index !== null && index > 0
+  const hasNext = index !== null && index < photos.length - 1
   const [info, setInfo] = useState<PhotoInfo | null>(null)
   const [loadedId, setLoadedId] = useState<number | null>(null)
   const [showInfo, setShowInfo] = useState(true)
+
+  useEffect(() => {
+    if (index === null) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft" && index > 0) onIndexChange(index - 1)
+      else if (e.key === "ArrowRight" && index < photos.length - 1) onIndexChange(index + 1)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [index, photos.length, onIndexChange])
 
   useEffect(() => {
     if (!target) return
@@ -61,6 +86,9 @@ export function PhotoViewer({ target, onClose }: { target: PhotoTarget | null; o
           <>
             <div className="flex items-center gap-3 pr-8">
               <DialogTitle className="min-w-0 flex-1 truncate">{target.name}</DialogTitle>
+              <span className="font-mono text-[11px] text-faint">
+                {(index ?? 0) + 1} / {photos.length}
+              </span>
               <button
                 type="button"
                 onClick={() => setShowInfo((v) => !v)}
@@ -72,8 +100,16 @@ export function PhotoViewer({ target, onClose }: { target: PhotoTarget | null; o
             </div>
             <DialogDescription className="sr-only">Photo preview and details for {target.name}</DialogDescription>
             <div className={cn("grid min-h-0 gap-4", showInfo ? "grid-cols-[minmax(0,1fr)_300px]" : "grid-cols-1")}>
-              {/* eslint-disable-next-line @next/next/no-img-element -- streamed from the local media route, not an optimizable remote image */}
-              <img src={`/media/${target.fileId}`} alt={target.name} className="max-h-[80vh] w-full rounded-md bg-panel object-contain" />
+              <div className="relative">
+                {/* eslint-disable-next-line @next/next/no-img-element -- streamed from the local media route, not an optimizable remote image */}
+                <img key={target.fileId} src={`/media/${target.fileId}`} alt={target.name} className="max-h-[80vh] w-full rounded-md bg-panel object-contain" />
+                <button type="button" aria-label="Previous photo" disabled={!hasPrev} onClick={() => onIndexChange((index ?? 0) - 1)} className={`${ARROW} left-3`}>
+                  <ChevronLeftIcon className="size-5" />
+                </button>
+                <button type="button" aria-label="Next photo" disabled={!hasNext} onClick={() => onIndexChange((index ?? 0) + 1)} className={`${ARROW} right-3`}>
+                  <ChevronRightIcon className="size-5" />
+                </button>
+              </div>
               {showInfo ? (
                 <div className="max-h-[80vh] overflow-y-auto pr-1">
                   {ready ? (
