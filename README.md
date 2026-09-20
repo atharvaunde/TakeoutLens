@@ -54,6 +54,10 @@ Everything in the data folder is derived from your export, including message tex
 - **Forgot the password:** delete `auth.json` in the data folder and reload.
 - **Full reset:** `docker compose down -v` (Docker) or delete the data folder (native).
 
+## Publishing the image (maintainers)
+
+`.github/workflows/docker-publish.yml` builds `linux/amd64` and `linux/arm64` on native runners and pushes one multi-arch image to Docker Hub as `<user>/takeout-viewer` when a `v*` tag is pushed (or manually). Set the repository variable `DOCKERHUB_USERNAME` and the secret `DOCKERHUB_TOKEN` first.
+
 ## Development
 
 ```bash
