@@ -26,7 +26,7 @@ import {
 // Single source of truth for static values (arrays, numbers, JSON).
 // Components import from here; do not inline magic values in components.
 
-export const APP_NAME = "Takeout Viewer"
+export const APP_NAME = "TakeoutLens"
 
 export const DESKTOP_ONLY_MESSAGE = {
   title: "Desktop only",

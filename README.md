@@ -1,4 +1,4 @@
-# Takeout Viewer
+# TakeoutLens
 
 A self-hosted viewer for a Google Takeout export. Read your mail, browse chats, walk your Drive like a file manager, see your calendar, photos, contacts, Keep notes, tasks, groups and YouTube history, all locally.
 

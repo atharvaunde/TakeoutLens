@@ -8,7 +8,7 @@ import { useTransition } from "react"
 import { toast } from "sonner"
 
 import { useMounted } from "@/hooks/use-mounted"
-import { GOOGLE_LOGOS, HOME_NAV, MODULES, type ModuleDefinition } from "@/lib/constant"
+import { APP_NAME, GOOGLE_LOGOS, HOME_NAV, MODULES, type ModuleDefinition } from "@/lib/constant"
 import { formatBytesCompact, formatNumber, formatRelative } from "@/lib/helper"
 import type { IndexStatus } from "@/lib/types"
 import { cn } from "@/lib/utils"
@@ -98,10 +98,13 @@ export function AppSidebar({ sizes, index }: AppSidebarProps) {
     <div className={cn("flex-none overflow-hidden p-2.5 transition-[width] duration-[180ms] ease-in-out", mini ? "w-[70px]" : "w-[246px]")}>
       <div className={cn("flex h-full flex-col rounded-[14px] border border-line bg-panel shadow-[0_1px_2px_var(--shadow)]", mini ? "w-[50px]" : "w-[226px]")}>
         <div className={cn("flex items-center gap-2 px-2.5 pt-3 pb-[18px]", mini && "justify-center")}>
-          <div className="size-[22px] flex-none rounded-[7px] bg-acc" />
+          {/* eslint-disable-next-line @next/next/no-img-element -- small local static logo */}
+          <img src="/brand/icon.png" alt={APP_NAME} className="size-7 flex-none object-contain" />
           {mini ? null : (
             <>
-              <div className="min-w-0 flex-1 whitespace-nowrap text-[13.5px] font-semibold tracking-[-.01em]">Takeout Viewer</div>
+              <div className="min-w-0 flex-1 whitespace-nowrap text-[15.5px] font-semibold tracking-[-.01em]">
+                Takeout<span className="text-acc">Lens</span>
+              </div>
               {iconButton(dark ? "Light theme" : "Dark theme", () => setTheme(dark ? "light" : "dark"), ThemeIcon, "size-6 rounded-[7px]")}
               {iconButton("Hide navigation  [", toggleRail, RailIcon, "size-6 rounded-[7px]")}
             </>
