@@ -2,7 +2,7 @@ import path from "node:path"
 
 import type { DriveRow } from "@/columns/drive-files.column"
 import type { TableParams } from "@/lib/helper"
-import { getFileKind, toFtsQuery } from "@/lib/helper"
+import { getFileKind, getKindLabel, toFtsQuery } from "@/lib/helper"
 import { requireSession } from "@/server/auth/session"
 import { getDb } from "@/server/db"
 
@@ -11,12 +11,14 @@ export interface TreeSource {
   module: "drive" | "browse"
   /** Path prefix of the tree inside the export ("Drive"), or "" when top-level folders are the roots. */
   root: string
+  /** Shown as the "Folder" of top-level items. */
+  rootLabel: string
   /** Use the Drive filename FTS index; otherwise search by LIKE on the path. */
   fts: boolean
 }
 
-export const DRIVE_SOURCE: TreeSource = { module: "drive", root: "Drive", fts: true }
-export const BROWSE_SOURCE: TreeSource = { module: "browse", root: "", fts: false }
+export const DRIVE_SOURCE: TreeSource = { module: "drive", root: "Drive", rootLabel: "Drive", fts: true }
+export const BROWSE_SOURCE: TreeSource = { module: "browse", root: "", rootLabel: "All products", fts: false }
 
 interface FileRow {
   id: number
@@ -41,7 +43,7 @@ export function normalizeFolder(input: string | undefined): string {
     .join("/")
 }
 
-function toFileRow(row: FileRow, showPath: boolean, root: string): DriveRow {
+function toFileRow(row: FileRow, showPath: boolean, root: string, rootLabel: string): DriveRow {
   const name = path.posix.basename(row.rel_path)
   const dir = path.posix.dirname(row.rel_path)
   const folder = dir === "." ? "" : root && dir.startsWith(`${root}`) ? dir.slice(root.length).replace(/^\//, "") : dir
@@ -52,6 +54,8 @@ function toFileRow(row: FileRow, showPath: boolean, root: string): DriveRow {
     name,
     fileKind: getFileKind(name),
     location: showPath ? folder : "",
+    parent: folder.split("/").pop() || rootLabel,
+    kindLabel: getKindLabel(name, false),
     folderPath: "",
     size: row.size,
     modifiedAt: new Date(row.mtime_ms).toISOString(),
@@ -106,7 +110,7 @@ export async function listTree(source: TreeSource, folderInput: string | undefin
         .prepare("SELECT id, rel_path, size, mtime_ms FROM files WHERE module = ? AND substr(rel_path, 1, ?) = ? AND rel_path LIKE ? ESCAPE '\\' LIMIT 2000")
         .all(source.module, prefix.length, prefix, `%${needle.replace(/[\\%_]/g, "\\$&")}%`) as FileRow[]
     }
-    const rows = sortRows(found.map((r) => toFileRow(r, true, source.root)), params.sort ? params : { ...params, sort: null })
+    const rows = sortRows(found.map((r) => toFileRow(r, true, source.root, source.rootLabel)), params.sort ? params : { ...params, sort: null })
     const start = (params.page - 1) * params.pageSize
     return { rows: rows.slice(start, start + params.pageSize), total: rows.length, breadcrumbs, folder, searching: true }
   }
@@ -121,7 +125,7 @@ export async function listTree(source: TreeSource, folderInput: string | undefin
     const rest = row.rel_path.slice(prefix.length)
     const slash = rest.indexOf("/")
     if (slash === -1) {
-      direct.push(toFileRow(row, false, source.root))
+      direct.push(toFileRow(row, false, source.root, source.rootLabel))
     } else {
       const name = rest.slice(0, slash)
       const entry = folders.get(name) ?? { count: 0, latest: 0 }
@@ -137,6 +141,8 @@ export async function listTree(source: TreeSource, folderInput: string | undefin
     name,
     fileKind: "other",
     location: "",
+    parent: folder.split("/").pop() || source.rootLabel,
+    kindLabel: "DIR",
     folderPath: folder ? `${folder}/${name}` : name,
     size: null,
     modifiedAt: new Date(info.latest).toISOString(),

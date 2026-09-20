@@ -192,3 +192,8 @@
 ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 10px; border: 3px solid transparent; background-clip: padding-box; }
 ::-webkit-scrollbar-track { background: transparent; }
 input::placeholder { color: var(--faint); }
+
+/* Striped placeholder used by file/photo tiles (design). */
+@utility bg-stripes {
+  background: repeating-linear-gradient(135deg, var(--panel) 0 7px, var(--sel) 7px 14px);
+}

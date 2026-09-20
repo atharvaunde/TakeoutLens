@@ -19,5 +19,5 @@ export const indexErrorColumns = helper.columns([
   helper.accessor("module", { header: "Module" }),
   helper.accessor("path", { header: "File", enableSorting: false }),
   helper.accessor("reason", { header: "Reason", enableSorting: false }),
-  helper.accessor("occurredAt", { header: "When", cell: (info) => formatDateTime(info.getValue()) }),
+  helper.accessor("occurredAt", { header: "When", cell: (info) => <span className="font-mono text-[11.5px] text-mute">{formatDateTime(info.getValue())}</span> }),
 ])

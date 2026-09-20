@@ -16,8 +16,6 @@ export function VideosTable({ rows, total }: { rows: VideoRow[]; total: number }
         data={rows}
         rowCount={total}
         rowIdKey="id"
-        searchable
-        searchPlaceholder="Search videos…"
         onRowClick={(row) => row.fileId !== null && setPlaying({ fileId: row.fileId, name: row.title, kind: "video" })}
         emptyTitle="No videos"
       />

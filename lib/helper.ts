@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react"
-import { FILE_ICON_FALLBACK, FILE_ICONS_BY_EXT, DEFAULT_CURRENCY, DEFAULT_LOCALE, INLINE_MIME_TYPES, PAGINATION, TABLE_PARAMS, UNITS } from "@/lib/constant"
+import { FILE_ICON_FALLBACK, FILE_KIND_DEFAULT_FAMILY, FILE_KIND_FAMILY, FILE_KIND_MAX_CHARS, FILE_ICONS_BY_EXT, DEFAULT_CURRENCY, DEFAULT_LOCALE, INLINE_MIME_TYPES, PAGINATION, TABLE_PARAMS, UNITS } from "@/lib/constant"
 
 // Shared formatters and small pure helpers. All Intl / toLocale* usage lives here.
 
@@ -301,4 +301,15 @@ export function decodeMimeWords(input: string): string {
       return new TextDecoder("latin1").decode(bytes)
     }
   })
+}
+
+/** Short kind label for a file chip: "DIR" for folders, else the upper-case extension (max 4 chars). */
+export function getKindLabel(fileName: string, isFolder: boolean): string {
+  if (isFolder) return "DIR"
+  const dot = fileName.lastIndexOf(".")
+  return dot === -1 || dot === fileName.length - 1 ? "FILE" : fileName.slice(dot + 1, dot + 1 + FILE_KIND_MAX_CHARS).toUpperCase()
+}
+
+export function getKindFamily(kindLabel: string) {
+  return FILE_KIND_FAMILY[kindLabel] ?? FILE_KIND_DEFAULT_FAMILY
 }

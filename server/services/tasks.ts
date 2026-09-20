@@ -54,3 +54,9 @@ export async function listTasks(params: TableParams): Promise<{ rows: TaskRow[];
   const start = (params.page - 1) * params.pageSize
   return { rows: rows.slice(start, start + params.pageSize), total: rows.length }
 }
+
+export async function getTaskCounts(): Promise<{ open: number; completed: number }> {
+  await requireSession()
+  const tasks = load().tasks
+  return { open: tasks.filter((t) => t.status !== "completed").length, completed: tasks.filter((t) => t.status === "completed").length }
+}

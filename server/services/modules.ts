@@ -125,3 +125,9 @@ export async function getHomeData(): Promise<HomeData> {
     errors: count("SELECT count(*) FROM index_errors"),
   }
 }
+
+export async function getModuleSummary(id: string): Promise<{ fileCount: number; totalBytes: number }> {
+  const { modules } = await getOverview()
+  const found = modules.find((m) => m.module.id === id)
+  return { fileCount: found?.fileCount ?? 0, totalBytes: found?.totalBytes ?? 0 }
+}

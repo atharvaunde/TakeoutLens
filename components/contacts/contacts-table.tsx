@@ -6,7 +6,6 @@ import { contactColumns, type ContactRow } from "@/columns/contacts.column"
 import { DataTable } from "@/components/data-table/data-table"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
-import { CONTACT_FILTERS } from "@/lib/constant"
 import { getInitials } from "@/lib/helper"
 
 const Detail = ({ label, value }: { label: string; value: string }) =>
@@ -25,9 +24,6 @@ export function ContactsTable({ rows, total }: { rows: ContactRow[]; total: numb
         columns={contactColumns}
         data={rows}
         rowCount={total}
-        searchable
-        searchPlaceholder="Search contacts…"
-        filters={CONTACT_FILTERS}
         rowIdKey="id"
         onRowClick={setSelected}
         emptyTitle="No contacts"

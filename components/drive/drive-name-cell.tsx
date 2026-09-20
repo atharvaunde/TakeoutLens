@@ -1,12 +1,12 @@
 import type { DriveRow } from "@/columns/drive-files.column"
-import { FileTypeIcon } from "@/components/common/file-type-icon"
+import { KindChip } from "./kind-chip"
 
 /** Display only: interaction (select, double-click, context menu) is handled by DriveExplorer. */
 export function DriveNameCell({ row }: { row: DriveRow }) {
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <FileTypeIcon name={row.name} isFolder={row.kind === "folder"} className="size-4 shrink-0 text-muted-foreground" />
-      <span className="truncate font-medium">{row.name}</span>
+      <KindChip label={row.kindLabel} className="w-[26px] flex-none text-[8.5px]" />
+      <span className="truncate text-[12.5px]">{row.name}</span>
     </div>
   )
 }

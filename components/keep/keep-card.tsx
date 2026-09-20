@@ -1,44 +1,56 @@
-import { CheckSquareIcon, PinIcon, SquareIcon } from "lucide-react"
+"use client"
 
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatDate } from "@/lib/helper"
 import type { KeepNote } from "@/lib/types"
 
-export function KeepCard({ note }: { note: KeepNote }) {
+const BOX = "mt-[3px] size-[11px] flex-none rounded-[2px] border border-line"
+
+/** Card body: checklist rows with small boxes, or the note text line by line. */
+export function KeepBody({ note }: { note: KeepNote }) {
   return (
-    <Card className="break-inside-avoid">
-      <CardHeader>
-        <div className="flex items-start justify-between gap-2">
-          <CardTitle className="wrap-break-word">{note.title || (note.items.length ? "List" : "Note")}</CardTitle>
-          {note.pinned ? <PinIcon className="size-4 shrink-0 text-muted-foreground" /> : null}
+    <>
+      {note.items.map((item, index) => (
+        <div key={index} className="flex items-start gap-[7px] py-[1.5px]">
+          <span className={`${BOX} ${item.checked ? "bg-sel" : "bg-transparent"}`} />
+          <span className={`text-[12.5px] leading-normal text-pretty ${item.checked ? "text-faint line-through" : "text-ink2"}`}>{item.text}</span>
         </div>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-3 text-sm">
-        {note.text ? <p className="whitespace-pre-wrap wrap-break-word">{note.text}</p> : null}
-        {note.items.length ? (
-          <ul className="flex flex-col gap-1">
-            {note.items.map((item, index) => (
-              <li key={index} className="flex items-start gap-2">
-                {item.checked ? <CheckSquareIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" /> : <SquareIcon className="mt-0.5 size-4 shrink-0" />}
-                <span className={item.checked ? "text-muted-foreground line-through" : undefined}>{item.text}</span>
-              </li>
-            ))}
-          </ul>
-        ) : null}
+      ))}
+      {note.text
+        ? note.text.split("\n").map((line, index) => (
+            <div key={index} className="py-[1.5px] text-[12.5px] leading-normal text-ink2 text-pretty">
+              {line || " "}
+            </div>
+          ))
+        : null}
+    </>
+  )
+}
+
+interface KeepCardProps {
+  note: KeepNote
+  onOpen: (note: KeepNote) => void
+}
+
+export function KeepCard({ note, onOpen }: KeepCardProps) {
+  return (
+    <div className="mb-2.5 overflow-hidden rounded-xl border border-line bg-surf break-inside-avoid">
+      <div className="flex items-center gap-2 border-b border-line2 px-3 py-2.5">
+        <span className="min-w-0 flex-1 truncate text-[13px] font-semibold">{note.title || (note.items.length ? "List" : "Note")}</span>
+        <span className="font-mono text-[9.5px] text-faint">{formatDate(note.editedAt, { day: "2-digit" })}</span>
+      </div>
+      <div className="max-h-[230px] overflow-hidden px-3 py-2.5">
+        <KeepBody note={note} />
         {note.attachmentIds.map((id) => (
           // eslint-disable-next-line @next/next/no-img-element -- cached local thumbnail
-          <img key={id} src={`/thumb/${id}`} alt="" loading="lazy" className="rounded-md" />
+          <img key={id} src={`/thumb/${id}`} alt="" loading="lazy" className="mt-2 rounded-md" />
         ))}
-        <div className="flex flex-wrap items-center gap-1">
-          {note.labels.map((label) => (
-            <Badge key={label} variant="secondary">
-              {label}
-            </Badge>
-          ))}
-          <span className="ml-auto text-xs text-muted-foreground">{formatDate(note.editedAt)}</span>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+      <div className="flex justify-between border-t border-line2 px-3 py-1.5 font-mono text-[10px] text-faint">
+        <span>{note.items.length ? "checklist" : "note"}</span>
+        <button type="button" onClick={() => onOpen(note)} className="cursor-pointer text-acc">
+          Open
+        </button>
+      </div>
+    </div>
   )
 }

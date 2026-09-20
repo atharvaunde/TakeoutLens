@@ -16,5 +16,5 @@ interface CsvViewerProps {
 
 export function CsvViewer({ headers, rows, total, secretHeaders }: CsvViewerProps) {
   const columns = useMemo(() => buildCsvColumns(headers, secretHeaders), [headers, secretHeaders])
-  return <DataTable columns={columns} data={rows} rowCount={total} rowIdKey="__id" searchable searchPlaceholder="Search this file…" emptyTitle="No rows" />
+  return <DataTable columns={columns} data={rows} rowCount={total} rowIdKey="__id" emptyTitle="No rows" />
 }

@@ -2,11 +2,8 @@
 
 import { Fragment, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon } from "lucide-react"
 import { useTable, type ColumnDef, type RowData, type SortingState, type PaginationState } from "@tanstack/react-table"
 
-import { Button } from "@/components/ui/button"
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { PAGINATION, TABLE_PARAMS, TABLE_TEXT, type TableFilterDefinition } from "@/lib/constant"
 import { cn } from "@/lib/utils"
@@ -121,32 +118,21 @@ export function DataTable<TData extends RowData>({
           end={toolbarEnd}
         />
       ) : null}
-      <div className="rounded-lg border">
+      <div className="overflow-hidden rounded-xl border border-line bg-surf">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((group) => (
-              <TableRow key={group.id}>
+              <TableRow key={group.id} className="border-b border-line bg-panel hover:bg-panel">
                 {group.headers.map((header) => {
                   const canSort = header.column.getCanSort()
                   const sorted = header.column.getIsSorted()
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="h-auto px-3 py-[7px] font-mono text-[9.5px] font-normal tracking-[.14em] text-faint uppercase">
                       {header.isPlaceholder ? null : canSort ? (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="-ml-2"
-                          onClick={header.column.getToggleSortingHandler()}
-                        >
+                        <button type="button" className="inline-flex cursor-pointer items-center gap-1 uppercase hover:text-ink" onClick={header.column.getToggleSortingHandler()}>
                           <table.FlexRender header={header} />
-                          {sorted === "asc" ? (
-                            <ArrowUpIcon data-icon="inline-end" />
-                          ) : sorted === "desc" ? (
-                            <ArrowDownIcon data-icon="inline-end" />
-                          ) : (
-                            <ArrowUpDownIcon data-icon="inline-end" />
-                          )}
-                        </Button>
+                          <span className={sorted ? "text-acc" : "opacity-40"}>{sorted === "asc" ? "↑" : sorted === "desc" ? "↓" : "↕"}</span>
+                        </button>
                       ) : (
                         <table.FlexRender header={header} />
                       )}
@@ -158,14 +144,10 @@ export function DataTable<TData extends RowData>({
           </TableHeader>
           <TableBody>
             {rows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={columns.length}>
-                  <Empty>
-                    <EmptyHeader>
-                      <EmptyTitle>{emptyTitle}</EmptyTitle>
-                      {emptyDescription ? <EmptyDescription>{emptyDescription}</EmptyDescription> : null}
-                    </EmptyHeader>
-                  </Empty>
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={columns.length} className="px-3 py-10 text-center">
+                  <div className="text-[13px] font-medium">{emptyTitle}</div>
+                  {emptyDescription ? <div className="mt-1 text-xs text-mute">{emptyDescription}</div> : null}
                 </TableCell>
               </TableRow>
             ) : (
@@ -176,12 +158,12 @@ export function DataTable<TData extends RowData>({
                   <TableRow
                     key={row.id}
                     data-state={selectedRowId && row.id === selectedRowId ? "selected" : undefined}
-                    className={cn(clickable && "cursor-pointer select-none")}
+                    className={cn("border-b border-line2 hover:bg-hov data-[state=selected]:bg-sel", clickable && "cursor-pointer select-none")}
                     onClick={href ? () => router.push(href) : onRowClick ? () => onRowClick(row.original) : undefined}
                     onDoubleClick={onRowDoubleClick ? () => onRowDoubleClick(row.original) : undefined}
                   >
                     {row.getAllCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} className="px-3 py-1.5 text-[12.5px]">
                         <table.FlexRender cell={cell} />
                       </TableCell>
                     ))}

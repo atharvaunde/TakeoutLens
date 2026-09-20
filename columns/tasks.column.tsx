@@ -1,6 +1,5 @@
 "use client"
 
-import { CheckCircle2Icon, CircleIcon } from "lucide-react"
 import { createColumnHelper } from "@tanstack/react-table"
 
 import type { DataTableFeatures } from "@/components/data-table/features"
@@ -26,18 +25,23 @@ export const taskColumns = helper.columns([
     cell: (info) => {
       const done = info.row.original.status === "completed"
       return (
-        <div className="flex items-start gap-2">
-          {done ? <CheckCircle2Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" /> : <CircleIcon className="mt-0.5 size-4 shrink-0" />}
-          <div className="flex min-w-0 flex-col">
-            <span className={cn("font-medium", done && "text-muted-foreground line-through")}>{info.getValue() || "(untitled)"}</span>
-            {info.row.original.notes ? <span className="line-clamp-2 text-xs text-muted-foreground">{info.row.original.notes}</span> : null}
-          </div>
+        <div className="flex min-w-0 flex-col">
+          <span className={cn("text-[13px]", done ? "text-faint line-through" : "text-ink")}>
+            {done ? "✓  " : "○  "}
+            {info.getValue() || "(untitled)"}
+          </span>
+          {info.row.original.notes ? <span className="line-clamp-1 pl-[1.35rem] text-xs text-faint">{info.row.original.notes}</span> : null}
         </div>
       )
     },
   }),
-  helper.accessor("list", { header: "List", enableSorting: false }),
-  helper.accessor("due", { header: "Due", cell: (info) => formatDate(info.getValue(), { timeZone: "UTC" }) }),
-  helper.accessor("status", { header: "Status", cell: (info) => (info.getValue() === "completed" ? "Completed" : "To do") }),
-  helper.accessor("completed", { header: "Completed", enableSorting: false, cell: (info) => formatDate(info.getValue()) }),
+  helper.accessor("list", { header: "List", enableSorting: false, cell: (info) => <span className="text-xs text-faint">{info.getValue()}</span> }),
+  helper.accessor("due", { header: "Due", cell: (info) => <span className="font-mono text-[11.5px] text-mute">{formatDate(info.getValue(), { timeZone: "UTC" })}</span> }),
+  helper.accessor("status", {
+    header: "Status",
+    cell: (info) => {
+      const done = info.getValue() === "completed"
+      return <span className={cn("font-mono text-[11px]", done ? "text-faint" : "text-acc")}>{done ? "Completed" : "To do"}</span>
+    },
+  }),
 ])

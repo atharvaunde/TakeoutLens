@@ -388,3 +388,15 @@ export const TIMELINE = {
   perSource: 80,
 } as const
 export type TimelineSource = (typeof TIMELINE.sources)[number]["value"]
+
+/** File-kind chip (design): extension label -> colour family (--k-<family>-bg/fg in globals.css). */
+export const FILE_KIND_FAMILY: Readonly<Record<string, ModuleKind>> = {
+  DIR: "neutral",
+  MP4: "photos",
+  MOV: "photos",
+  WEBM: "photos",
+  M4V: "photos",
+  PDF: "mail",
+}
+export const FILE_KIND_DEFAULT_FAMILY: ModuleKind = "drive"
+export const FILE_KIND_MAX_CHARS = 4
