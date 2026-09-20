@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery, splitHighlight, getDayKey, zonedTimeToUtc, utcToWall, htmlToText, decodeMimeWords, stripMeetBoilerplate, getMimeType, formatExposure, formatAperture, formatCoordinates } from "@/lib/helper"
+import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery, splitHighlight, getDayKey, zonedTimeToUtc, utcToWall, htmlToText, decodeMimeWords, stripMeetBoilerplate, getMimeType, formatExposure, formatAperture, formatCoordinates, formatBytesFixed } from "@/lib/helper"
 
 describe("helper", () => {
   it("formats bytes", () => {
@@ -85,5 +85,11 @@ describe("helper", () => {
     expect(formatAperture(1.75)).toBe("f/1.8")
     expect(formatCoordinates(12.5, -77.1)).toBe("12.50000° N, 77.10000° W")
     expect(formatCoordinates(null, null)).toBe("—")
+  })
+  it("formats fixed-width durations and sizes", () => {
+    expect(formatDuration(3724, { fixed: true })).toBe("01:02:04")
+    expect(formatDuration(7, { fixed: true })).toBe("00:00:07")
+    expect(formatBytesFixed(113.3 * 1024 ** 2)).toBe("\u00a0\u00a0113.3 MB")
+    expect(formatBytesFixed(1.05 * 1024 ** 3)).toHaveLength(9)
   })
 })

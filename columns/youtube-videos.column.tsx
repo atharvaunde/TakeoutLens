@@ -3,7 +3,7 @@
 import { createColumnHelper } from "@tanstack/react-table"
 
 import type { DataTableFeatures } from "@/components/data-table/features"
-import { formatBytes, formatDate, formatDuration } from "@/lib/helper"
+import { formatBytesFixed, formatDate, formatDuration } from "@/lib/helper"
 import { cn } from "@/lib/utils"
 
 export interface VideoRow {
@@ -18,7 +18,7 @@ export interface VideoRow {
 }
 
 const helper = createColumnHelper<DataTableFeatures, VideoRow>()
-const mono = "font-mono text-[11.5px] text-mute"
+const mono = "font-mono text-[11.5px] whitespace-pre text-mute"
 
 export const videoColumns = helper.columns([
   helper.accessor("title", {
@@ -30,12 +30,12 @@ export const videoColumns = helper.columns([
       </span>
     ),
   }),
-  helper.accessor("durationMs", { header: "Length", cell: (info) => <span className={mono}>{info.getValue() ? formatDuration(info.getValue()! / 1000) : "—"}</span> }),
+  helper.accessor("durationMs", { header: "Length", cell: (info) => <span className={mono}>{info.getValue() ? formatDuration(info.getValue()! / 1000, { fixed: true }) : "—"}</span> }),
   helper.accessor("privacy", {
     header: "Privacy",
     enableSorting: false,
     cell: (info) => <span className={cn("font-mono text-[11px]", info.getValue() === "Private" ? "text-acc" : "text-faint")}>{info.getValue() || "—"}</span>,
   }),
   helper.accessor("createdAt", { header: "Uploaded", cell: (info) => <span className={mono}>{formatDate(info.getValue())}</span> }),
-  helper.accessor("size", { header: "Size", cell: (info) => <span className={mono}>{formatBytes(info.getValue())}</span> }),
+  helper.accessor("size", { header: "Size", cell: (info) => <span className={mono}>{formatBytesFixed(info.getValue())}</span> }),
 ])

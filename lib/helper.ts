@@ -84,7 +84,7 @@ export function formatBytes(bytes: number | null | undefined, decimals = 1): str
   return `${value.toFixed(exponent === 0 ? 0 : decimals)} ${UNITS.bytes[exponent]}`
 }
 
-export function formatDuration(totalSeconds: number | null | undefined): string {
+export function formatDuration(totalSeconds: number | null | undefined, options: { fixed?: boolean } = {}): string {
   if (totalSeconds === null || totalSeconds === undefined || Number.isNaN(totalSeconds)) {
     return PLACEHOLDER
   }
@@ -92,6 +92,7 @@ export function formatDuration(totalSeconds: number | null | undefined): string 
   const minutes = Math.floor((totalSeconds / 60) % 60)
   const hours = Math.floor(totalSeconds / 3600)
   const pad = (n: number) => n.toString().padStart(2, "0")
+  if (options.fixed) return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}` // always HH:MM:SS so a column lines up
   return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${minutes}:${pad(seconds)}`
 }
 
@@ -355,4 +356,11 @@ export function formatAperture(fNumber: number | null | undefined): string {
 export function formatCoordinates(lat: number | null | undefined, lon: number | null | undefined): string {
   if (lat === null || lat === undefined || lon === null || lon === undefined) return PLACEHOLDER
   return `${Math.abs(lat).toFixed(5)}° ${lat >= 0 ? "N" : "S"}, ${Math.abs(lon).toFixed(5)}° ${lon >= 0 ? "E" : "W"}`
+}
+
+const NBSP = "\u00a0"
+
+/** Byte size padded to a fixed width ("  113.3 MB") so sizes right-align in a mono column. */
+export function formatBytesFixed(bytes: number | null | undefined, width = 9): string {
+  return formatBytes(bytes).padStart(width, NBSP)
 }
