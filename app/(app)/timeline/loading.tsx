@@ -4,7 +4,7 @@ import { SKELETON_ROWS } from "@/lib/constant"
 export default function Loading() {
   return (
     <div data-testid="skeleton-timeline" className="h-full overflow-y-auto px-7 pt-6 pb-11">
-      <div className="mx-auto flex max-w-[860px] flex-col gap-3.5">
+      <div className="flex w-full flex-col gap-3.5">
         <Skeleton className="h-3 w-32" />
         <Skeleton className="h-7 w-40" />
         <Skeleton className="h-6 w-96" />

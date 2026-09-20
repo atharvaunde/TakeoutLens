@@ -3,6 +3,7 @@ import path from "node:path"
 import PostalMime, { type Email } from "postal-mime"
 
 import { MAIL_INDEX } from "@/lib/constant"
+import { decodeMimeWords } from "@/lib/helper"
 import type { Db } from "@/server/db"
 import { readMessage, scanMbox } from "./mbox"
 
@@ -34,6 +35,7 @@ export interface IndexedMail {
   body: string
   attachCount: number
   labels: string[]
+  labelsDecoded: boolean
   threadId: string
   messageId: string | null
   unread: boolean
@@ -42,7 +44,9 @@ export interface IndexedMail {
 export async function parseForIndex(raw: Buffer, guarded: boolean): Promise<IndexedMail> {
   const mail = await new PostalMime().parse(raw)
   const text = (mail.text ?? (mail.html ? stripHtml(mail.html) : "")).replace(/\s+/g, " ").trim()
-  const labels = (header(mail, "x-gmail-labels") ?? "")
+  // Google may MIME-encode the whole label list ("=?UTF-8?Q?Inbox,Sent,=E2=9C=94?="), so decode before splitting.
+  const rawLabels = header(mail, "x-gmail-labels") ?? ""
+  const labels = decodeMimeWords(rawLabels)
     .split(",")
     .map((l) => l.trim())
     .filter(Boolean)
@@ -58,6 +62,7 @@ export async function parseForIndex(raw: Buffer, guarded: boolean): Promise<Inde
     body: text.slice(0, 64 * 1024),
     attachCount: guarded ? Math.max(mail.attachments.length, 1) : mail.attachments.filter((a) => a.disposition !== "inline" || !a.related).length,
     labels,
+    labelsDecoded: rawLabels.includes("=?"),
     threadId: header(mail, "x-gm-thrid") ?? mail.messageId ?? "",
     messageId: mail.messageId ?? null,
     unread: labels.includes("Unread"),
@@ -76,7 +81,7 @@ export async function importMbox(db: Db, root: string, { rel, source }: MboxImpo
   const file = path.join(root, rel)
   if (!fs.existsSync(file)) return
   const stat = fs.statSync(file)
-  const signature = `${stat.size}:${Math.floor(stat.mtimeMs)}`
+  const signature = `${stat.size}:${Math.floor(stat.mtimeMs)}:v${MAIL_INDEX.version}`
   const signatureKey = source === "mail" ? "mail_signature" : `mbox_signature:${source}`
   const previous = db.prepare("SELECT value FROM kv WHERE key = ?").pluck().get(signatureKey) as string | undefined
   if (previous === signature) return
@@ -87,7 +92,7 @@ export async function importMbox(db: Db, root: string, { rel, source }: MboxImpo
     `INSERT INTO mail_messages (source, file_rel, byte_offset, byte_length, message_id, thread_id, subject, from_name, from_email, to_text, date_ts, snippet, attach_count, unread)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   )
-  const insertLabel = db.prepare("INSERT OR IGNORE INTO mail_labels (message_id, label) VALUES (?, ?)")
+  const insertLabel = db.prepare("INSERT OR IGNORE INTO mail_labels (message_id, label, decoded) VALUES (?, ?, ?)")
   const insertFts = db.prepare("INSERT INTO mail_fts (rowid, subject, sender, recipients, body) VALUES (?, ?, ?, ?, ?)")
   const logError = db.prepare("INSERT INTO index_errors (module, path, reason, occurred_at) VALUES (?, ?, ?, ?)")
   const errorModule = source === "mail" ? "mail" : "groups"
@@ -116,7 +121,7 @@ export async function importMbox(db: Db, root: string, { rel, source }: MboxImpo
             parsed.fromName, parsed.fromEmail, parsed.toText, parsed.dateTs, parsed.snippet, parsed.attachCount, parsed.unread ? 1 : 0
           ).lastInsertRowid
         )
-        for (const label of parsed.labels) insertLabel.run(id, label)
+        for (const label of parsed.labels) insertLabel.run(id, label, parsed.labelsDecoded ? 1 : 0)
         insertFts.run(id, parsed.subject, `${parsed.fromName} ${parsed.fromEmail}`, parsed.toText, parsed.body)
       } catch (error) {
         logError.run(errorModule, `${rel}@${entry.offset}`, `Cannot parse message: ${(error as Error).message}`, Date.now())

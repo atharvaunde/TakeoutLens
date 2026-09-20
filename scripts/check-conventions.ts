@@ -10,7 +10,7 @@ export interface Violation {
   detail: string
 }
 
-const SKIP_DIRS = new Set(["node_modules", ".next", ".git", "out", "build", "coverage"])
+const SKIP_DIRS = new Set(["node_modules", ".next", ".git", "out", "build", "coverage", "design"])
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {

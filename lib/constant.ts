@@ -296,6 +296,8 @@ export type ChatKind = (typeof CHAT.kinds)[number]
 
 export const MAIL_INDEX = {
   /** Messages larger than this are parsed from their first `guardHeadBytes` only when indexing (bounds memory). */
+  /** Bump to force a full re-index of mail (parser or schema change). */
+  version: 2,
   guardBytes: 8 * 1000 * 1000,
   guardHeadBytes: 1_000_000,
   chunkBytes: 1 << 20,

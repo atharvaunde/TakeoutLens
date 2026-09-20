@@ -35,9 +35,11 @@ afterAll(() => { cleanup(base); fs.rmSync(dataDir, { recursive: true, force: tru
 describe("mail service", () => {
   it("lists labels without state flags, system labels first", async () => {
     const { listMailLabels } = await import("@/server/services/mail")
-    const labels = await listMailLabels()
+    const { total, labels } = await listMailLabels()
+    expect(total).toBe(3)
     expect(labels.map((l) => l.label)).toEqual(["Inbox", "Important", "Sent", "Category Updates"])
-    expect(labels.find((l) => l.label === "Inbox")).toMatchObject({ total: 2, unread: 1 })
+    expect(labels.find((l) => l.label === "Inbox")).toMatchObject({ total: 2, unread: 1, group: "system", decoded: false })
+    expect(labels.find((l) => l.label === "Category Updates")).toMatchObject({ name: "Updates", group: "category" })
   })
 
   it("filters by label, searches full-text and sorts", async () => {

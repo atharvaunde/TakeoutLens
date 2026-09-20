@@ -285,3 +285,20 @@ export function formatShortAgo(value: DateInput, now: Date = new Date()): string
   for (const [size, unit] of steps) if (seconds >= size) return `${Math.floor(seconds / size)}${unit}`
   return "now"
 }
+
+const decodeQuoted = (value: string) =>
+  value.replace(/_/g, " ").replace(/=([0-9A-Fa-f]{2})/g, (_m, hex: string) => String.fromCharCode(Number.parseInt(hex, 16)))
+
+/** Decode RFC 2047 encoded words (`=?UTF-8?Q?...?=` / `?B?`) in a header value. Unknown charsets fall back to latin1. */
+export function decodeMimeWords(input: string): string {
+  if (!input.includes("=?")) return input
+  return input.replace(/=\?([^?\s]+)\?([QqBb])\?([^?]*)\?=/g, (_m, charset: string, encoding: string, text: string) => {
+    const binary = encoding.toUpperCase() === "B" ? atob(text) : decodeQuoted(text)
+    const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0))
+    try {
+      return new TextDecoder(charset.toLowerCase()).decode(bytes)
+    } catch {
+      return new TextDecoder("latin1").decode(bytes)
+    }
+  })
+}

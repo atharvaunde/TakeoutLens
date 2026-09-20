@@ -4,30 +4,47 @@ import PostalMime, { type Attachment } from "postal-mime"
 
 import type { MailRow } from "@/columns/mail-messages.column"
 import { MAIL_INDEX, MAIL_VIEW } from "@/lib/constant"
-import { toFtsQuery, type TableParams } from "@/lib/helper"
+import { decodeMimeWords, toFtsQuery, type TableParams } from "@/lib/helper"
 import type { MailAttachmentItem, MailLabelItem, MailMessageView } from "@/lib/types"
 import { requireSession } from "@/server/auth/session"
 import { getConfig } from "@/server/config"
 import { getDb } from "@/server/db"
 import { readMessage } from "@/server/indexer/mbox"
 
-export async function listMailLabels(): Promise<MailLabelItem[]> {
+const GROUP_ORDER: Record<MailLabelItem["group"], number> = { system: 0, category: 1, user: 2 }
+
+export async function listMailLabels(): Promise<{ total: number; labels: MailLabelItem[] }> {
   await requireSession()
-  const rows = getDb()
+  const db = getDb()
+  const rows = db
     .prepare(
-      `SELECT l.label AS label, count(*) AS total, sum(m.unread) AS unread
+      `SELECT l.label AS label, count(*) AS total, sum(m.unread) AS unread, max(l.decoded) AS decoded
        FROM mail_labels l JOIN mail_messages m ON m.id = l.message_id
        WHERE m.source = 'mail' GROUP BY l.label`
     )
-    .all() as { label: string; total: number; unread: number }[]
-  const visible = rows.filter((r) => !MAIL_INDEX.hiddenLabels.includes(r.label))
+    .all() as { label: string; total: number; unread: number; decoded: number }[]
   const rank = (label: string) => {
     const i = MAIL_INDEX.systemLabelOrder.indexOf(label)
     return i === -1 ? MAIL_INDEX.systemLabelOrder.length : i
   }
-  return visible
-    .map((r) => ({ label: r.label, total: r.total, unread: r.unread ?? 0 }))
-    .sort((a, b) => rank(a.label) - rank(b.label) || a.label.localeCompare(b.label))
+  const labels: MailLabelItem[] = rows
+    .filter((r) => !MAIL_INDEX.hiddenLabels.includes(r.label))
+    .map((r) => {
+      const system = MAIL_INDEX.systemLabelOrder.includes(r.label)
+      const category = r.label.startsWith("Category ")
+      const parts = r.label.split("/")
+      return {
+        label: r.label,
+        name: system ? r.label : category ? r.label.slice("Category ".length) : parts[parts.length - 1],
+        total: r.total,
+        unread: r.unread ?? 0,
+        decoded: r.decoded === 1,
+        depth: system || category ? 0 : parts.length - 1,
+        group: (system ? "system" : category ? "category" : "user") as MailLabelItem["group"],
+      }
+    })
+    .sort((a, b) => GROUP_ORDER[a.group] - GROUP_ORDER[b.group] || (a.group === "system" ? rank(a.label) - rank(b.label) : a.label.localeCompare(b.label)))
+  return { total: db.prepare("SELECT count(*) FROM mail_messages WHERE source = 'mail'").pluck().get() as number, labels }
 }
 
 const SORTABLE: Record<string, string> = { date: "m.date_ts", from: "m.from_name COLLATE NOCASE", subject: "m.subject COLLATE NOCASE" }
@@ -134,7 +151,7 @@ export function inlineCidImages(html: string, attachments: Attachment[]): string
 
 async function parseMessage(row: Located): Promise<MailMessageView> {
   const mail = await new PostalMime().parse(readRaw(row))
-  const labels = (mail.headers.find((h) => h.key === "x-gmail-labels")?.value ?? "").split(",").map((l) => l.trim()).filter(Boolean)
+  const labels = decodeMimeWords(mail.headers.find((h) => h.key === "x-gmail-labels")?.value ?? "").split(",").map((l) => l.trim()).filter(Boolean)
   return {
     id: row.id,
     subject: mail.subject ?? "",
@@ -175,4 +192,13 @@ export async function getMailDownload(messageId: number, index: string): Promise
   const attachment = mail.attachments[Number(index)]
   if (!attachment || typeof attachment.content === "string") return null
   return { body: new Uint8Array(attachment.content), fileName: attachment.filename || `attachment-${Number(index) + 1}`, mime: attachment.mimeType }
+}
+
+/** The raw RFC 822 source of a message (capped), for "Show original". */
+export async function getRawMessage(messageId: number): Promise<string | null> {
+  await requireSession()
+  const row = locate(messageId)
+  if (!row) return null
+  const raw = readRaw(row)
+  return raw.subarray(0, 1_000_000).toString("utf8") + (raw.length > 1_000_000 ? "\n\n[… truncated …]" : "")
 }

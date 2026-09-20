@@ -158,4 +158,7 @@ export const MIGRATIONS: readonly string[] = [
   CREATE INDEX photo_items_taken ON photo_items(taken_ts);
   CREATE INDEX photo_items_album ON photo_items(album);
   `,
+  `
+  ALTER TABLE mail_labels ADD COLUMN decoded INTEGER NOT NULL DEFAULT 0;
+  `,
 ]

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery, splitHighlight, getDayKey, zonedTimeToUtc, utcToWall, htmlToText } from "@/lib/helper"
+import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery, splitHighlight, getDayKey, zonedTimeToUtc, utcToWall, htmlToText, decodeMimeWords } from "@/lib/helper"
 
 describe("helper", () => {
   it("formats bytes", () => {
@@ -58,5 +58,11 @@ describe("helper", () => {
     )
     expect(htmlToText("plain text stays")).toBe("plain text stays")
     expect(htmlToText("a&nbsp\\;b")).toBe("a b")
+  })
+  it("decodes RFC 2047 words, including ones that span several comma-separated labels", () => {
+    expect(decodeMimeWords("=?UTF-8?Q?Inbox,Sent,=E2=9C=94?=")).toBe("Inbox,Sent,✔")
+    expect(decodeMimeWords("=?UTF-8?B?w4l0w6k=?= news")).toBe("Été news")
+    expect(decodeMimeWords("Plain,Labels")).toBe("Plain,Labels")
+    expect(decodeMimeWords("=?bogus-charset?Q?caf=E9?=")).toBe("café")
   })
 })

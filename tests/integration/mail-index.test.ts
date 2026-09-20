@@ -67,4 +67,14 @@ describe("parseForIndex", () => {
     const parsed = await parseForIndex(Buffer.from("Subject: t\r\nFrom: a@b.test\r\n\r\nbody"), true)
     expect(parsed.attachCount).toBe(1) // guarded messages are assumed to contain an attachment
   })
+
+  it("decodes MIME-encoded label headers before splitting on commas", async () => {
+    const parsed = await parseForIndex(
+      Buffer.from("X-Gmail-Labels: =?UTF-8?Q?Inbox,Sent,=E2=9C=94?=,HR/Letters\r\nSubject: t\r\nFrom: a@b.test\r\n\r\nbody"),
+      false
+    )
+    expect(parsed.labels).toEqual(["Inbox", "Sent", "✔", "HR/Letters"])
+    expect(parsed.labelsDecoded).toBe(true)
+    expect((await parseForIndex(Buffer.from("X-Gmail-Labels: Inbox,Sent\r\nSubject: t\r\n\r\nb"), false)).labelsDecoded).toBe(false)
+  })
 })

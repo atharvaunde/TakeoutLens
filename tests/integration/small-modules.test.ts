@@ -147,7 +147,7 @@ describe("groups", () => {
     expect(discussions.rows.map((r) => r.subject)).toEqual(["[dev] Release plan"])
     expect((await listMailMessages(parseTableParams({}), null)).rows.every((r) => r.subject !== "[dev] Release plan")).toBe(true) // not in the Gmail view
     expect((await getThread(discussions.rows[0].messageId))[0].text).toContain("ship on Friday")
-    expect((await listMailLabels()).length).toBeGreaterThan(0)
+    expect((await listMailLabels()).labels.length).toBeGreaterThan(0)
   })
 })
 

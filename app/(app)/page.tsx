@@ -29,7 +29,7 @@ export default async function HomePage() {
   return (
     <div className="h-full overflow-y-auto px-7 pt-[26px] pb-11">
       <Crumb value="overview" />
-      <div className="mx-auto max-w-[1220px]">
+      <div className="w-full">
         <div className="flex flex-wrap items-end justify-between gap-5">
           <div>
             <div className="mb-1.5 font-mono text-[10.5px] tracking-[.16em] text-faint uppercase">Archive overview</div>

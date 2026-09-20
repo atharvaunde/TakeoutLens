@@ -20,7 +20,7 @@ export default async function TimelinePage({ searchParams }: { searchParams: Pro
   return (
     <div className="h-full overflow-y-auto px-7 pt-6 pb-11">
       <Crumb value="timeline" />
-      <div className="mx-auto max-w-[860px]">
+      <div className="w-full">
         <div className="font-mono text-[10.5px] tracking-[.16em] text-faint uppercase">Across all sources</div>
         <div className="mt-[5px] text-2xl font-semibold tracking-[-.025em]">Timeline</div>
         <UrlOptionGroup className="mt-3.5" param="source" value={source} defaultValue="all" resetParams={["before"]} variant="pill-mono" options={TIMELINE.sources} />

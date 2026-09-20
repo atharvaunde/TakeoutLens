@@ -73,9 +73,16 @@ export interface ChatSearchHit {
 }
 
 export interface MailLabelItem {
+  /** Stored (decoded) label, used in URLs and filters. */
   label: string
+  /** Display name: nested labels show their last segment, categories drop the "Category " prefix. */
+  name: string
   total: number
   unread: number
+  /** The label came from a MIME-encoded header (shown with a "Q" badge). */
+  decoded: boolean
+  depth: number
+  group: "system" | "category" | "user"
 }
 
 export interface MailAttachmentItem {

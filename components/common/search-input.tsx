@@ -2,10 +2,9 @@
 
 import { useRef, useState, useTransition } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { SearchIcon } from "lucide-react"
 
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { SEARCH, TABLE_PARAMS } from "@/lib/constant"
+import { cn } from "@/lib/utils"
 
 interface SearchInputProps {
   placeholder?: string
@@ -35,19 +34,15 @@ export function SearchInput({ placeholder = "Search…", param = TABLE_PARAMS.se
   }
 
   return (
-    <InputGroup className={className}>
-      <InputGroupAddon>
-        <SearchIcon />
-      </InputGroupAddon>
-      <InputGroupInput
-        defaultValue={initial}
-        placeholder={placeholder}
-        onChange={(event) => {
-          clearTimeout(timer.current)
-          const value = event.target.value.trim()
-          timer.current = setTimeout(() => push(value), SEARCH.debounceMs)
-        }}
-      />
-    </InputGroup>
+    <input
+      defaultValue={initial}
+      placeholder={placeholder}
+      onChange={(event) => {
+        clearTimeout(timer.current)
+        const value = event.target.value.trim()
+        timer.current = setTimeout(() => push(value), SEARCH.debounceMs)
+      }}
+      className={cn("h-7 w-full rounded-[7px] border border-line bg-background px-2.5 text-[12.5px] text-ink outline-none focus:border-acc", className)}
+    />
   )
 }
