@@ -53,6 +53,12 @@
   --color-gp-sheets: var(--gp-sheets);
   --color-gp-slides: var(--gp-slides);
   --color-gp-pdf: var(--gp-pdf);
+  --color-gs-drive: var(--gs-drive);
+  --color-gs-photos: var(--gs-photos);
+  --color-gs-mail: var(--gs-mail);
+  --color-gs-chat: var(--gs-chat);
+  --color-gs-youtube: var(--gs-youtube);
+  --color-gs-other: var(--gs-other);
   --color-on-acc: var(--on-acc);
   --color-scrim: var(--scrim);
   --color-background: var(--background);
@@ -106,6 +112,8 @@
   --shadow: rgba(16, 24, 40, 0.12);
   /* file-product accents (Docs / Sheets / Slides / PDF style icons) */
   --gp-docs: #4285f4; --gp-sheets: #0f9d58; --gp-slides: #f4b400; --gp-pdf: #e5493a;
+  /* storage bar segments (Google-style: Drive blue, Photos yellow, Gmail red, ...) */
+  --gs-drive: #4285f4; --gs-photos: #f4b400; --gs-mail: #ea4335; --gs-chat: #34a853; --gs-youtube: #a142f4; --gs-other: #5f6368;
   --on-acc: #fff8f2;
   --scrim: rgba(20, 17, 13, 0.42);
   /* module / file-kind chip palette */
@@ -161,6 +169,7 @@
   --acc: #5b8cff; --accbg: #16203a; --sel: #1b222c; --hov: #171d26; --ok: #3da56b;
   --shadow: rgba(0, 0, 0, 0.5);
   --gp-docs: #6a9bf7; --gp-sheets: #34b27a; --gp-slides: #f6c445; --gp-pdf: #ef6b5d;
+  --gs-drive: #6a9bf7; --gs-photos: #f6c445; --gs-mail: #ef6b5d; --gs-chat: #4fbf7f; --gs-youtube: #b980f7; --gs-other: #8a9199;
   --k-mail-bg: #16203a; --k-mail-fg: #5b8cff;
   --k-chat-bg: #1b222c; --k-chat-fg: #98a2af;
   --k-cal-bg: #1b222c; --k-cal-fg: #828c99;

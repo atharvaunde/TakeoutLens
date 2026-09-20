@@ -179,6 +179,8 @@ export interface IndexStatus {
 }
 
 export interface StackSegment {
+  /** Module id, or "other" for the remainder. */
+  id: string
   name: string
   bytes: number
   percent: number

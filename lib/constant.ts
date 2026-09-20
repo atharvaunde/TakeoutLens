@@ -82,6 +82,16 @@ export const SHORTCUTS = [
   { key: "[", label: "Collapse sidebar" },
 ] as const
 
+/** Storage-bar segment colour per module (Tailwind classes backed by --gs-* tokens); unlisted modules use the "other" grey. */
+export const STORAGE_SEGMENT_CLASSES: Readonly<Record<string, string>> = {
+  drive: "bg-gs-drive",
+  photos: "bg-gs-photos",
+  mail: "bg-gs-mail",
+  chat: "bg-gs-chat",
+  youtube: "bg-gs-youtube",
+}
+export const STORAGE_OTHER_CLASS = "bg-gs-other"
+
 export const SHELL = {
   railStorageKey: "takeout-rail-collapsed",
   recentsStorageKey: "takeout-recents",

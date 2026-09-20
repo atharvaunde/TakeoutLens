@@ -91,10 +91,10 @@ export async function getHomeData(): Promise<HomeData> {
     }
   }
 
-  const bytes = modules.map((m) => ({ name: m.module.label, bytes: m.totalBytes })).sort((a, b) => b.bytes - a.bytes)
+  const bytes = modules.map((m) => ({ id: m.module.id, name: m.module.label, bytes: m.totalBytes })).sort((a, b) => b.bytes - a.bytes)
   const top = bytes.slice(0, STACK_TOP)
   const rest = bytes.slice(STACK_TOP).reduce((sum, m) => sum + m.bytes, 0)
-  const stack = [...top, { name: "Everything else", bytes: rest }].map((s) => ({ ...s, percent: totalBytes ? Math.max((s.bytes / totalBytes) * 100, s.bytes > 0 ? 0.5 : 0) : 0 }))
+  const stack = [...top, { id: "other", name: "Everything else", bytes: rest }].map((s) => ({ ...s, percent: totalBytes ? Math.max((s.bytes / totalBytes) * 100, s.bytes > 0 ? 0.5 : 0) : 0 }))
 
   const contacts = await import("./contacts").then((m) => m.listContacts({ page: 1, pageSize: 1, sort: null, dir: "asc", search: "", filters: {} }))
   const tasks = await import("./tasks").then((m) => m.listTasks({ page: 1, pageSize: 1, sort: null, dir: "asc", search: "", filters: {} }))

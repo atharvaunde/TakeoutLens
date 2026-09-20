@@ -2,11 +2,11 @@ import Link from "next/link"
 
 import { Crumb } from "@/components/layout/crumb"
 import { RecentsCard } from "@/components/home/recents-card"
-import { MODULES, SHORTCUTS, type ModuleKind } from "@/lib/constant"
+import { MODULES, SHORTCUTS, STORAGE_OTHER_CLASS, STORAGE_SEGMENT_CLASSES, type ModuleKind } from "@/lib/constant"
 import { formatBytes, formatBytesCompact, formatNumber } from "@/lib/helper"
 import { getHomeData, getOverview } from "@/server/services/modules"
 
-const STACK_CLASSES = ["bg-stack-1", "bg-stack-2", "bg-stack-3", "bg-stack-4", "bg-stack-5"]
+const segmentClass = (id: string) => STORAGE_SEGMENT_CLASSES[id] ?? STORAGE_OTHER_CLASS
 const KIND_ICON_COLOR: Record<ModuleKind, string> = {
   mail: "text-acc", chat: "text-acc", cal: "text-acc", drive: "text-acc", photos: "text-acc", keep: "text-acc", neutral: "text-mute",
 }
@@ -42,15 +42,15 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="mt-[18px] flex h-[7px] overflow-hidden rounded border border-line">
-          {home.stack.map((segment, i) => (
-            <div key={segment.name} title={segment.name} className={STACK_CLASSES[i]} style={{ width: `${segment.percent}%` }} />
+        <div className="mt-[18px] flex h-3 gap-[2px]">
+          {home.stack.map((segment) => (
+            <div key={segment.id} title={`${segment.name} · ${formatBytes(segment.bytes)}`} className={`${segmentClass(segment.id)} h-full min-w-1.5 rounded-full`} style={{ width: `${segment.percent}%` }} />
           ))}
         </div>
-        <div className="mt-2 flex flex-wrap gap-3.5">
-          {home.stack.map((segment, i) => (
-            <div key={segment.name} className="flex items-center gap-[5px] text-[11.5px] text-mute">
-              <span className={`size-[7px] rounded-[2px] ${STACK_CLASSES[i]}`} />
+        <div className="mt-2.5 flex flex-wrap gap-4">
+          {home.stack.map((segment) => (
+            <div key={segment.id} className="flex items-center gap-1.5 text-[12px] text-mute">
+              <span className={`size-2 rounded-full ${segmentClass(segment.id)}`} />
               {segment.name}
               <span className="font-mono text-faint">{formatBytes(segment.bytes)}</span>
             </div>
