@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react"
-import { FILE_ICON_FALLBACK, FILE_KIND_DEFAULT_FAMILY, FILE_KIND_FAMILY, FILE_KIND_MAX_CHARS, FILE_ICONS_BY_EXT, DEFAULT_CURRENCY, DEFAULT_LOCALE, INLINE_MIME_TYPES, PAGINATION, TABLE_PARAMS, UNITS } from "@/lib/constant"
+import { FILE_ICON_FALLBACK, FOLDER_MIME, MIME_BY_EXT, FILE_KIND_DEFAULT_FAMILY, FILE_KIND_FAMILY, FILE_KIND_MAX_CHARS, FILE_ICONS_BY_EXT, DEFAULT_CURRENCY, DEFAULT_LOCALE, INLINE_MIME_TYPES, PAGINATION, TABLE_PARAMS, UNITS } from "@/lib/constant"
 
 // Shared formatters and small pure helpers. All Intl / toLocale* usage lives here.
 
@@ -333,4 +333,11 @@ export function stripMeetBoilerplate(text: string): string {
   }
   const cleaned = inside ? lines.filter((line) => !isRule(line)) : kept
   return cleaned.join("\n").replace(/\n{3,}/g, "\n\n").trim()
+}
+
+/** MIME type from the file extension (folders: inode/directory; unknown: application/octet-stream). */
+export function getMimeType(fileName: string, isFolder = false): string {
+  if (isFolder) return FOLDER_MIME
+  const dot = fileName.lastIndexOf(".")
+  return (dot === -1 ? undefined : MIME_BY_EXT[fileName.slice(dot).toLowerCase()]) ?? "application/octet-stream"
 }

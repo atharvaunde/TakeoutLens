@@ -2,7 +2,7 @@ import path from "node:path"
 
 import type { DriveRow } from "@/columns/drive-files.column"
 import type { TableParams } from "@/lib/helper"
-import { getFileKind, getKindLabel, toFtsQuery } from "@/lib/helper"
+import { getFileKind, getKindLabel, getMimeType, toFtsQuery } from "@/lib/helper"
 import { requireSession } from "@/server/auth/session"
 import { getDb } from "@/server/db"
 
@@ -56,6 +56,7 @@ function toFileRow(row: FileRow, showPath: boolean, root: string, rootLabel: str
     location: showPath ? folder : "",
     parent: folder.split("/").pop() || rootLabel,
     kindLabel: getKindLabel(name, false),
+    mime: getMimeType(name),
     folderPath: "",
     size: row.size,
     modifiedAt: new Date(row.mtime_ms).toISOString(),
@@ -143,6 +144,7 @@ export async function listTree(source: TreeSource, folderInput: string | undefin
     location: "",
     parent: folder.split("/").pop() || source.rootLabel,
     kindLabel: "DIR",
+    mime: getMimeType(name, true),
     folderPath: folder ? `${folder}/${name}` : name,
     size: null,
     modifiedAt: new Date(info.latest).toISOString(),

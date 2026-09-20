@@ -4,6 +4,7 @@ import type { DriveRow } from "@/columns/drive-files.column"
 import { formatBytes, formatNumber } from "@/lib/helper"
 import { cn } from "@/lib/utils"
 import { DriveContextMenu, type DriveActions } from "./drive-context-menu"
+import { FileTypeIcon } from "@/components/common/file-type-icon"
 import { KindChip } from "./kind-chip"
 
 interface DriveGridProps {
@@ -26,6 +27,7 @@ export function DriveGrid({ rows, selectedId, actions, emptyText, canView = fals
             role="button"
             aria-label={row.name}
             aria-pressed={selectedId === row.id}
+            title={`${row.name} · ${row.mime}`}
             onClick={() => actions.select(row)}
             onDoubleClick={() => actions.open(row)}
             onKeyDown={(event) => event.key === "Enter" && actions.open(row)}
@@ -36,7 +38,10 @@ export function DriveGrid({ rows, selectedId, actions, emptyText, canView = fals
                 // eslint-disable-next-line @next/next/no-img-element -- cached local thumbnail
                 <img src={`/thumb/${row.fileId}`} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
               ) : (
-                <KindChip label={row.kindLabel} className="px-1.5 text-[9.5px] tracking-[.06em]" />
+                <div className="flex flex-col items-center gap-1.5">
+                  <FileTypeIcon name={row.name} isFolder={row.kind === "folder"} className="size-[26px] text-mute" />
+                  <KindChip label={row.kindLabel} className="px-1.5 text-[9.5px] tracking-[.06em]" />
+                </div>
               )}
             </div>
             <div className="border-t border-line2 px-[9px] py-2">

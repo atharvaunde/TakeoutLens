@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery, splitHighlight, getDayKey, zonedTimeToUtc, utcToWall, htmlToText, decodeMimeWords, stripMeetBoilerplate } from "@/lib/helper"
+import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery, splitHighlight, getDayKey, zonedTimeToUtc, utcToWall, htmlToText, decodeMimeWords, stripMeetBoilerplate, getMimeType } from "@/lib/helper"
 
 describe("helper", () => {
   it("formats bytes", () => {
@@ -71,5 +71,11 @@ describe("helper", () => {
     expect(stripMeetBoilerplate(text)).toBe("Agenda: standup\n\nNotes below")
     expect(stripMeetBoilerplate(`Keep me\n${rule}\nno closing rule`)).toBe("Keep me\nno closing rule")
     expect(stripMeetBoilerplate("plain description")).toBe("plain description")
+  })
+  it("resolves MIME types from extensions", () => {
+    expect(getMimeType("Report.PDF")).toBe("application/pdf")
+    expect(getMimeType("a.docx")).toBe("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    expect(getMimeType("noext")).toBe("application/octet-stream")
+    expect(getMimeType("Meet Recordings", true)).toBe("inode/directory")
   })
 })

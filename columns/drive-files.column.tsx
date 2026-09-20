@@ -19,6 +19,8 @@ export interface DriveRow {
   parent: string
   /** Chip label: DIR or the file extension. */
   kindLabel: string
+  /** MIME type resolved from the extension. */
+  mime: string
   /** For folder rows: the path to open. */
   folderPath: string
   size: number | null
@@ -31,6 +33,15 @@ const helper = createColumnHelper<DataTableFeatures, DriveRow>()
 export const driveColumns = helper.columns([
   helper.accessor("name", { header: "Name", cell: (info) => <DriveNameCell row={info.row.original} /> }),
   helper.accessor("parent", { header: "Folder", enableSorting: false, cell: (info) => <span className="block max-w-64 truncate text-xs text-faint">{info.getValue()}</span> }),
+  helper.accessor("mime", {
+    header: "Type",
+    enableSorting: false,
+    cell: (info) => (
+      <span className="block max-w-56 truncate font-mono text-[10.5px] text-faint" title={info.getValue()}>
+        {info.getValue()}
+      </span>
+    ),
+  }),
   helper.accessor("size", {
     header: "Size",
     cell: (info) => (
