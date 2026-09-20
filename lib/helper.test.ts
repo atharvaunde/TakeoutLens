@@ -89,7 +89,7 @@ describe("helper", () => {
   it("formats fixed-width durations and sizes", () => {
     expect(formatDuration(3724, { fixed: true })).toBe("01:02:04")
     expect(formatDuration(7, { fixed: true })).toBe("00:00:07")
-    expect(formatBytesFixed(113.3 * 1024 ** 2)).toBe("\u00a0\u00a0113.3 MB")
+    expect(formatBytesFixed(113.3 * 1024 ** 2)).toBe("\u00a0113.3 MB")
     expect(formatBytesFixed(1.05 * 1024 ** 3)).toHaveLength(9)
   })
 })
