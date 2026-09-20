@@ -29,10 +29,17 @@ describe("check-conventions", () => {
     ["E1", "components/a.tsx", `"use client"\nimport { x } from "@/server/db"\n`],
     ["E5", "components/a.tsx", `import type { ColumnDef } from "@tanstack/react-table"\n`],
     ["E6", "components/a.tsx", `export const f = (d: Date) => d.toLocaleDateString()\n`],
+    ["E9", "components/a.tsx", `export const c = "#ff0000"\n`],
+    ["E9", "lib/b.ts", "export const c = 'oklch(0.5 0.1 200)'\n"],
     ["style", "components/a.tsx", `export const A = () => <div className="space-y-4" />\n`],
   ])("flags %s violation", (rule, file, content) => {
     const root = project({ [file]: content })
     expect(runChecks(root).map((v) => v.rule)).toContain(rule)
+  })
+
+  it("allows colours in generated ui primitives", () => {
+    const root = project({ "components/ui/x.tsx": `export const c = "#fff"\n` })
+    expect(runChecks(root)).toEqual([])
   })
 
   it("allows client files to import Server Functions from server/actions", () => {

@@ -292,12 +292,8 @@ export const CALENDAR = {
   initialScrollHour: 7,
   maxChipsPerDay: 3,
   agendaDays: 30,
-  /** One colour per calendar (cycled). oklch keeps lightness consistent in light and dark themes. */
-  colors: [
-    "oklch(0.62 0.17 255)", "oklch(0.65 0.18 145)", "oklch(0.68 0.18 55)", "oklch(0.62 0.21 25)",
-    "oklch(0.60 0.20 305)", "oklch(0.70 0.13 195)", "oklch(0.66 0.19 350)", "oklch(0.64 0.15 100)",
-    "oklch(0.58 0.14 230)", "oklch(0.60 0.16 175)", "oklch(0.66 0.20 80)", "oklch(0.55 0.18 280)",
-  ] as readonly string[],
+  /** One colour per calendar (cycled). Values live in globals.css as --cal-N. */
+  colors: Array.from({ length: 12 }, (_, i) => `var(--cal-${i + 1})`) as readonly string[],
   fallbackTimeZone: "UTC",
 } as const
 export type CalendarView = (typeof CALENDAR.views)[number]
@@ -318,21 +314,6 @@ export const TASK_FILTERS = {
 
 export const KEEP = {
   views: ["notes", "archived", "trash"] as const,
-  /** Google Keep note colours (theme-aware via oklch with alpha). */
-  colors: {
-    DEFAULT: "transparent",
-    RED: "oklch(0.75 0.12 25 / 0.35)",
-    ORANGE: "oklch(0.8 0.13 60 / 0.35)",
-    YELLOW: "oklch(0.88 0.13 95 / 0.35)",
-    GREEN: "oklch(0.8 0.13 145 / 0.35)",
-    TEAL: "oklch(0.8 0.1 190 / 0.35)",
-    BLUE: "oklch(0.78 0.1 230 / 0.35)",
-    CERULEAN: "oklch(0.75 0.1 250 / 0.35)",
-    PURPLE: "oklch(0.75 0.12 300 / 0.35)",
-    PINK: "oklch(0.8 0.12 350 / 0.35)",
-    BROWN: "oklch(0.7 0.07 60 / 0.35)",
-    GRAY: "oklch(0.75 0.01 260 / 0.35)",
-  } as Readonly<Record<string, string>>,
 } as const
 export type KeepView = (typeof KEEP.views)[number]
 

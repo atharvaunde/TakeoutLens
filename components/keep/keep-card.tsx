@@ -2,13 +2,12 @@ import { CheckSquareIcon, PinIcon, SquareIcon } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { KEEP } from "@/lib/constant"
 import { formatDate } from "@/lib/helper"
 import type { KeepNote } from "@/lib/types"
 
 export function KeepCard({ note }: { note: KeepNote }) {
   return (
-    <Card className="break-inside-avoid" style={{ backgroundColor: KEEP.colors[note.color] ?? KEEP.colors.DEFAULT }}>
+    <Card className="break-inside-avoid">
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="wrap-break-word">{note.title || (note.items.length ? "List" : "Note")}</CardTitle>

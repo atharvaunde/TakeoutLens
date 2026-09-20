@@ -56,6 +56,12 @@ export function runChecks(root: string): Violation[] {
       add("E6", rel, "toLocale*/Intl.* outside lib/helper.ts")
     }
 
+    // E9: design tokens live in app/globals.css. No colour literals in code (generated shadcn primitives and the
+    // isolated email iframe document, which cannot inherit CSS variables, are exempt).
+    if (!isUnder(rel, "components/ui/") && rel !== "components/mail/mail-message-frame.tsx" && /#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab)\(/.test(src)) {
+      add("E9", rel, "colour literal in code; define a token in app/globals.css and use var(--token) or a Tailwind colour")
+    }
+
     // shadcn styling rule: no space-x/space-y.
     if (rel.endsWith(".tsx") && !isUnder(rel, "components/ui/") && /\bspace-[xy]-/.test(src)) {
       add("style", rel, "space-x-*/space-y-* used; use flex + gap-*")
