@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import { AutoRefresh } from "@/components/common/auto-refresh"
-import { MODULES, TIMELINE_NAV, HOME_NAV } from "@/lib/constant"
+import { MODULES, HOME_NAV } from "@/lib/constant"
 import type { IndexStatus } from "@/lib/types"
 import { useRecentsStore } from "@/stores/recents-store"
 import { useUiStore } from "@/stores/ui-store"
@@ -20,7 +20,6 @@ interface AppShellProps {
 
 const SHORTCUT_ROUTES: Record<string, string> = {
   [HOME_NAV.shortcut]: HOME_NAV.href,
-  [TIMELINE_NAV.shortcut]: TIMELINE_NAV.href,
   ...Object.fromEntries(MODULES.filter((m) => m.shortcut).map((m) => [m.shortcut as string, m.href])),
 }
 
@@ -71,7 +70,7 @@ export function AppShell({ sizes, index, children }: AppShellProps) {
     if (!crumb || pathname === "/") return
     const current = MODULES.find((m) => pathname.startsWith(m.href))
     const qs = search.toString()
-    pushRecent({ label: crumb, href: qs ? `${pathname}?${qs}` : pathname, moduleId: current?.id ?? "timeline", kind: current?.kind ?? "neutral" })
+    pushRecent({ label: crumb, href: qs ? `${pathname}?${qs}` : pathname, moduleId: current?.id ?? "home", kind: current?.kind ?? "neutral" })
   }, [crumb, pathname, search, pushRecent])
 
   return (

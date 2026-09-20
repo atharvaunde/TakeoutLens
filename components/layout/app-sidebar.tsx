@@ -8,7 +8,7 @@ import { useTransition } from "react"
 import { toast } from "sonner"
 
 import { useMounted } from "@/hooks/use-mounted"
-import { HOME_NAV, MODULES, TIMELINE_NAV, type ModuleDefinition } from "@/lib/constant"
+import { HOME_NAV, MODULES, type ModuleDefinition } from "@/lib/constant"
 import { formatBytesCompact, formatNumber, formatRelative } from "@/lib/helper"
 import type { IndexStatus } from "@/lib/types"
 import { cn } from "@/lib/utils"
@@ -65,7 +65,6 @@ export function AppSidebar({ sizes, index }: AppSidebarProps) {
   const toItem = (m: ModuleDefinition): Item => ({ key: m.id, label: m.label, href: m.href, icon: m.icon, size: formatBytesCompact(sizes[m.id]) })
   const top: Item[] = [
     { key: "home", label: HOME_NAV.label, href: HOME_NAV.href, icon: HOME_NAV.icon },
-    { key: "timeline", label: TIMELINE_NAV.label, href: TIMELINE_NAV.href, icon: TIMELINE_NAV.icon },
   ]
   const core = MODULES.filter((m) => m.nav === "core").map(toItem)
   const more = MODULES.filter((m) => m.nav === "more").map(toItem)

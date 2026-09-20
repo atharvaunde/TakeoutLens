@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 
-import { HOME_NAV, MODULES, SEARCH_MODULE_LABELS, SHELL, TIMELINE_NAV } from "@/lib/constant"
+import { HOME_NAV, MODULES, SEARCH_MODULE_LABELS, SHELL } from "@/lib/constant"
 import type { GlobalSearchResult } from "@/lib/types"
 import { searchEverythingAction } from "@/server/actions/search"
 import { useRecentsStore } from "@/stores/recents-store"
@@ -57,7 +57,6 @@ export function CommandPalette() {
   const searching = query.trim().length >= SHELL.searchMinLength
   const jumps: Row[] = [
     { id: "home", label: HOME_NAV.label, meta: "overview", href: HOME_NAV.href, moduleId: "home" },
-    { id: "timeline", label: TIMELINE_NAV.label, meta: "all sources", href: TIMELINE_NAV.href, moduleId: "timeline" },
     ...MODULES.map((m) => ({ id: m.id, label: m.label, meta: "open", href: m.href, moduleId: m.id })),
   ]
   const recentRows: Row[] = recents.map((r) => ({ id: `recent-${r.href}`, label: r.label, meta: "recent", href: r.href, moduleId: r.moduleId }))

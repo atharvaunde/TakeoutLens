@@ -10,7 +10,6 @@ import {
   FileTextIcon,
   FileVideoIcon,
   HardDriveIcon,
-  HistoryIcon,
   HouseIcon,
   ImageIcon,
   LayoutGridIcon,
@@ -72,12 +71,10 @@ export const MODULES: readonly ModuleDefinition[] = [
 ] as const
 
 export const HOME_NAV = { label: "Home", href: "/", icon: HouseIcon, shortcut: "g" } as const
-export const TIMELINE_NAV = { label: "Timeline", href: "/timeline", icon: HistoryIcon, shortcut: "t" } as const
 
 export const SHORTCUTS = [
   { key: "⌘K", label: "Search everything" },
   { key: "G", label: "Overview" },
-  { key: "T", label: "Timeline" },
   { key: "M", label: "Mail" },
   { key: "C", label: "Chat" },
   { key: "E", label: "Calendar" },
@@ -374,20 +371,6 @@ export const GROUP_TABS = [
   { value: "members", label: "Members" },
 ] as const
 
-export const TIMELINE = {
-  sources: [
-    { value: "all", label: "All" },
-    { value: "mail", label: "Mail" },
-    { value: "chat", label: "Chat" },
-    { value: "calendar", label: "Calendar" },
-    { value: "drive", label: "Drive" },
-    { value: "photos", label: "Photos" },
-  ] as const,
-  pageSize: 60,
-  /** Rows fetched per source before merging (chat is de-duplicated per conversation and day). */
-  perSource: 80,
-} as const
-export type TimelineSource = (typeof TIMELINE.sources)[number]["value"]
 
 /** File-kind chip (design): extension label -> colour family (--k-<family>-bg/fg in globals.css). */
 export const FILE_KIND_FAMILY: Readonly<Record<string, ModuleKind>> = {

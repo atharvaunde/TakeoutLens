@@ -150,18 +150,3 @@ describe("groups", () => {
     expect((await listMailLabels()).labels.length).toBeGreaterThan(0)
   })
 })
-
-describe("timeline", () => {
-  it("merges sources by date, filters by source and pages backwards", async () => {
-    const { getTimeline } = await import("@/server/services/timeline")
-    const all = await getTimeline("all")
-    const modules = new Set(all.items.map((i) => i.moduleId))
-    expect([...modules].sort()).toEqual(expect.arrayContaining(["calendar", "chat", "drive", "mail", "photos"]))
-    expect(all.items.map((i) => i.ts)).toEqual([...all.items.map((i) => i.ts)].sort((a, b) => b - a)) // newest first
-    const mail = await getTimeline("mail")
-    expect(mail.items.every((i) => i.moduleId === "mail")).toBe(true)
-    expect(mail.items[0].title).toBe("Été news") // 18 Oct 2023 is the newest mail
-    const older = await getTimeline("mail", mail.items[0].ts)
-    expect(older.items.every((i) => i.ts < mail.items[0].ts)).toBe(true)
-  })
-})

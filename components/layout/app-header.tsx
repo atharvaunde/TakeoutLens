@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation"
 
-import { HOME_NAV, MODULES, TIMELINE_NAV } from "@/lib/constant"
+import { HOME_NAV, MODULES } from "@/lib/constant"
 import { logoutAction } from "@/server/actions/auth"
 import { useUiStore } from "@/stores/ui-store"
 
@@ -11,7 +11,7 @@ export function AppHeader() {
   const crumb = useUiStore((s) => s.crumb)
   const setCmdOpen = useUiStore((s) => s.setCmdOpen)
   const fallback =
-    pathname === "/" ? "overview" : pathname.startsWith(TIMELINE_NAV.href) ? "timeline" : (MODULES.find((m) => pathname.startsWith(m.href))?.label ?? HOME_NAV.label)
+    pathname === "/" ? "overview" : (MODULES.find((m) => pathname.startsWith(m.href))?.label ?? HOME_NAV.label)
 
   return (
     <header className="flex h-[42px] flex-none items-center gap-3 border-b border-line bg-background px-3.5">
