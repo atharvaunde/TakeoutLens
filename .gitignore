@@ -53,3 +53,4 @@ spike/mbox-offsets.json
 # playwright
 /test-results/
 /playwright-report/
+!.env.example

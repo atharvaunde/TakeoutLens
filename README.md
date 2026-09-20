@@ -39,6 +39,8 @@ On first visit you set a password, then press **Reindex** in the sidebar (or run
 
 ## Configuration
 
+Copy `.env.example` to `.env.local` (native) or `.env` (Docker compose) and edit it.
+
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `TAKEOUT_DIR` | `./takeout` | Extracted export (read-only) |
