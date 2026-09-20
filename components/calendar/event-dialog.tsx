@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 
+import { OptionGroup } from "@/components/common/option-group"
 import { Skeleton } from "@/components/ui/skeleton"
 import { formatDate, formatTime } from "@/lib/helper"
 import type { CalendarEventDetail, CalendarEventItem } from "@/lib/types"
@@ -18,10 +19,14 @@ const TAG = "rounded-[3px] bg-sel px-1.5 py-0.5 font-mono text-[9.5px] text-mute
 
 const statusOf = (s: string) => (s === "ACCEPTED" ? "accepted" : s === "DECLINED" ? "declined" : "pending")
 
+type AttendeeFilter = "all" | "accepted" | "declined" | "pending"
+const FILTER_LABELS: Record<AttendeeFilter, string> = { all: "All", accepted: "Yes", declined: "No", pending: "Pending" }
+
 /** Event card over the calendar: title + time, tags, Meet/Organizer, attendees with response counts. */
 export function EventDialog({ target, color, onClose }: EventDialogProps) {
   const [detail, setDetail] = useState<CalendarEventDetail | null>(null)
   const [loadedKey, setLoadedKey] = useState<string | null>(null)
+  const [filter, setFilter] = useState<AttendeeFilter>("all")
 
   useEffect(() => {
     if (!target) return
@@ -29,6 +34,7 @@ export function EventDialog({ target, color, onClose }: EventDialogProps) {
     void loadEventDetailAction(target.eventId, target.recurring ? target.startWall : undefined).then((result) => {
       if (cancelled) return
       setDetail(result)
+      setFilter("all")
       setLoadedKey(target.key)
     })
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose()
@@ -43,6 +49,10 @@ export function EventDialog({ target, color, onClose }: EventDialogProps) {
   const ready = loadedKey === target.key && detail !== null
   const counts = { accepted: 0, declined: 0, pending: 0 }
   for (const a of detail?.attendees ?? []) counts[statusOf(a.status)]++
+  const filterOptions = (["all", "accepted", "declined", "pending"] as const)
+    .filter((key) => key === "all" || counts[key] > 0)
+    .map((key) => ({ value: key, label: `${FILTER_LABELS[key]} ${key === "all" ? (detail?.attendees.length ?? 0) : counts[key]}` }))
+  const shown = (detail?.attendees ?? []).filter((a) => filter === "all" || statusOf(a.status) === filter)
 
   return (
     <div onClick={onClose} className="absolute inset-0 z-30 flex items-center justify-center bg-scrim p-8">
@@ -94,12 +104,10 @@ export function EventDialog({ target, color, onClose }: EventDialogProps) {
               <div>
                 <div className="flex items-baseline justify-between border-b border-line2 pb-1.5">
                   <span className="font-mono text-[10px] tracking-[.1em] text-faint uppercase">{detail.attendees.length} attendees</span>
-                  <span className="font-mono text-[10px] text-faint">
-                    {counts.accepted} yes · {counts.declined} no · {counts.pending} pending
-                  </span>
+                  <OptionGroup options={filterOptions} value={filter} onChange={setFilter} variant="pill-mono" className="flex-nowrap justify-end" />
                 </div>
                 <div className="mt-1 flex flex-col">
-                  {detail.attendees.map((a) => {
+                  {shown.map((a) => {
                     const status = statusOf(a.status)
                     return (
                       <div key={a.email} className="flex items-center gap-2 py-1">
