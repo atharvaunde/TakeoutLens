@@ -81,6 +81,15 @@ export const STORAGE_SEGMENT_CLASSES: Readonly<Record<string, string>> = {
   youtube: "bg-gs-youtube",
 }
 export const STORAGE_OTHER_CLASS = "bg-gs-other"
+/** Same segments as CSS colour values, for chart libraries that take a fill instead of a class. */
+export const STORAGE_SEGMENT_COLORS: Readonly<Record<string, string>> = {
+  drive: "var(--gs-drive)",
+  photos: "var(--gs-photos)",
+  mail: "var(--gs-mail)",
+  chat: "var(--gs-chat)",
+  youtube: "var(--gs-youtube)",
+}
+export const STORAGE_OTHER_COLOR = "var(--gs-other)"
 
 export const SHELL = {
   railStorageKey: "takeout-rail-collapsed",
