@@ -39,7 +39,7 @@ export function DriveGrid({ rows, selectedId, actions, emptyText, canView = fals
                 <img src={`/thumb/${row.fileId}`} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
               ) : (
                 <div className="flex flex-col items-center gap-1.5">
-                  <FileTypeIcon name={row.name} isFolder={row.kind === "folder"} className="size-[26px] text-mute" />
+                  <FileTypeIcon name={row.name} isFolder={row.kind === "folder"} className="size-[30px] text-mute" />
                   <KindChip label={row.kindLabel} className="px-1.5 text-[9.5px] tracking-[.06em]" />
                 </div>
               )}

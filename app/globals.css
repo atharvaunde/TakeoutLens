@@ -49,6 +49,10 @@
   --color-cal-10: var(--cal-10);
   --color-cal-11: var(--cal-11);
   --color-cal-12: var(--cal-12);
+  --color-gp-docs: var(--gp-docs);
+  --color-gp-sheets: var(--gp-sheets);
+  --color-gp-slides: var(--gp-slides);
+  --color-gp-pdf: var(--gp-pdf);
   --color-on-acc: var(--on-acc);
   --color-scrim: var(--scrim);
   --color-background: var(--background);
@@ -100,6 +104,8 @@
   --ink: #171b21; --ink2: #3a424c; --mute: #69717c; --faint: #98a0aa;
   --acc: #2f6bf6; --accbg: #eaf0fe; --sel: #edeff3; --hov: #f4f6f8; --ok: #1f9254;
   --shadow: rgba(16, 24, 40, 0.12);
+  /* file-product accents (Docs / Sheets / Slides / PDF style icons) */
+  --gp-docs: #4285f4; --gp-sheets: #0f9d58; --gp-slides: #f4b400; --gp-pdf: #e5493a;
   --on-acc: #fff8f2;
   --scrim: rgba(20, 17, 13, 0.42);
   /* module / file-kind chip palette */
@@ -154,6 +160,7 @@
   --ink: #e7ebf0; --ink2: #c0c8d2; --mute: #8a939f; --faint: #69727d;
   --acc: #5b8cff; --accbg: #16203a; --sel: #1b222c; --hov: #171d26; --ok: #3da56b;
   --shadow: rgba(0, 0, 0, 0.5);
+  --gp-docs: #6a9bf7; --gp-sheets: #34b27a; --gp-slides: #f6c445; --gp-pdf: #ef6b5d;
   --k-mail-bg: #16203a; --k-mail-fg: #5b8cff;
   --k-chat-bg: #1b222c; --k-chat-fg: #98a2af;
   --k-cal-bg: #1b222c; --k-cal-fg: #828c99;
