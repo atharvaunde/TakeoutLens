@@ -6,11 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-Milestones M0–M6 of plan.md are implemented: every module has a page (Mail, Chat, Calendar incl. the multi-calendar overlay grid, Drive, Contacts, Keep, Tasks, Photos, Groups, YouTube, and the generic "Other data" browser). **M7 is done except the optional Typesense provider** (Dockerfile/compose, README, MIT license, Playwright smoke test in `e2e/`, `docs/security-review.md`). Measurements from the real export are in `docs/m0-spike-report.md`. The design docs remain the source of truth; read them before changing behavior:
-
-- `intent.md`: the problem, scope and decisions.
-- `spec.md`: requirements, design decisions, edge cases, acceptance criteria, and facts measured from a real 45GB export.
-- `plan.md`: milestones M0–M7, file layout and verification checks.
+All modules are implemented: Mail, Chat, Calendar (incl. the multi-calendar overlay grid), Drive, Contacts, Keep, Tasks, Photos, Groups, YouTube and the generic "Other data" browser, plus packaging (Dockerfile/compose, README, MIT license), a Playwright smoke test in `e2e/`, and CI. The optional Typesense search provider is not built (FTS5 is sufficient at this scale). The planning docs (intent/spec/plan) are no longer in the repo; the decisions that still matter are summarised below.
 
 ## Commands
 
@@ -25,7 +21,7 @@ Package manager is pnpm.
 - `.env.example` documents `TAKEOUT_DIR`, `DATA_DIR`, `ALLOWED_HOSTS` (`.gitignore` re-includes it despite `.env*`).
 - Docker: `TAKEOUT_DIR=… docker compose up --build`. The image keeps `node_modules` and sources (not Next standalone) because the server spawns the indexer with `tsx`; `serverExternalPackages` covers the native modules.
 
-## Architecture decisions that span the codebase (from spec.md)
+## Architecture decisions that span the codebase
 
 - **Read-only input, separate writable state.** The Takeout folder is mounted read-only (`TAKEOUT_DIR`, `/takeout` in Docker); all derived data (SQLite index, thumbnails, `auth.json`) goes to `DATA_DIR` (`/data`). Nothing may ever write under the Takeout folder.
 - **Separate indexer process.** A worker scans the Takeout tree and writes SQLite (WAL + FTS5, `better-sqlite3`); the Next.js server only reads it. Everything must stream: no large file (a 4.7GB mbox, 27MB `.ics`, multi-GB videos) is ever loaded into memory. The indexer is incremental and resumable, keyed by `(relative path, size, mtime)`.
@@ -36,7 +32,7 @@ Package manager is pnpm.
 - **Search behind a `SearchProvider` interface.** SQLite FTS5 is the default; Typesense is an optional compose-profile add-on.
 - **Priorities.** P0: Mail, Chat, Calendar (agenda), Drive list and search. P1: the multi-calendar overlay grid (the USP). P2: everything else.
 
-## Code conventions (owner-mandated; details and enforcement in plan.md)
+## Code conventions (owner-mandated; enforced by `pnpm check:conventions` and ESLint)
 
 - No client-side API calls: data comes from Server Components, Server Functions, or a Zustand store. Only exception: `media`/`thumb`/`download` Route Handlers, which serve bytes to `<img>`/`<video>`/download links.
 - Reuse generic components (`components/common/`); use shadcn components and check the shadcn skill/`docs` before writing UI.

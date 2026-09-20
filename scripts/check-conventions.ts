@@ -2,7 +2,7 @@ import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
-// Mechanical enforcement of the owner-mandated rules (plan.md E1, E5, E6, E8).
+// Mechanical enforcement of the owner-mandated rules (rules E1, E5, E6, E8).
 
 export interface Violation {
   rule: string
