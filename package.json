@@ -1,5 +1,5 @@
 {
-  "name": "google-takeout-tool",
+  "name": "takeout-lens",
   "version": "0.1.0",
   "private": true,
   "scripts": {
