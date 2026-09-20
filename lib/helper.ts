@@ -341,3 +341,18 @@ export function getMimeType(fileName: string, isFolder = false): string {
   const dot = fileName.lastIndexOf(".")
   return (dot === -1 ? undefined : MIME_BY_EXT[fileName.slice(dot).toLowerCase()]) ?? "application/octet-stream"
 }
+
+/** 0.03 -> "1/33 s"; 2 -> "2 s". */
+export function formatExposure(seconds: number | null | undefined): string {
+  if (!seconds || seconds <= 0) return PLACEHOLDER
+  return seconds >= 1 ? `${Number(seconds.toFixed(1))} s` : `1/${Math.round(1 / seconds)} s`
+}
+
+export function formatAperture(fNumber: number | null | undefined): string {
+  return fNumber ? `f/${Number(fNumber.toFixed(1))}` : PLACEHOLDER
+}
+
+export function formatCoordinates(lat: number | null | undefined, lon: number | null | undefined): string {
+  if (lat === null || lat === undefined || lon === null || lon === undefined) return PLACEHOLDER
+  return `${Math.abs(lat).toFixed(5)}° ${lat >= 0 ? "N" : "S"}, ${Math.abs(lon).toFixed(5)}° ${lon >= 0 ? "E" : "W"}`
+}

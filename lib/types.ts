@@ -221,3 +221,26 @@ export interface ChatConversationDetail {
   firstAt: number | null
   lastAt: number | null
 }
+
+export interface PhotoInfo {
+  name: string
+  width: number | null
+  height: number | null
+  format: string | null
+  sizeBytes: number
+  takenAt: number | null
+  uploadedAt: number | null
+  views: number | null
+  description: string
+  camera: string | null
+  lens: string | null
+  exposureSeconds: number | null
+  aperture: number | null
+  iso: number | null
+  focalLengthMm: number | null
+  software: string | null
+  latitude: number | null
+  longitude: number | null
+  googleUrl: string | null
+  origin: string | null
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery, splitHighlight, getDayKey, zonedTimeToUtc, utcToWall, htmlToText, decodeMimeWords, stripMeetBoilerplate, getMimeType } from "@/lib/helper"
+import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery, splitHighlight, getDayKey, zonedTimeToUtc, utcToWall, htmlToText, decodeMimeWords, stripMeetBoilerplate, getMimeType, formatExposure, formatAperture, formatCoordinates } from "@/lib/helper"
 
 describe("helper", () => {
   it("formats bytes", () => {
@@ -77,5 +77,13 @@ describe("helper", () => {
     expect(getMimeType("a.docx")).toBe("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
     expect(getMimeType("noext")).toBe("application/octet-stream")
     expect(getMimeType("Meet Recordings", true)).toBe("inode/directory")
+  })
+  it("formats photo exposure details", () => {
+    expect(formatExposure(0.03)).toBe("1/33 s")
+    expect(formatExposure(2)).toBe("2 s")
+    expect(formatExposure(null)).toBe("—")
+    expect(formatAperture(1.75)).toBe("f/1.8")
+    expect(formatCoordinates(12.5, -77.1)).toBe("12.50000° N, 77.10000° W")
+    expect(formatCoordinates(null, null)).toBe("—")
   })
 })
