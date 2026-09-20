@@ -43,6 +43,15 @@ Package manager is pnpm.
 - Every route has a page-shaped skeleton `loading.tsx` (shadcn `Skeleton`), never a progress bar.
 - Desktop/laptop only: below `lg` the app shows a block screen.
 
+## Design system
+
+The UI follows a Claude Design handoff (reference copy in `design/`, git-ignored; its source of truth is `design/project/Takeout Viewer.dc.html`). Rules that matter when changing UI:
+
+- **All colours are tokens in `app/globals.css`** (light + `.dark`): `--bg/--panel/--surf/--line/--line2/--ink/--ink2/--mute/--faint/--acc/--accbg/--sel/--hov/--ok`, module chips `--k-<kind>-bg/fg`, calendar palette `--cal-1..12`, stack ramp `--stack-1..5`, `--on-acc`, `--scrim`. They map onto shadcn's semantic tokens and are exposed as Tailwind colours (`bg-panel`, `text-faint`, `border-line2`, `bg-acc`...). No colour literals in code: `pnpm check:conventions` (rule E9) fails on them (only generated `components/ui/` and the isolated email iframe document are exempt).
+- Fonts are IBM Plex Sans/Mono (`font-sans`, `font-mono`); labels are mono, uppercase, tracked (`font-mono text-[9.5px] tracking-[.16em] uppercase text-faint`).
+- Shell = floating sidebar card + 42px top bar (`components/layout/`); pages fill the area under it (`h-full`, scroll inside). Pages set the breadcrumb with `<Crumb value="Mail / Inbox" />`.
+- Reuse: `ModuleHeader`/`TablePage` (title + mono sub + controls), `OptionGroup`/`UrlOptionGroup` (pills, tabs, segments), `SearchInput`, `SortChips`, `UrlPagination`, `DataTable` (design table look), `KindChip`.
+
 ## Gotchas
 
 - **Index database:** never delete only `index.db-wal`/`-shm` while a server is running; to reset, delete all three `index.db*` files and run `pnpm index` (it is derived data; sessions live in it, so everyone is logged out; `auth.json` is separate). `getDb()` reopens when the schema version or the file's inode changes, so hot reload picks up new migrations.

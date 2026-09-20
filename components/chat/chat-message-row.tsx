@@ -20,8 +20,8 @@ const MINE_BUBBLE = "rounded-[10px_3px_10px_10px] bg-acc text-on-acc"
 function Attachments({ message, onPreview }: { message: ChatMessageItem; onPreview: ChatGroupViewProps["onPreview"] }) {
   return (
     <>
-      {message.links.map((link) => (
-        <div key={link.title} className="flex max-w-[400px] items-center gap-2 rounded-[10px] border border-line bg-surf px-3 py-2 text-xs">
+      {message.links.map((link, index) => (
+        <div key={`${index}-${link.title}`} className="flex max-w-[400px] items-center gap-2 rounded-[10px] border border-line bg-surf px-3 py-2 text-xs">
           <LinkIcon className="size-3.5 flex-none text-mute" />
           <span className="truncate">{link.title}</span>
         </div>
@@ -76,8 +76,8 @@ export function ChatGroupView({ group, focusSeq, onPreview }: ChatGroupViewProps
       <Attachments message={message} onPreview={onPreview} />
       {message.reactions.length ? (
         <div className="flex flex-wrap gap-1">
-          {message.reactions.map((reaction) => (
-            <span key={reaction.emoji} className="rounded-full border border-line bg-surf px-1.5 text-[11px]">
+          {message.reactions.map((reaction, index) => (
+            <span key={`${index}-${reaction.emoji}`} className="rounded-full border border-line bg-surf px-1.5 text-[11px]">
               {reaction.emoji} {reaction.count > 1 ? reaction.count : ""}
             </span>
           ))}

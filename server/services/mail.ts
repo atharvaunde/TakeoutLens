@@ -38,7 +38,7 @@ export async function listMailLabels(): Promise<{ total: number; labels: MailLab
         name: system ? r.label : category ? r.label.slice("Category ".length) : parts[parts.length - 1],
         total: r.total,
         unread: r.unread ?? 0,
-        decoded: r.decoded === 1,
+        decoded: r.decoded === 1 && !system && !category,
         depth: system || category ? 0 : parts.length - 1,
         group: (system ? "system" : category ? "category" : "user") as MailLabelItem["group"],
       }
