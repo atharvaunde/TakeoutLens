@@ -42,9 +42,9 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="mt-[18px] flex h-3 gap-[2px]">
+        <div className="mt-[18px] flex h-3 gap-[2px] overflow-hidden rounded-full">
           {home.stack.map((segment) => (
-            <div key={segment.id} title={`${segment.name} · ${formatBytes(segment.bytes)}`} className={`${segmentClass(segment.id)} h-full min-w-1.5 rounded-full`} style={{ width: `${segment.percent}%` }} />
+            <div key={segment.id} title={`${segment.name} · ${formatBytes(segment.bytes)}`} className={`${segmentClass(segment.id)} h-full min-w-1.5`} style={{ width: `${segment.percent}%` }} />
           ))}
         </div>
         <div className="mt-2.5 flex flex-wrap gap-4">
