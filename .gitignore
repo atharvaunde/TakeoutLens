@@ -49,3 +49,7 @@ spike/mbox-offsets.json
 
 # downloaded Claude Design handoff (reference only)
 /design/
+
+# playwright
+/test-results/
+/playwright-report/
