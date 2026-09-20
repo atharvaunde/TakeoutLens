@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery, splitHighlight, getDayKey, zonedTimeToUtc, utcToWall, htmlToText, decodeMimeWords } from "@/lib/helper"
+import { formatBytes, formatDuration, getInitials, formatDate, parseTableParams, getFileKind, toFtsQuery, splitHighlight, getDayKey, zonedTimeToUtc, utcToWall, htmlToText, decodeMimeWords, stripMeetBoilerplate } from "@/lib/helper"
 
 describe("helper", () => {
   it("formats bytes", () => {
@@ -64,5 +64,12 @@ describe("helper", () => {
     expect(decodeMimeWords("=?UTF-8?B?w4l0w6k=?= news")).toBe("Été news")
     expect(decodeMimeWords("Plain,Labels")).toBe("Plain,Labels")
     expect(decodeMimeWords("=?bogus-charset?Q?caf=E9?=")).toBe("café")
+  })
+  it("strips Google Meet boilerplate fenced by dashed rules", () => {
+    const rule = "-::~:~::~:~:~:~:~:~:~:~:~:~::~:~::-"
+    const text = `Agenda: standup\n\n${rule}\nJoin with Google Meet: https://meet.google.com/abc\nPlease do not edit this section.\n${rule}\n\nNotes below`
+    expect(stripMeetBoilerplate(text)).toBe("Agenda: standup\n\nNotes below")
+    expect(stripMeetBoilerplate(`Keep me\n${rule}\nno closing rule`)).toBe("Keep me\nno closing rule")
+    expect(stripMeetBoilerplate("plain description")).toBe("plain description")
   })
 })

@@ -1,7 +1,7 @@
 import { RRule } from "rrule"
 
 import { CALENDAR } from "@/lib/constant"
-import { htmlToText, toFtsQuery, utcToWall, zonedTimeToUtc } from "@/lib/helper"
+import { htmlToText, stripMeetBoilerplate, toFtsQuery, utcToWall, zonedTimeToUtc } from "@/lib/helper"
 import type { CalendarEventDetail, CalendarEventItem, CalendarInfo } from "@/lib/types"
 import { requireSession } from "@/server/auth/session"
 import { getDb } from "@/server/db"
@@ -148,7 +148,7 @@ export async function getEventDetail(id: number, occurrenceStartWall?: number): 
     startWall: base.startWall + shift,
     endWall: base.endWall + shift,
     calendarName: row.calendar_name,
-    description: htmlToText(row.description),
+    description: stripMeetBoilerplate(htmlToText(row.description)),
     organizer: row.organizer,
     attendees: row.attendees ? (JSON.parse(row.attendees) as CalendarEventDetail["attendees"]) : [],
     meetUrl: row.meet_url,

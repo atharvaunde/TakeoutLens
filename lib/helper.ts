@@ -313,3 +313,24 @@ export function getKindLabel(fileName: string, isFolder: boolean): string {
 export function getKindFamily(kindLabel: string) {
   return FILE_KIND_FAMILY[kindLabel] ?? FILE_KIND_DEFAULT_FAMILY
 }
+
+/**
+ * Google Calendar invites embed a "Join with Google Meet ... Please do not edit this section." block
+ * fenced by dashed rules (-::~:~::~...). Remove the fences and everything between them; the Meet link is
+ * shown separately. If the fences are unbalanced, only the rule lines are removed.
+ */
+export function stripMeetBoilerplate(text: string): string {
+  const isRule = (line: string) => /^-[:~-]{8,}$/.test(line.trim())
+  const lines = text.split("\n")
+  const kept: string[] = []
+  let inside = false
+  for (const line of lines) {
+    if (isRule(line)) {
+      inside = !inside
+      continue
+    }
+    if (!inside) kept.push(line)
+  }
+  const cleaned = inside ? lines.filter((line) => !isRule(line)) : kept
+  return cleaned.join("\n").replace(/\n{3,}/g, "\n\n").trim()
+}
