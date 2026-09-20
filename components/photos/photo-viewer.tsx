@@ -51,6 +51,8 @@ export function PhotoViewer({ photos, index, onIndexChange, onClose }: PhotoView
   const [info, setInfo] = useState<PhotoInfo | null>(null)
   const [loadedId, setLoadedId] = useState<number | null>(null)
   const [showInfo, setShowInfo] = useState(true)
+  /** The photo currently painted. It lags `target` until the next one has loaded, so navigating never flashes blank. */
+  const [shownId, setShownId] = useState<number | null>(null)
 
   useEffect(() => {
     if (index === null) return
@@ -65,6 +67,27 @@ export function PhotoViewer({ photos, index, onIndexChange, onClose }: PhotoView
   useEffect(() => {
     if (!target) return
     let cancelled = false
+    const next = new window.Image()
+    const done = () => !cancelled && setShownId(target.fileId)
+    next.onload = done
+    next.onerror = done
+    next.src = `/media/${target.fileId}`
+    return () => {
+      cancelled = true
+    }
+  }, [target])
+
+  // Warm the cache for the neighbours so arrow-key navigation is instant.
+  useEffect(() => {
+    if (index === null) return
+    for (const neighbour of [photos[index - 1], photos[index + 1]]) {
+      if (neighbour) new window.Image().src = `/media/${neighbour.fileId}`
+    }
+  }, [index, photos])
+
+  useEffect(() => {
+    if (!target) return
+    let cancelled = false
     void loadPhotoInfoAction(target.fileId).then((result) => {
       if (cancelled) return
       setInfo(result)
@@ -75,12 +98,21 @@ export function PhotoViewer({ photos, index, onIndexChange, onClose }: PhotoView
     }
   }, [target])
 
-  const ready = target !== null && loadedId === target.fileId && info !== null
+  // Keep showing the previous photo's details (dimmed) while the next ones load.
+  const ready = target !== null && info !== null
+  const infoStale = target !== null && loadedId !== target.fileId
   const dimensions = ready && info.width && info.height ? `${formatNumber(info.width)} × ${formatNumber(info.height)}${info.width * info.height >= 1e6 ? ` · ${(info.width * info.height / 1e6).toFixed(1)} MP` : ""}` : null
   const exposure = ready ? [formatExposure(info.exposureSeconds), formatAperture(info.aperture), info.iso ? `ISO ${info.iso}` : null].filter((v) => v && v !== "—").join(" · ") : ""
 
   return (
-    <Dialog open={target !== null} onOpenChange={(open) => !open && onClose()}>
+    <Dialog
+      open={target !== null}
+      onOpenChange={(open) => {
+        if (open) return
+        setShownId(null) // next open starts from the thumbnail, not the previously viewed photo
+        onClose()
+      }}
+    >
       <DialogContent className="w-[94vw] gap-3 sm:max-w-[min(1500px,94vw)]">
         {target ? (
           <>
@@ -100,9 +132,13 @@ export function PhotoViewer({ photos, index, onIndexChange, onClose }: PhotoView
             </div>
             <DialogDescription className="sr-only">Photo preview and details for {target.name}</DialogDescription>
             <div className={cn("grid min-h-0 gap-4", showInfo ? "grid-cols-[minmax(0,1fr)_300px]" : "grid-cols-1")}>
-              <div className="relative">
+              <div className="relative h-[80vh]">
                 {/* eslint-disable-next-line @next/next/no-img-element -- streamed from the local media route, not an optimizable remote image */}
-                <img key={target.fileId} src={`/media/${target.fileId}`} alt={target.name} className="max-h-[80vh] w-full rounded-md bg-panel object-contain" />
+                <img
+                  src={shownId !== null ? `/media/${shownId}` : `/thumb/${target.fileId}`}
+                  alt={target.name}
+                  className="size-full rounded-md bg-panel object-contain"
+                />
                 <button type="button" aria-label="Previous photo" disabled={!hasPrev} onClick={() => onIndexChange((index ?? 0) - 1)} className={`${ARROW} left-3`}>
                   <ChevronLeftIcon className="size-5" />
                 </button>
@@ -113,7 +149,7 @@ export function PhotoViewer({ photos, index, onIndexChange, onClose }: PhotoView
               {showInfo ? (
                 <div className="max-h-[80vh] overflow-y-auto pr-1">
                   {ready ? (
-                    <div className="flex flex-col gap-3">
+                    <div className={cn("flex flex-col gap-3 transition-opacity", infoStale && "opacity-50")}>
                       <Section title="Details">
                         <Row label="Taken" value={info.takenAt ? formatDateTime(info.takenAt) : null} />
                         <Row label="Uploaded" value={info.uploadedAt ? formatDateTime(info.uploadedAt) : null} />
