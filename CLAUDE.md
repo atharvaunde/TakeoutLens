@@ -53,7 +53,7 @@ The UI follows a Claude Design handoff (exported into a git-ignored `design/` fo
 ## Gotchas
 
 - **Branding:** the app is called TakeoutLens (`APP_NAME` in `lib/constant.ts`). Logos are `public/brand/icon.png` (sidebar, lock screen) and `app/icon.png` (favicon); `proxy.ts` excludes `/brand/` and `/icon.png` from its session redirect so the lock screen can load them. Any new asset shown before login must be added to that matcher.
-- **CI:** `.github/workflows/docker-publish.yml` publishes the multi-arch image on `v*` tags; it needs the `DOCKERHUB_USERNAME` variable and `DOCKERHUB_TOKEN` secret.
+- **CI:** `.github/workflows/docker.yml` checks and builds both architectures on pull requests, and publishes the multi-arch image to GHCR and Docker Hub on pushes to `main` (`edge`) and `v*` tags; Docker Hub needs the `DOCKERHUB_USERNAME` variable and `DOCKERHUB_TOKEN` secret.
 
 - **Index database:** never delete only `index.db-wal`/`-shm` while a server is running; to reset, delete all three `index.db*` files and run `pnpm index` (it is derived data; sessions live in it, so everyone is logged out; `auth.json` is separate). `getDb()` reopens when the schema version or the file's inode changes, so hot reload picks up new migrations.
 - **Adding a table or index:** append a new string to `MIGRATIONS` in `server/db/schema.ts` (never edit old ones) and register a per-module indexer in `server/indexer/run.ts`. Small modules (contacts, keep, tasks, youtube, groups metadata, browse) parse their files on demand instead.

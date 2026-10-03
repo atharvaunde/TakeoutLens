@@ -56,7 +56,7 @@ Everything in the data folder is derived from your export, including message tex
 
 ## Publishing the image (maintainers)
 
-`.github/workflows/docker-publish.yml` builds `linux/amd64` and `linux/arm64` on native runners and pushes one multi-arch image to Docker Hub as `<user>/takeout-viewer` when a `v*` tag is pushed (or manually). Set the repository variable `DOCKERHUB_USERNAME` and the secret `DOCKERHUB_TOKEN` first.
+`.github/workflows/docker.yml` runs the checks and builds `linux/amd64` and `linux/arm64` on native runners for every pull request (nothing is pushed). Pushes to `main` publish `edge` and `sha-*` tags, and `v*` tags (or a manual run) also publish `latest` and the version tags. Images go to GitHub Container Registry (`ghcr.io/<owner>/<repo>`, no setup needed) and Docker Hub (`<user>/takeout-viewer`), each as one multi-arch image. For Docker Hub set the repository variable `DOCKERHUB_USERNAME` and the secret `DOCKERHUB_TOKEN` first.
 
 ## Development
 
