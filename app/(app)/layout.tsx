@@ -1,7 +1,11 @@
+import { connection } from "next/server"
+
 import { AppShell } from "@/components/layout/app-shell"
 import { getOverview } from "@/server/services/modules"
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  // Everything under here reads the live index and session: never prerender it at build time.
+  await connection()
   const { modules, indexerRunning, lastRun } = await getOverview()
   const sizes = Object.fromEntries(modules.map((m) => [m.module.id, m.totalBytes]))
   const present = modules.filter((m) => m.state !== "missing")

@@ -9,3 +9,5 @@ spike
 takeout
 Takeout
 tsconfig.tsbuildinfo
+.github
+*.md

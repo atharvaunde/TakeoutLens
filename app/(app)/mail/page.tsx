@@ -7,6 +7,7 @@ import { MailList } from "@/components/mail/mail-list"
 import { MailThread } from "@/components/mail/mail-thread"
 import { MAIL_TEXT } from "@/lib/constant"
 import { formatNumber, parseTableParams } from "@/lib/helper"
+import { getConfig } from "@/server/config"
 import { getThread, listMailLabels, listMailMessages } from "@/server/services/mail"
 
 type Query = Record<string, string | string[] | undefined>
@@ -62,7 +63,7 @@ export default async function MailPage({ searchParams }: { searchParams: Promise
 
       <div className="min-h-0 bg-background">
         {thread.length ? (
-          <MailThread key={openId} messages={thread} />
+          <MailThread key={openId} messages={thread} autoLoadRemote={getConfig().loadRemoteImages} />
         ) : (
           <div className="flex h-full items-center justify-center px-10 text-center">
             <div>

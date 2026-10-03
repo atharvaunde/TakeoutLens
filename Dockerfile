@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
 COPY . .
-RUN pnpm build
+RUN pnpm build && rm -rf .next/cache && pnpm prune --prod
 
 # The indexer runs under tsx as a child process of the server, so the runtime keeps node_modules
 # (not Next's standalone trace) and the TypeScript sources it executes.
@@ -19,4 +19,4 @@ COPY --from=build --chown=node:node /app ./
 USER node
 VOLUME /data
 EXPOSE 3000
-CMD ["pnpm", "start"]
+CMD ["node_modules/.bin/next", "start"]

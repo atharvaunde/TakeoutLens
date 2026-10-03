@@ -12,6 +12,7 @@ import { DiscussionList } from "@/components/groups/discussion-list"
 import { MailThread } from "@/components/mail/mail-thread"
 import { GROUP_TABS } from "@/lib/constant"
 import { parseTableParams, pluralize } from "@/lib/helper"
+import { getConfig } from "@/server/config"
 import { getGroup, listGroupMembers, listGroups } from "@/server/services/groups"
 import { getThread, listMailMessages } from "@/server/services/mail"
 
@@ -106,7 +107,7 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
       </div>
       <div className="min-h-0 bg-background">
         {thread.length ? (
-          <MailThread key={openId} messages={thread} />
+          <MailThread key={openId} messages={thread} autoLoadRemote={getConfig().loadRemoteImages} />
         ) : (
           <div className="flex h-full items-center justify-center px-10 text-center">
             <div>

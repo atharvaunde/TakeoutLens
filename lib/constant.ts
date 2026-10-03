@@ -215,6 +215,7 @@ export const ENV = {
   takeoutDir: "TAKEOUT_DIR",
   dataDir: "DATA_DIR",
   allowedHosts: "ALLOWED_HOSTS",
+  loadRemoteImages: "LOAD_REMOTE_IMAGES",
 } as const
 
 export const DEFAULT_DIRS = {
