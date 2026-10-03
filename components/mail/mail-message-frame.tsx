@@ -7,17 +7,19 @@ import { MAIL_TEXT, MAIL_VIEW } from "@/lib/constant"
 interface MailMessageFrameProps {
   html: string | null
   text: string
+  /** Global setting (LOAD_REMOTE_IMAGES): start with remote images allowed. */
+  autoLoadRemote?: boolean
 }
 
 const escapeHtml = (value: string) => value.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c] as string)
 
 /**
  * Untrusted message HTML renders inside a sandboxed iframe (no scripts, no same-origin) with a
- * CSP that blocks all network access. Remote images are opt-in per message.
+ * CSP that blocks all network access. Remote images are opt-in per message unless LOAD_REMOTE_IMAGES is set.
  * (The iframe document is isolated, so its light "paper" colours cannot come from the app's CSS variables.)
  */
-export function MailMessageFrame({ html, text }: MailMessageFrameProps) {
-  const [allowRemote, setAllowRemote] = useState(false)
+export function MailMessageFrame({ html, text, autoLoadRemote = false }: MailMessageFrameProps) {
+  const [allowRemote, setAllowRemote] = useState(autoLoadRemote)
   const hasRemote = useMemo(() => Boolean(html && /<img[^>]+src=["']?https?:/i.test(html)), [html])
 
   const srcDoc = useMemo(() => {

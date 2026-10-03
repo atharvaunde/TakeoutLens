@@ -7,6 +7,7 @@ import { TablePage } from "@/components/common/table-page"
 import { TableControls } from "@/components/data-table/table-controls"
 import { MailMessageFrame } from "@/components/mail/mail-message-frame"
 import { formatBytes, parseTableParams } from "@/lib/helper"
+import { getConfig } from "@/server/config"
 import { getFileForViewer, getFilePreview } from "@/server/services/viewer"
 
 const BUTTON = "rounded-[7px] border border-line bg-surf px-2.5 py-[5px] text-xs font-medium text-ink no-underline hover:bg-hov hover:no-underline"
@@ -39,7 +40,7 @@ export default async function FileViewerPage({ searchParams }: { searchParams: P
       {preview.kind === "csv" ? (
         <CsvViewer headers={preview.headers} rows={preview.rows} total={preview.total} secretHeaders={preview.passwordHeaders} />
       ) : preview.kind === "html" ? (
-        <MailMessageFrame html={preview.html} text="" />
+        <MailMessageFrame html={preview.html} text="" autoLoadRemote={getConfig().loadRemoteImages} />
       ) : preview.kind === "text" || preview.kind === "json" ? (
         <div className="flex flex-col gap-2">
           {preview.truncated ? <p className="font-mono text-[10px] text-faint">Showing the beginning of a large file. Download it to see everything.</p> : null}

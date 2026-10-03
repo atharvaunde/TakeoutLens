@@ -35,10 +35,13 @@ export function detectTakeoutRoot(dir: string): string {
 export interface AppConfig {
   takeoutDir: string
   dataDir: string
+  /** LOAD_REMOTE_IMAGES=true: show remote images in every email without asking. */
+  loadRemoteImages: boolean
 }
 
 export function getConfig(): AppConfig {
   const takeout = path.resolve(process.env[ENV.takeoutDir] ?? DEFAULT_DIRS.takeout)
   const dataDir = path.resolve(process.env[ENV.dataDir] ?? DEFAULT_DIRS.data)
-  return { takeoutDir: detectTakeoutRoot(takeout), dataDir }
+  const loadRemoteImages = /^(1|true|yes|on)$/i.test(process.env[ENV.loadRemoteImages] ?? "")
+  return { takeoutDir: detectTakeoutRoot(takeout), dataDir, loadRemoteImages }
 }

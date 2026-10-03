@@ -18,7 +18,7 @@ function splitAddress(value: string): { name: string; email: string } {
   return match ? { name: match[1].replace(/^"|"$/g, "") || match[2], email: match[2] } : { name: value, email: value }
 }
 
-function MessageBlock({ message, defaultOpen }: { message: MailMessageView; defaultOpen: boolean }) {
+function MessageBlock({ message, defaultOpen, autoLoadRemote }: { message: MailMessageView; defaultOpen: boolean; autoLoadRemote: boolean }) {
   const [open, setOpen] = useState(defaultOpen)
   const [raw, setRaw] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
@@ -45,7 +45,7 @@ function MessageBlock({ message, defaultOpen }: { message: MailMessageView; defa
           {raw !== null ? (
             <pre className="max-h-[52vh] overflow-auto rounded-lg border border-line2 bg-panel p-3 font-mono text-[11px] whitespace-pre-wrap break-words">{raw}</pre>
           ) : (
-            <MailMessageFrame html={message.html} text={message.text} />
+            <MailMessageFrame html={message.html} text={message.text} autoLoadRemote={autoLoadRemote} />
           )}
           {message.attachments.some((a) => !a.inline) ? (
             <div className="mt-3 flex flex-wrap gap-1.5">
@@ -81,7 +81,7 @@ function MessageBlock({ message, defaultOpen }: { message: MailMessageView; defa
 }
 
 /** A conversation as the reading pane: subject, label tags, then each message (newest expanded). */
-export function MailThread({ messages }: { messages: MailMessageView[] }) {
+export function MailThread({ messages, autoLoadRemote = false }: { messages: MailMessageView[]; autoLoadRemote?: boolean }) {
   const labels = [...new Set(messages.flatMap((m) => m.labels))]
   return (
     <div className="h-full overflow-y-auto bg-background">
@@ -95,7 +95,7 @@ export function MailThread({ messages }: { messages: MailMessageView[] }) {
           ))}
         </div>
         {messages.map((message, index) => (
-          <MessageBlock key={message.id} message={message} defaultOpen={index === messages.length - 1} />
+          <MessageBlock key={message.id} message={message} defaultOpen={index === messages.length - 1} autoLoadRemote={autoLoadRemote} />
         ))}
       </div>
     </div>

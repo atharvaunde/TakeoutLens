@@ -6,6 +6,7 @@ services:
       - "127.0.0.1:3000:3000" # local only: never published on other interfaces
     environment:
       ALLOWED_HOSTS: ${ALLOWED_HOSTS:-}
+      LOAD_REMOTE_IMAGES: ${LOAD_REMOTE_IMAGES:-false}
     volumes:
       - ${TAKEOUT_DIR:?Set TAKEOUT_DIR to your extracted Takeout folder}:/takeout:ro
       - viewer-data:/data # index, password hash and sessions; delete this volume to reset
