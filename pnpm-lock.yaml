@@ -156,8 +156,8 @@ importers:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       postal-mime:
-        specifier: ^3.0.0
-        version: 3.0.0
+        specifier: ^4.0.8
+        version: 4.1.4
       radix-ui:
         specifier: ^1.6.7
         version: 1.6.7(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -4115,8 +4115,9 @@ packages:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
     engines: {node: '>= 0.4'}
 
-  postal-mime@3.0.0:
-    resolution: {integrity: sha512-Z4a9ar2Bv3YpK3IXag+Yda30k7bMZfpRuUGyqtHnZ2pjHG8Bl62EhZIk4n1dzv00gfzP9g+94e9kd8+XmjVWLA==}
+  postal-mime@4.1.4:
+    resolution: {integrity: sha512-+6Qsn7Q2TSLMScfN4X2VQIclPRKgDAtKhytQex3fVSV/+HgVaawtsQGzKYDQLQIBR7b4Vfg+88WRGvuF/kwLSw==}
+    engines: {node: '>=20'}
 
   postcss-selector-parser@7.1.6:
     resolution: {integrity: sha512-7qASPzhKF2l2KLboRZux8CCTRMdGiV08vWmyKzPz22qZ7ZjQBOeY7rNzNoCLSUiftJ7HUq0GERHmxw/t0dCdMw==}
@@ -8732,7 +8733,7 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postal-mime@3.0.0: {}
+  postal-mime@4.1.4: {}
 
   postcss-selector-parser@7.1.6:
     dependencies:
